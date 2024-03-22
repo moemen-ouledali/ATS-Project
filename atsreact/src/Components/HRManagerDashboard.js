@@ -6,18 +6,28 @@ const HRManagerDashboard = () => {
     const [jobListings, setJobListings] = useState([]);
 
     useEffect(() => {
-        const fetchJobListings = async () => {
-            try {
-                // Adjust this URL to your backend's job listings endpoint
-                const response = await axios.get('http://localhost:5000/api/joblistings');
-                setJobListings(response.data);
-            } catch (error) {
-                console.error('Failed to fetch job listings:', error);
-            }
-        };
-
         fetchJobListings();
     }, []);
+
+    const fetchJobListings = async () => {
+        try {
+            // Adjust this URL to your backend's job listings endpoint
+            const response = await axios.get('http://localhost:5000/api/joblistings');
+            setJobListings(response.data);
+        } catch (error) {
+            console.error('Failed to fetch job listings:', error);
+        }
+    };
+
+    const deleteJobListing = async (id) => {
+        try {
+            await axios.delete(`http://localhost:5000/api/joblistings/${id}`);
+            // Refresh the job listings to reflect the deletion
+            fetchJobListings();
+        } catch (error) {
+            console.error('Failed to delete job listing:', error);
+        }
+    };
 
     return (
         <div>
@@ -30,8 +40,9 @@ const HRManagerDashboard = () => {
                         <div key={listing._id}>
                             <h4>{listing.title} at {listing.company}</h4>
                             <p>{listing.description}</p>
-                            {/* Placeholder for update and delete operations */}
-                            <button>Edit</button> <button>Delete</button>
+                            {/* Update and Delete operations now have functionality */}
+                            <button>Edit</button> {/* Placeholder for future implementation */}
+                            <button onClick={() => deleteJobListing(listing._id)}>Delete</button>
                         </div>
                     ))
                 ) : (
