@@ -1,9 +1,10 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import { AuthContext } from '../AuthContext'; // Import AuthContext to access the authToken
+import { AuthContext } from '../AuthContext';
+import '../Add-Ons/toast-notification-01/style.css';
 
 const AddJobListing = () => {
-    const { authToken } = useContext(AuthContext); // Use AuthContext to get the authToken
+    const { authToken } = useContext(AuthContext);
     const [formData, setFormData] = useState({
         title: '',
         company: '',
@@ -14,24 +15,28 @@ const AddJobListing = () => {
         salaryRange: '',
         experienceLevel: '',
     });
+    const [showToast, setShowToast] = useState(false);
 
-    // Update form state when input changes
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // Submit form data to server
+    const showNotification = () => {
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const response = await axios.post('http://localhost:5000/api/joblistings/add', formData, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`, // Include the authToken in the authorization header
+                    'Authorization': `Bearer ${authToken}`,
                 },
             });
             console.log('Job listing added:', response.data);
-            // Optionally reset form here or give user feedback
+            showNotification();
             setFormData({
                 title: '',
                 company: '',
@@ -44,11 +49,9 @@ const AddJobListing = () => {
             });
         } catch (error) {
             console.error('Failed to add job listing:', error);
-            // Optionally give user feedback on failure
         }
     };
 
-    // The form component
     return (
         <div>
             <h2>Add Job Listing</h2>
@@ -63,6 +66,11 @@ const AddJobListing = () => {
                 <input type="text" name="experienceLevel" value={formData.experienceLevel} onChange={handleChange} placeholder="Experience Level" />
                 <button type="submit">Submit</button>
             </form>
+            {showToast && <div className="notification">
+                <div className="notification__body">
+                    ✅ Job listing added successfully! 🚀
+                </div>
+            </div>}
         </div>
     );
 };
