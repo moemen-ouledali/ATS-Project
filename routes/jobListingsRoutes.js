@@ -30,4 +30,17 @@ router.post('/add', async (req, res) => {
     }
 });
 
+
+// Route to find listings
+router.get('/', async (req, res) => {
+    try {
+        const listings = await JobListing.find();
+        res.json(listings);
+    } catch (error) {
+        console.error('Failed to get job listings:', error);
+        res.status(500).json({ message: 'Failed to get job listings' });
+    }
+});
+
+
 module.exports = router;
