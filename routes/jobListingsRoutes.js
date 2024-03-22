@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const JobListing = require('../models/JobListing'); // Ensure this path correctly points to your JobListing model
+console.log(JobListing); // This should log a function or model definition.
 
 // Route to create a new job listing
 router.post('/add', async (req, res) => {
@@ -29,6 +30,23 @@ router.post('/add', async (req, res) => {
         res.status(500).json({ message: 'Failed to add job listing' });
     }
 });
+
+
+// Delete a job listing
+router.delete('/:id', async (req, res) => {
+    try {
+        const jobListing = await JobListing.findOneAndRemove({ _id: req.params.id });
+        if (!jobListing) {
+            return res.status(404).send('The job listing with the given ID was not found.');
+        }
+        res.send(jobListing);
+    } catch (error) {
+        console.error('Failed to delete job listing:', error);
+        res.status(500).send('Error deleting job listing');
+    }
+});
+
+
 
 
 // Route to find listings
