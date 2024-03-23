@@ -35,18 +35,16 @@ router.post('/add', async (req, res) => {
 // Delete a job listing
 router.delete('/:id', async (req, res) => {
     try {
-        const jobListing = await JobListing.findOneAndRemove({ _id: req.params.id });
-        if (!jobListing) {
+        const result = await JobListing.deleteOne({ _id: req.params.id });
+        if (result.deletedCount === 0) {
             return res.status(404).send('The job listing with the given ID was not found.');
         }
-        res.send(jobListing);
+        res.send({ message: 'Job listing deleted successfully.' });
     } catch (error) {
         console.error('Failed to delete job listing:', error);
         res.status(500).send('Error deleting job listing');
     }
 });
-
-
 
 
 // Route to find listings
