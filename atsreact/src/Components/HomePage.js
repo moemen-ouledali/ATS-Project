@@ -1,6 +1,7 @@
 // HomePage.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom'; // Import Link for navigation
 
 const HomePage = () => {
   const [jobListings, setJobListings] = useState([]);
@@ -18,7 +19,7 @@ const HomePage = () => {
     fetchJobListings();
   }, []);
 
-  // Inline CSS styles
+  // Inline CSS styles (Keep your existing styles)
   const styles = {
     container: {
       padding: '20px',
@@ -43,6 +44,16 @@ const HomePage = () => {
     strong: {
       fontWeight: 'bold',
     },
+    discoverButton: {
+      marginTop: '10px',
+      padding: '8px 16px',
+      backgroundColor: '#0275d8',
+      color: 'white',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      textDecoration: 'none', // Remove underline from link
+    }
   };
 
   return (
@@ -53,13 +64,11 @@ const HomePage = () => {
         {jobListings.length > 0 ? (
           jobListings.map((listing) => (
             <div key={listing._id} style={styles.jobListing}>
-              <h3 style={styles.jobTitle}>{listing.title} at {listing.company}</h3>
-              <p style={styles.detail}><strong style={styles.strong}>Description:</strong> {listing.description}</p>
-              <p style={styles.detail}><strong style={styles.strong}>Location:</strong> {listing.location}</p>
+              <h3 style={styles.jobTitle}>{listing.title}</h3>
               <p style={styles.detail}><strong style={styles.strong}>Job Type:</strong> {listing.jobType}</p>
-              <p style={styles.detail}><strong style={styles.strong}>Requirements:</strong> {listing.requirements}</p>
-              <p style={styles.detail}><strong style={styles.strong}>Salary Range:</strong> {listing.salaryRange}</p>
-              <p style={styles.detail}><strong style={styles.strong}>Experience Level:</strong> {listing.experienceLevel}</p>
+              <p style={styles.detail}>{listing.description}</p>
+              {/* Link to detailed job view using React Router's Link component */}
+              <Link to={`/job/${listing._id}`} style={styles.discoverButton}>Discover</Link>
             </div>
           ))
         ) : (

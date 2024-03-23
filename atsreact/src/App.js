@@ -13,6 +13,7 @@ import LoggedOutNav from './Components/LoggedOutNav';
 import ManagerNav from './Components/ManagerNav';
 import CandidateNav from './Components/CandidateNav';
 import BeeCodersLogo from './Media/BeeCodersLogo.png';
+import JobDetails from './Components/JobDetails';
 
 import './App.css';
 
@@ -38,6 +39,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/" element={<HomePage />} />
+        <Route path="/job/:jobId" element={<JobDetails />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/candidate_dashboard" element={<CandidateDashboard />} />
         <Route path="/hr_manager_dashboard" element={<HRManagerDashboard />} />
