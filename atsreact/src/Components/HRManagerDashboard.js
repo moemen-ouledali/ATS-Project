@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AddJobListing from './AddJobListing'; // Make sure this path is correct
 import EditJobListing from './EditJobListing'; // Make sure this path is correct
+import ToastNotification from './ToastNotification'; // Adjust the import path as needed
 
 const HRManagerDashboard = () => {
     const [jobListings, setJobListings] = useState([]);
     const [editingId, setEditingId] = useState(null);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
 
     useEffect(() => {
         fetchJobListings();
@@ -24,8 +27,12 @@ const HRManagerDashboard = () => {
         try {
             await axios.delete(`http://localhost:5000/api/joblistings/${id}`);
             fetchJobListings();
+            setToastMessage('Job listing deleted successfully.');
+            setShowToast(true);
         } catch (error) {
             console.error('Failed to delete job listing:', error);
+            setToastMessage('Failed to delete job listing.');
+            setShowToast(true);
         }
     };
 
@@ -38,8 +45,12 @@ const HRManagerDashboard = () => {
             await axios.put(`http://localhost:5000/api/joblistings/${id}`, updatedListing);
             fetchJobListings();
             setEditingId(null);
+            setToastMessage('Job listing updated successfully.');
+            setShowToast(true);
         } catch (error) {
             console.error('Failed to update job listing:', error);
+            setToastMessage('Failed to update job listing.');
+            setShowToast(true);
         }
     };
 
@@ -76,6 +87,9 @@ const HRManagerDashboard = () => {
                     <p>No job listings found.</p>
                 )}
             </div>
+            {showToast && (
+                <ToastNotification message={toastMessage} onClose={() => setShowToast(false)} />
+            )}
         </div>
     );
 };
