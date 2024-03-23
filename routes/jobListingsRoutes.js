@@ -47,6 +47,24 @@ router.delete('/:id', async (req, res) => {
 });
 
 
+// Update a job listing
+router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    try {
+        const updatedListing = await JobListing.findByIdAndUpdate(id, updateData, { new: true });
+        if (!updatedListing) {
+            return res.status(404).send('Job listing not found.');
+        }
+        res.send(updatedListing);
+    } catch (error) {
+        console.error('Failed to update job listing:', error);
+        res.status(500).send('Error updating job listing');
+    }
+});
+
+
 // Route to find listings
 router.get('/', async (req, res) => {
     try {
@@ -60,3 +78,5 @@ router.get('/', async (req, res) => {
 
 
 module.exports = router;
+
+

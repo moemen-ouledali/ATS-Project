@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import AddJobListing from './AddJobListing'; // Adjust the path as necessary
+import AddJobListing from './AddJobListing'; // Make sure this path is correct
+import EditJobListing from './EditJobListing'; // Make sure this path is correct
 
 const HRManagerDashboard = () => {
     const [jobListings, setJobListings] = useState([]);
+    const [editingId, setEditingId] = useState(null);
 
     useEffect(() => {
         fetchJobListings();
@@ -11,7 +13,6 @@ const HRManagerDashboard = () => {
 
     const fetchJobListings = async () => {
         try {
-            // Adjust this URL to your backend's job listings endpoint
             const response = await axios.get('http://localhost:5000/api/joblistings');
             setJobListings(response.data);
         } catch (error) {
@@ -22,27 +23,53 @@ const HRManagerDashboard = () => {
     const deleteJobListing = async (id) => {
         try {
             await axios.delete(`http://localhost:5000/api/joblistings/${id}`);
-            // Refresh the job listings to reflect the deletion
             fetchJobListings();
         } catch (error) {
             console.error('Failed to delete job listing:', error);
         }
     };
 
+    const handleEditClick = (id) => {
+        setEditingId(id);
+    };
+
+    const handleSave = async (id, updatedListing) => {
+        try {
+            await axios.put(`http://localhost:5000/api/joblistings/${id}`, updatedListing);
+            fetchJobListings();
+            setEditingId(null);
+        } catch (error) {
+            console.error('Failed to update job listing:', error);
+        }
+    };
+
+    const handleCancel = () => {
+        setEditingId(null);
+    };
+
     return (
         <div>
             <h2>Welcome HR MANAGER</h2>
-            <AddJobListing /> {/* This line adds the job listing form to the HR Manager's Dashboard */}
+            <AddJobListing fetchJobListings={fetchJobListings} />
             <div>
                 <h3>Current Job Postings</h3>
                 {jobListings.length > 0 ? (
                     jobListings.map((listing) => (
                         <div key={listing._id}>
-                            <h4>{listing.title} at {listing.company}</h4>
-                            <p>{listing.description}</p>
-                            {/* Update and Delete operations now have functionality */}
-                            <button>Edit</button> {/* Placeholder for future implementation */}
-                            <button onClick={() => deleteJobListing(listing._id)}>Delete</button>
+                            {editingId === listing._id ? (
+                                <EditJobListing
+                                    listing={listing}
+                                    onSave={handleSave}
+                                    onCancel={handleCancel}
+                                />
+                            ) : (
+                                <div>
+                                    <h4>{listing.title} at {listing.company}</h4>
+                                    <p>{listing.description}</p>
+                                    <button onClick={() => handleEditClick(listing._id)}>Edit</button>
+                                    <button onClick={() => deleteJobListing(listing._id)}>Delete</button>
+                                </div>
+                            )}
                         </div>
                     ))
                 ) : (
