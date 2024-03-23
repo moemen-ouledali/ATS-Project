@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import AddJobListing from './AddJobListing'; // Make sure this path is correct
-import EditJobListing from './EditJobListing'; // Make sure this path is correct
+import AddJobListing from './AddJobListing'; // Adjust the import path as needed
+import EditJobListing from './EditJobListing'; // Adjust the import path as needed
 import ToastNotification from './ToastNotification'; // Adjust the import path as needed
 
 const HRManagerDashboard = () => {
@@ -58,15 +58,25 @@ const HRManagerDashboard = () => {
         setEditingId(null);
     };
 
+    // Inline CSS styles
+    const style = {
+        container: { padding: '20px' },
+        jobListing: { border: '1px solid #ccc', borderRadius: '8px', padding: '10px', marginBottom: '10px' },
+        title: { color: '#333', fontWeight: 'bold' },
+        button: { marginRight: '10px', padding: '8px 12px', cursor: 'pointer' },
+        editButton: { backgroundColor: 'lightblue' },
+        deleteButton: { backgroundColor: 'salmon', color: 'white' },
+    };
+
     return (
-        <div>
+        <div style={style.container}>
             <h2>Welcome HR MANAGER</h2>
             <AddJobListing fetchJobListings={fetchJobListings} />
             <div>
                 <h3>Current Job Postings</h3>
                 {jobListings.length > 0 ? (
                     jobListings.map((listing) => (
-                        <div key={listing._id}>
+                        <div key={listing._id} style={style.jobListing}>
                             {editingId === listing._id ? (
                                 <EditJobListing
                                     listing={listing}
@@ -74,12 +84,17 @@ const HRManagerDashboard = () => {
                                     onCancel={handleCancel}
                                 />
                             ) : (
-                                <div>
-                                    <h4>{listing.title} at {listing.company}</h4>
+                                <>
+                                    <h4 style={style.title}>{listing.title} at {listing.company}</h4>
                                     <p>{listing.description}</p>
-                                    <button onClick={() => handleEditClick(listing._id)}>Edit</button>
-                                    <button onClick={() => deleteJobListing(listing._id)}>Delete</button>
-                                </div>
+                                    <p>Location: {listing.location}</p>
+                                    <p>Job Type: {listing.jobType}</p>
+                                    <p>Requirements: {listing.requirements}</p>
+                                    <p>Salary Range: {listing.salaryRange}</p>
+                                    <p>Experience Level: {listing.experienceLevel}</p>
+                                    <button style={{...style.button, ...style.editButton}} onClick={() => handleEditClick(listing._id)}>Edit</button>
+                                    <button style={{...style.button, ...style.deleteButton}} onClick={() => deleteJobListing(listing._id)}>Delete</button>
+                                </>
                             )}
                         </div>
                     ))
