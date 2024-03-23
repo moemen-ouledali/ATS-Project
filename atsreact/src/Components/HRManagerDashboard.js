@@ -27,7 +27,7 @@ const HRManagerDashboard = () => {
         try {
             await axios.delete(`http://localhost:5000/api/joblistings/${id}`);
             fetchJobListings();
-            setToastMessage('Job listing deleted successfully.');
+            setToastMessage(' 🗑️ deleted successfully. 🚀');
             setShowToast(true);
         } catch (error) {
             console.error('Failed to delete job listing:', error);
@@ -45,7 +45,7 @@ const HRManagerDashboard = () => {
             await axios.put(`http://localhost:5000/api/joblistings/${id}`, updatedListing);
             fetchJobListings();
             setEditingId(null);
-            setToastMessage('Job listing updated successfully.');
+            setToastMessage('🖋️ Updated successfully.🚀');
             setShowToast(true);
         } catch (error) {
             console.error('Failed to update job listing:', error);
