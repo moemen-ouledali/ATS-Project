@@ -20,7 +20,7 @@ const LoginForm = () => {
 
       if (response.data.token) {
         // Updated to use setTokenAndRole with both token and role
-        setTokenAndRole(response.data.token, response.data.role);
+        setTokenAndRole(response.data.token, response.data.role, response.data.userId); // Include the userId
         localStorage.setItem('userId', response.data.userId); // Assuming you're storing userId in localStorage
         navigate('/dashboard'); // Or navigate based on role
       } else {

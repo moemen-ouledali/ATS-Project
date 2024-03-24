@@ -5,36 +5,41 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState(localStorage.getItem('token'));
   const [userRole, setUserRole] = useState(localStorage.getItem('role'));
-  const [userId, setUserId] = useState(localStorage.getItem('userId')); // Include userId state
+  const [userId, setUserId] = useState(localStorage.getItem('userId'));
 
-  const setTokenAndRole = (token, role, userId = null) => { // Accept userId as an argument
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const role = localStorage.getItem('role');
+    const id = localStorage.getItem('userId');
+    if (token && role && id) {
+      setAuthToken(token);
+      setUserRole(role);
+      setUserId(id);
+    }
+  }, []);
+
+  const setTokenAndRole = (token, role, id) => {
     localStorage.setItem('token', token);
     localStorage.setItem('role', role);
-    if (userId) {
-      localStorage.setItem('userId', userId); // Store userId in localStorage
-      setUserId(userId); // Update userId state
-    }
+    localStorage.setItem('userId', id);
     setAuthToken(token);
     setUserRole(role);
+    setUserId(id);
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-    localStorage.removeItem('userId'); // Clear userId from localStorage
+    localStorage.removeItem('userId');
     setAuthToken(null);
     setUserRole(null);
-    setUserId(null); // Reset userId state
+    setUserId(null);
   };
-
-  useEffect(() => {
-    // This effect runs once on component mount to initialize state from localStorage
-  }, []);
 
   const authContextValue = {
     authToken,
     userRole,
-    userId, // Include userId in the context value
+    userId,
     setTokenAndRole,
     logout,
   };
