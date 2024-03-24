@@ -98,6 +98,22 @@ router.get('/candidate/:userId', async (req, res) => {
     }
   });
 
+  // GET /api/jobapplications/all-details
+router.get('/all-details', async (req, res) => {
+  try {
+      const applications = await JobApplication.find({})
+          .populate('jobId', 'title company')
+          .populate('applicantId', 'username email');
+      res.json(applications);
+  } catch (error) {
+      console.error('Error fetching all applications with details:', error);
+      res.status(500).json({ message: 'Failed to fetch applications' });
+  }
+});
+
+
+
 
 module.exports = router;
+
 
