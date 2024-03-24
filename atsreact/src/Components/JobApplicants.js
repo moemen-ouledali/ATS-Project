@@ -45,6 +45,7 @@ const JobApplicants = () => {
         <div key={applicant._id}>
           <p>Name: {applicant.name}</p>
           <p>Email: {applicant.applicantId ? applicant.applicantId.email : 'N/A'}</p>
+          <p>Status: {applicant.status || 'In Review'}</p>
           <button onClick={() => acceptApplication(applicant._id)}>Accept</button>
           <button onClick={() => declineApplication(applicant._id)}>Decline</button>
         </div>
