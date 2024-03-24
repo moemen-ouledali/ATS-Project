@@ -26,8 +26,8 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
             degree,
             motivationLetter,
             resumeText,
-            jobId: mongoose.Types.ObjectId(jobId),
-            applicantId: mongoose.Types.ObjectId(applicantId)
+            jobId: req.body.jobId,
+            applicantId: req.body.applicantId
         });
 
         await newJobApplication.save();
@@ -50,7 +50,7 @@ router.get('/for-job/:jobId', async (req, res) => {
     try {
         const { jobId } = req.params;
         // Populate additional fields from the User model as required
-        const applications = await JobApplication.find({ jobId: jobId }).populate('applicantId', 'username email role');
+        const applications = await JobApplication.find({ jobId: jobId }).populate('applicantId', 'email username');
         res.json(applications);
     } catch (error) {
         console.error('Error fetching applications:', error);
@@ -58,4 +58,46 @@ router.get('/for-job/:jobId', async (req, res) => {
     }
 });
 
+router.put('/accept/:id', async (req, res) => {
+    try {
+      const updatedApplication = await JobApplication.findByIdAndUpdate(
+        req.params.id,
+        { status: 'accepted' },
+        { new: true }
+      );
+      res.json({ message: 'Application accepted', updatedApplication });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to accept application', error: error.message });
+    }
+});
+
+// PUT /api/jobapplications/decline/:id - Decline an application
+router.put('/decline/:id', async (req, res) => {
+    try {
+      const updatedApplication = await JobApplication.findByIdAndUpdate(
+        req.params.id,
+        { status: 'declined' },
+        { new: true }
+      );
+      res.json({ message: 'Application declined', updatedApplication });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to decline application', error: error.message });
+    }
+});
+
+
+
+router.get('/candidate/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const applications = await JobApplication.find({ applicantId: userId }).populate('jobId', 'title');
+      res.json(applications);
+    } catch (error) {
+      console.error('Error fetching applications for candidate:', error);
+      res.status(500).json({ message: 'Failed to fetch applications' });
+    }
+  });
+
+
 module.exports = router;
+
