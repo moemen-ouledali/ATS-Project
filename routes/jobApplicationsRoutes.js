@@ -26,17 +26,15 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
             degree,
             motivationLetter,
             resumeText,
-            jobId, // No need to convert to ObjectId
-            applicantId // No need to convert to ObjectId
+            jobId: mongoose.Types.ObjectId(jobId),
+            applicantId: mongoose.Types.ObjectId(applicantId)
         });
 
         await newJobApplication.save();
-
         res.status(201).json({ message: 'Application submitted successfully' });
     } catch (error) {
         console.error('Error processing application:', error);
         if (resumeFile) {
-            // Safely attempt to delete the file if an error occurs
             try {
                 await fs.unlink(resumeFile.path);
             } catch (fsError) {
@@ -44,6 +42,19 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
             }
         }
         res.status(500).json({ message: 'Failed to submit application', error: error.message });
+    }
+});
+
+// Fetch all applications for a specific job
+router.get('/for-job/:jobId', async (req, res) => {
+    try {
+        const { jobId } = req.params;
+        // Populate additional fields from the User model as required
+        const applications = await JobApplication.find({ jobId: jobId }).populate('applicantId', 'username email role');
+        res.json(applications);
+    } catch (error) {
+        console.error('Error fetching applications:', error);
+        res.status(500).json({ message: 'Failed to fetch applications' });
     }
 });
 

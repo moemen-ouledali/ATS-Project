@@ -14,6 +14,7 @@ import ManagerNav from './Components/ManagerNav';
 import CandidateNav from './Components/CandidateNav';
 import BeeCodersLogo from './Media/BeeCodersLogo.png';
 import JobDetails from './Components/JobDetails';
+import JobApplicants from './Components/JobApplicants';
 
 import './App.css';
 
@@ -44,6 +45,7 @@ function App() {
         <Route path="/candidate_dashboard" element={<CandidateDashboard />} />
         <Route path="/hr_manager_dashboard" element={<HRManagerDashboard />} />
         <Route path="/edit-profile" element={<EditProfileForm />} />
+        <Route path="/job-applicants/:jobId" element={<JobApplicants />} />
       </Routes>
     </Router>
   );
