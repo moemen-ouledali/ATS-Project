@@ -10,10 +10,12 @@ app.use(express.json());
 // Import routes
 const authRoutes = require('./routes/auth');
 const jobListingsRoutes = require('./routes/jobListingsRoutes'); // Import job listings routes
+const jobApplicationsRoutes = require('./routes/jobApplicationsRoutes');
 
 // Use routes
 app.use('/auth', authRoutes);
 app.use('/api/joblistings', jobListingsRoutes); // Use job listings routes
+app.use('/api/jobapplications', jobApplicationsRoutes);
 
 app.get('/', (req, res) => {
     res.send('Server is up and running');
