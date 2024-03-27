@@ -25,6 +25,16 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 
+app.get('/api/jobapplications/all-details', async (req, res) => {
+    try {
+      const allApplications = await JobApplication.find().populate('applicantId jobId');
+      res.json(allApplications);
+    } catch (error) {
+      console.error('Error fetching all job applications:', error);
+      res.status(500).send('Internal Server Error');
+    }
+  });
+
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/ats_database', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('Connected to MongoDB'))
