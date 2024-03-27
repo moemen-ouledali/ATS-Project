@@ -15,6 +15,9 @@ import CandidateNav from './Components/CandidateNav';
 import BeeCodersLogo from './Media/BeeCodersLogo.png';
 import JobDetails from './Components/JobDetails';
 import JobApplicants from './Components/JobApplicants';
+import Sidebar from './Components/SideBar';
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import "./assets/styles/tailwind.css";
 
 import './App.css';
 
@@ -46,6 +49,7 @@ function App() {
         <Route path="/hr_manager_dashboard" element={<HRManagerDashboard />} />
         <Route path="/edit-profile" element={<EditProfileForm />} />
         <Route path="/job-applicants/:jobId" element={<JobApplicants />} />
+        <Route path ="SideBar" element = {<Sidebar />} />
       </Routes>
     </Router>
   );
