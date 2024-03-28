@@ -16,8 +16,7 @@ import BeeCodersLogo from './Media/BeeCodersLogo.png';
 import JobDetails from './Components/JobDetails';
 import JobApplicants from './Components/JobApplicants';
 import Sidebar from './Components/SideBar';
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import "./assets/styles/tailwind.css";
+
 
 import './App.css';
 
