@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import { AuthProvider } from './AuthContext';
 import reportWebVitals from './reportWebVitals';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 // Correct way to use createRoot in React 18
 const container = document.getElementById('root');

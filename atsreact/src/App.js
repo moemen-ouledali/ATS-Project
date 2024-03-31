@@ -1,7 +1,10 @@
+
 // App.js
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { AuthContext } from './AuthContext'; // Import without AuthProvider
+import { AuthContext } from './AuthContext';
 import LoginForm from './Components/LoginForm';
 import RegisterForm from './Components/RegisterForm';
 import Dashboard from './Components/Dashboard';
@@ -15,9 +18,6 @@ import CandidateNav from './Components/CandidateNav';
 import BeeCodersLogo from './Media/BeeCodersLogo.png';
 import JobDetails from './Components/JobDetails';
 import JobApplicants from './Components/JobApplicants';
-import Sidebar from './Components/SideBar';
-
-
 import './App.css';
 
 function App() {
@@ -33,10 +33,10 @@ function App() {
   return (
     <Router>
       <header className="App-header">
-        <Link to="/">
-          <img src={BeeCodersLogo} alt="BeeCoders Logo" style={{ height: '50px', marginRight: 'auto' }} />
-        </Link>
-        <DynamicNavigation />
+        { <Link to="/">
+          <img src={BeeCodersLogo} alt="BeeCoders Logo" style={{ height: '100px', marginRight: 'auto' }} />
+        </Link> }
+        { <DynamicNavigation /> }
       </header>
       <Routes>
         <Route path="/login" element={<LoginForm />} />
@@ -48,7 +48,6 @@ function App() {
         <Route path="/hr_manager_dashboard" element={<HRManagerDashboard />} />
         <Route path="/edit-profile" element={<EditProfileForm />} />
         <Route path="/job-applicants/:jobId" element={<JobApplicants />} />
-        <Route path ="SideBar" element = {<Sidebar />} />
       </Routes>
     </Router>
   );
