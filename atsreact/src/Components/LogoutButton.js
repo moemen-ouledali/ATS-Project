@@ -11,7 +11,12 @@ const LogoutButton = () => {
     navigate('/login'); // Redirect to the login page
   };
 
-  return <button onClick={handleLogout}>Sign Out</button>;
+  // Apply Bootstrap button styling here
+  return (
+    <button onClick={handleLogout} className="btn btn-outline-danger btn-sm">
+      Sign Out
+    </button>
+  );
 };
 
 export default LogoutButton;

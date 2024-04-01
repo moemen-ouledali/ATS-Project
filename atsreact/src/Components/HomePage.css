@@ -1,0 +1,47 @@
+/* HomePage.css */
+
+/* Enhance the container for a better alignment with the site's theme */
+.container {
+    max-width: 1200px; /* Adjust based on your layout's maximum width */
+}
+
+/* Job Listings Section */
+h1, h2 {
+    color: #333; /* Assuming a darker shade for titles */
+    font-weight: bold;
+}
+
+.card {
+    border: 1px solid #ddd; /* Lighter border for a subtle distinction */
+    transition: transform 0.3s ease-in-out; /* Smooth transition for hover effect */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Soft shadow for depth */
+}
+
+.card:hover {
+    transform: scale(1.02); /* Slight scale-up on hover */
+}
+
+.card-title {
+    color: #0275d8; /* Bootstrap's primary color for consistency */
+}
+
+.card-text {
+    color: #666; /* Slightly muted text for readability */
+}
+
+.btn-primary {
+    background-color: #0056b3; /* Slightly darker shade of primary for buttons */
+    border-color: #004085; /* Ensuring accessible contrast */
+}
+
+.btn-primary:hover {
+    background-color: #004085; /* Darker on hover for feedback */
+    border-color: #003362;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px; /* More padding on smaller screens */
+    }
+}

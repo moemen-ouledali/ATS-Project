@@ -3,7 +3,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import React, { useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import LoginForm from './Components/LoginForm';
 import RegisterForm from './Components/RegisterForm';
@@ -15,9 +15,11 @@ import HomePage from './Components/HomePage';
 import LoggedOutNav from './Components/LoggedOutNav';
 import ManagerNav from './Components/ManagerNav';
 import CandidateNav from './Components/CandidateNav';
-import BeeCodersLogo from './Media/BeeCodersLogo.png';
+
 import JobDetails from './Components/JobDetails';
 import JobApplicants from './Components/JobApplicants';
+import LandingPage from './Components/LandingPage';
+import CardComponent from './Components/CardComponent';
 import './App.css';
 
 function App() {
@@ -32,12 +34,7 @@ function App() {
 
   return (
     <Router>
-      <header className="App-header">
-        { <Link to="/">
-          <img src={BeeCodersLogo} alt="BeeCoders Logo" style={{ height: '100px', marginRight: 'auto' }} />
-        </Link> }
-        { <DynamicNavigation /> }
-      </header>
+        <DynamicNavigation />
       <Routes>
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
@@ -48,6 +45,10 @@ function App() {
         <Route path="/hr_manager_dashboard" element={<HRManagerDashboard />} />
         <Route path="/edit-profile" element={<EditProfileForm />} />
         <Route path="/job-applicants/:jobId" element={<JobApplicants />} />
+        <Route path="/Landing" element={<LandingPage />} />
+        <Route path="/loggedoutnav" element={<LoggedOutNav />} />
+        <Route path="/card" element={<CardComponent />} />
+
       </Routes>
     </Router>
   );
