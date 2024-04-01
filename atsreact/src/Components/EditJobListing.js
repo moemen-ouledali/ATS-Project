@@ -47,10 +47,11 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
                     <option value="">Select a type</option>
                     <option value="Full-time">Full-time</option>
                     <option value="Part-time">Part-time</option>
-                    <option value="Contract">Contract</option>
-                    <option value="Temporary">Temporary</option>
-                    <option value="Internship">Internship</option>
+                    <option value="Contract"> Contract</option>
+                    <option value="Temporary"> Temporary</option>
+                    <option value="Internship"> Internship </option>
                 </select>
+
             </label>
             <label>
                 Description:
@@ -59,6 +60,8 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
                     value={formData.description}
                     onChange={handleChange}
                 />
+
+                
             </label>
             <label>
                 Requirements:
@@ -86,6 +89,21 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
                     onChange={handleChange}
                 />
             </label>
+
+
+            <label>
+                Category:
+                <select name="category" value={formData.category} onChange={handleChange} required>
+                    <option value="">Select a Category</option>
+                    <option value="Web & Mobile Development">Web & Mobile Development</option>
+                    <option value="Business Intelligence">Business Intelligence</option>
+                    <option value="Digital Marketing & Design">Digital Marketing & Design</option>
+                </select>
+            </label>
+
+
+
+
             <button type="submit">Save</button>
             <button type="button" onClick={onCancel}>Cancel</button>
         </form>

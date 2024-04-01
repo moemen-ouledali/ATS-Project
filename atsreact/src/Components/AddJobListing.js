@@ -14,6 +14,8 @@ const AddJobListing = () => {
         requirements: '',
         salaryRange: '',
         experienceLevel: '',
+        category: '', // Add category to the form state
+
     });
     const [showToast, setShowToast] = useState(false);
 
@@ -37,6 +39,7 @@ const AddJobListing = () => {
             });
             console.log('Job listing added:', response.data);
             showNotification();
+            // Reset the form fields after successful submission
             setFormData({
                 title: '',
                 company: '',
@@ -46,6 +49,7 @@ const AddJobListing = () => {
                 requirements: '',
                 salaryRange: '',
                 experienceLevel: '',
+                category: '', // Reset category as well
             });
         } catch (error) {
             console.error('Failed to add job listing:', error);
@@ -64,6 +68,12 @@ const AddJobListing = () => {
                 <textarea name="requirements" value={formData.requirements} onChange={handleChange} placeholder="Requirements" />
                 <input type="text" name="salaryRange" value={formData.salaryRange} onChange={handleChange} placeholder="Salary Range" />
                 <input type="text" name="experienceLevel" value={formData.experienceLevel} onChange={handleChange} placeholder="Experience Level" />
+                <select name="category" value={formData.category} onChange={handleChange} required>
+                    <option value="">Select Category</option>
+                    <option value="Web & Mobile Development">Web & Mobile Development</option>
+                    <option value="Business Intelligence">Business Intelligence</option>
+                    <option value="Digital Marketing & Design">Digital Marketing & Design</option>
+                </select>
                 <button type="submit">Submit</button>
             </form>
             {showToast && <div className="notification">

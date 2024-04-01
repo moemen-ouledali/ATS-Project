@@ -5,7 +5,17 @@ const JobListing = require('../models/JobListing');
 // Route to create a new job listing
 router.post('/add', async (req, res) => {
     try {
-        const newJobListing = new JobListing({ ...req.body });
+        const newJobListing = new JobListing({
+            title: req.body.title,
+            company: req.body.company,
+            location: req.body.location,
+            jobType: req.body.jobType,
+            description: req.body.description,
+            requirements: req.body.requirements,
+            salaryRange: req.body.salaryRange,
+            experienceLevel: req.body.experienceLevel,
+            category: req.body.category // Included with enum validation
+        });
         const savedListing = await newJobListing.save();
         res.status(201).json(savedListing);
     } catch (error) {
@@ -31,7 +41,21 @@ router.delete('/:id', async (req, res) => {
 // Route to update a job listing
 router.put('/:id', async (req, res) => {
     try {
-        const updatedListing = await JobListing.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updatedListing = await JobListing.findByIdAndUpdate(
+            req.params.id, 
+            {
+                title: req.body.title,
+                company: req.body.company,
+                location: req.body.location,
+                jobType: req.body.jobType,
+                description: req.body.description,
+                requirements: req.body.requirements,
+                salaryRange: req.body.salaryRange,
+                experienceLevel: req.body.experienceLevel,
+                category: req.body.category // Ensured to update category
+            }, 
+            { new: true }
+        );
         if (!updatedListing) {
             return res.status(404).send('Job listing not found.');
         }

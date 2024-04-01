@@ -9,6 +9,16 @@ const jobListingSchema = new mongoose.Schema({
     requirements: String,
     salaryRange: String,
     experienceLevel: String,
+
+    category: {
+        type: String,
+        required: true,
+        enum: ['Web & Mobile Development', 'Business Intelligence', 'Digital Marketing & Design']
+    },
+
+
+
+
     postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Assuming you have a User model
     // Add any other fields you think are necessary
 }, { timestamps: true });
