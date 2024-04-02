@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 // Import CSS
 import '../../src/bootstrap LP/css/styles.css'; // Adjust the path according to your project structure
 // Import images
@@ -10,10 +10,20 @@ import CardComponent from './CardComponent'; // Import CardComponent
 
 
 
+
 import 'bootstrap/dist/css/bootstrap.min.css'; // This assumes you've installed Bootstrap via npm
 import '../App.css'
 
+
+
 const LandingPage = () => {
+  // Ref for the CardComponent section
+  const cardComponentRef = useRef(null);
+
+  const scrollToCards = () => {
+    cardComponentRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <>
 
@@ -28,7 +38,7 @@ const LandingPage = () => {
           <div className="text-center text-xxl-start">
             <div className="badge bg-gradient-primary-to-secondary text-white mb-4">
               <div className="text-uppercase">
-                Development   ·   UI/UX DESIGN   ·   MANAGEMENT
+                Development   ·   Business Intelligence   ·   Digital Marketing & Design
               </div>
             </div>
             <div className="fs-3 fw-light text-muted">
@@ -36,23 +46,32 @@ const LandingPage = () => {
             </div>
             <h1 className="display-3 fw-bolder mb-5">
               <span className="text-gradient d-inline">
-                Join us at BeeCoders !
+                Join us our BeeCoders' Team !
               </span>
             </h1>
+      
             <div className="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
-              <a
-                className="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder"
-                href="resume.html"
-              >
-                Resume
-              </a>
-              <a
-                className="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder"
-                href="projects.html"
-              >
-                Projects
-              </a>
-            </div>
+  {/* Updated button to call scrollToCards on click */}
+  <button
+    className="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder"
+    onClick={scrollToCards} // Use scrollToCards here
+    style={{ cursor: 'pointer' }} // Adds a pointer cursor to indicate clickability
+  >
+    Apply for a Job 
+  </button>
+  <a
+    className="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder"
+    href="projects.html"
+  >
+    Learn About Us
+  </a>
+</div>
+
+
+
+
+
+
           </div>
         </div>
         <div className="col-xxl-7">
@@ -230,7 +249,9 @@ const LandingPage = () => {
             </div>
 
 {/* Insert CardComponent here, before the About section */}
-<CardComponent />
+<div ref={cardComponentRef}>
+        <CardComponent />
+      </div>
 
 
 

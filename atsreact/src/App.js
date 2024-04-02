@@ -20,6 +20,8 @@ import JobDetails from './Components/JobDetails';
 import JobApplicants from './Components/JobApplicants';
 import LandingPage from './Components/LandingPage';
 import CardComponent from './Components/CardComponent';
+import JobListingsPage from './Components/JobListingsPage';
+
 import './App.css';
 
 function App() {
@@ -38,16 +40,18 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
-        <Route path="/" element={<HomePage />} />
+        <Route path="/Home" element={<HomePage />} />
         <Route path="/job/:jobId" element={<JobDetails />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/candidate_dashboard" element={<CandidateDashboard />} />
         <Route path="/hr_manager_dashboard" element={<HRManagerDashboard />} />
         <Route path="/edit-profile" element={<EditProfileForm />} />
         <Route path="/job-applicants/:jobId" element={<JobApplicants />} />
-        <Route path="/Landing" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/loggedoutnav" element={<LoggedOutNav />} />
         <Route path="/card" element={<CardComponent />} />
+        <Route path="/jobs/:category" element={<JobListingsPage />} />
+
 
       </Routes>
     </Router>

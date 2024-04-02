@@ -66,10 +66,16 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Route to find all listings
+// Route to find all listings, with optional category filter
 router.get('/', async (req, res) => {
+    const { category } = req.query;
+    let filter = {};
+    if (category) {
+        filter.category = category;
+    }
+
     try {
-        const listings = await JobListing.find();
+        const listings = await JobListing.find(filter);
         res.json(listings);
     } catch (error) {
         console.error('Failed to get job listings:', error);

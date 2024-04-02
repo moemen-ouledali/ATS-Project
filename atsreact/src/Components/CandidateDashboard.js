@@ -1,4 +1,3 @@
-// CandidateDashboard.js
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../AuthContext';
 import axios from 'axios';
@@ -26,7 +25,8 @@ const CandidateDashboard = () => {
       <h2>Your Applications</h2>
       {applications.map(app => (
         <div key={app._id}>
-          <p>Job Title: {app.jobId.title}</p>
+          {/* Using optional chaining to safely access app.jobId.title */}
+          <p>Job Title: {app.jobId?.title || 'Job title not available'}</p>
           <p>Application Status: {app.status}</p>
           {/* Add more details if you wish */}
         </div>
