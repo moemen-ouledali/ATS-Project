@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 // Import CSS
 import '../../src/bootstrap LP/css/styles.css'; // Adjust the path according to your project structure
 // Import images
@@ -19,6 +19,11 @@ import '../App.css'
 const LandingPage = () => {
   // Ref for the CardComponent section
   const cardComponentRef = useRef(null);
+
+  // useEffect to log the ref after component mounts
+  useEffect(() => {
+    console.log(cardComponentRef.current); // Should log the DOM element if it's correctly attached
+  }, []); // Empty dependency array means this runs once after initial render
 
   const scrollToCards = () => {
     cardComponentRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -53,12 +58,12 @@ const LandingPage = () => {
             <div className="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
   {/* Updated button to call scrollToCards on click */}
   <button
-    className="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder"
-    onClick={scrollToCards} // Use scrollToCards here
-    style={{ cursor: 'pointer' }} // Adds a pointer cursor to indicate clickability
-  >
-    Apply for a Job 
-  </button>
+  className="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder"
+  onClick={scrollToCards}
+  style={{ cursor: 'pointer' }}
+>
+  Apply for a Job
+</button>
   <a
     className="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder"
     href="projects.html"
@@ -248,12 +253,6 @@ const LandingPage = () => {
 
             </div>
 
-{/* Insert CardComponent here, before the About section */}
-<div ref={cardComponentRef}>
-        <CardComponent />
-      </div>
-
-
 
 
 
@@ -326,6 +325,16 @@ const LandingPage = () => {
   {/* Bootstrap core JS*/}
   {/* Core theme JS*/}
 </>
+
+
+
+{/* Insert CardComponent here, before the About section */}
+<div ref={cardComponentRef}>
+  <CardComponent />
+</div>
+
+
+
 
 
     </>
