@@ -5,6 +5,7 @@ import '../../src/bootstrap LP/css/styles.css'; // Adjust the path according to 
 import profileImg from '../bootstrap LP/assets/profile.png'; // Adjust the path
 
 import CardComponent from './CardComponent'; // Import CardComponent
+import {Link} from 'react-scroll';
 
 
 
@@ -25,12 +26,10 @@ const LandingPage = () => {
     console.log(cardComponentRef.current); // Should log the DOM element if it's correctly attached
   }, []); // Empty dependency array means this runs once after initial render
 
-  const scrollToCards = () => {
-    cardComponentRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <>
+
+    
 
 
 
@@ -55,15 +54,16 @@ const LandingPage = () => {
               </span>
             </h1>
       
+
+
             <div className="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
   {/* Updated button to call scrollToCards on click */}
-  <button
-  className="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder"
-  onClick={scrollToCards}
-  style={{ cursor: 'pointer' }}
->
+  <Link to="cardComponentSection" spy={true} smooth={true} offset={-200} duration={900} className="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder">
   Apply for a Job
-</button>
+</Link>
+
+
+
   <a
     className="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder"
     href="projects.html"
@@ -251,12 +251,36 @@ const LandingPage = () => {
               <span className="text-gradient d-inline">Check Our Current Job Offers ! </span>
             </h2>
 
+
+            
+
             </div>
 
 
 
 
+{/* CardComponent section */}
+<div id="cardComponentSection" ref={cardComponentRef}>
+        <CardComponent />
+      </div>
 
+
+
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
+  <div className="text-center fs-3 fw-light text-muted">
+    Are You Looking for an Internship ?
+  </div>
+</div>
+
+
+
+      
+
+
+
+
+
+    </>
 
 
 
@@ -328,16 +352,7 @@ const LandingPage = () => {
 
 
 
-{/* Insert CardComponent here, before the About section */}
-<div ref={cardComponentRef}>
-  <CardComponent />
-</div>
 
-
-
-
-
-    </>
   );
 };
 
