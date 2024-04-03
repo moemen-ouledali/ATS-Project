@@ -21,7 +21,6 @@ import JobApplicants from './Components/JobApplicants';
 import LandingPage from './Components/LandingPage';
 import CardComponent from './Components/CardComponent';
 import JobListingsPage from './Components/JobListingsPage';
-import HeroImage from './Components/HeroImage';
 
 import './App.css';
 
@@ -52,7 +51,6 @@ function App() {
         <Route path="/loggedoutnav" element={<LoggedOutNav />} />
         <Route path="/card" element={<CardComponent />} />
         <Route path="/jobs/:category" element={<JobListingsPage />} />
-        <Route path="/hero" element={<HeroImage />} />
 
 
       </Routes>

@@ -7,6 +7,8 @@ import profileImg from '../bootstrap LP/assets/profile.png'; // Adjust the path
 import CardComponent from './CardComponent'; // Import CardComponent
 import {Link} from 'react-scroll';
 
+import CallToAction from './CallToAction'; 
+
 
 
 
@@ -266,11 +268,9 @@ const LandingPage = () => {
 
 
 
-      <div className="d-flex justify-content-center align-items-center" style={{ height: '100%' }}>
-  <div className="text-center fs-3 fw-light text-muted">
-    Are You Looking for an Internship ?
-  </div>
-</div>
+
+<CallToAction />
+
 
 
 

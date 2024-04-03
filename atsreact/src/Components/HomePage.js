@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom'; // Import Link for navigation
-import './HomePage.css'; // Import your HomePage CSS for custom styles if needed
+
 
 const HomePage = () => {
   const [jobListings, setJobListings] = useState([]);
@@ -21,6 +21,9 @@ const HomePage = () => {
   }, []);
 
   return (
+
+
+    
     <div className="container my-5">
       <h1 className="text-center mb-4">WELCOME TO BEECODERS!</h1>
       <div>
