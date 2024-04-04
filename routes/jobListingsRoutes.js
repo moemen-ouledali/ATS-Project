@@ -5,17 +5,7 @@ const JobListing = require('../models/JobListing');
 // Route to create a new job listing
 router.post('/add', async (req, res) => {
     try {
-        const newJobListing = new JobListing({
-            title: req.body.title,
-            company: req.body.company,
-            location: req.body.location,
-            jobType: req.body.jobType,
-            description: req.body.description,
-            requirements: req.body.requirements,
-            salaryRange: req.body.salaryRange,
-            experienceLevel: req.body.experienceLevel,
-            category: req.body.category // Included with enum validation
-        });
+        const newJobListing = new JobListing(req.body);
         const savedListing = await newJobListing.save();
         res.status(201).json(savedListing);
     } catch (error) {
@@ -27,8 +17,8 @@ router.post('/add', async (req, res) => {
 // Route to delete a job listing
 router.delete('/:id', async (req, res) => {
     try {
-        const result = await JobListing.deleteOne({ _id: req.params.id });
-        if (result.deletedCount === 0) {
+        const result = await JobListing.findByIdAndDelete(req.params.id);
+        if (!result) {
             return res.status(404).send('The job listing with the given ID was not found.');
         }
         res.send({ message: 'Job listing deleted successfully.' });
@@ -41,21 +31,7 @@ router.delete('/:id', async (req, res) => {
 // Route to update a job listing
 router.put('/:id', async (req, res) => {
     try {
-        const updatedListing = await JobListing.findByIdAndUpdate(
-            req.params.id, 
-            {
-                title: req.body.title,
-                company: req.body.company,
-                location: req.body.location,
-                jobType: req.body.jobType,
-                description: req.body.description,
-                requirements: req.body.requirements,
-                salaryRange: req.body.salaryRange,
-                experienceLevel: req.body.experienceLevel,
-                category: req.body.category // Ensured to update category
-            }, 
-            { new: true }
-        );
+        const updatedListing = await JobListing.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!updatedListing) {
             return res.status(404).send('Job listing not found.');
         }
@@ -66,13 +42,13 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Route to find all listings, with optional category filter
+// Route to find all listings with optional category and jobType filter
 router.get('/', async (req, res) => {
-    const { category } = req.query;
     let filter = {};
-    if (category) {
-        filter.category = category;
-    }
+    const { category, jobType } = req.query;
+
+    if (category) filter.category = category;
+    if (jobType) filter.jobType = jobType;
 
     try {
         const listings = await JobListing.find(filter);

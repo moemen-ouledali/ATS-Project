@@ -14,6 +14,7 @@ import CallToAction from './CallToAction';
 
 
 
+
 import 'bootstrap/dist/css/bootstrap.min.css'; // This assumes you've installed Bootstrap via npm
 import '../App.css'
 
@@ -58,9 +59,11 @@ const LandingPage = () => {
       
 
 
+
+
             <div className="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
   {/* Updated button to call scrollToCards on click */}
-  <Link to="cardComponentSection" spy={true} smooth={true} offset={-200} duration={900} className="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder">
+  <Link to="cardComponentSection" spy={true} smooth={true} offset={-200} duration={900} className="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder">
   Apply for a Job
 </Link>
 
@@ -73,6 +76,8 @@ const LandingPage = () => {
     Learn About Us
   </a>
 </div>
+
+
 
 
 
@@ -267,11 +272,19 @@ const LandingPage = () => {
       </div>
 
 
+      
+      <div className="fs-3 fw-light text-muted text-center">
+  Or <Link to="/all-jobs">Click Here</Link> to see the complete list.
+</div>
+
+      
 
 
-<CallToAction />
 
-
+{/* Adding space using inline style */}
+<div style={{ marginTop: '50px' }}> {/* Adjust the value as needed */}
+  <CallToAction />
+</div>
 
 
       

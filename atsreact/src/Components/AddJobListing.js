@@ -63,7 +63,13 @@ const AddJobListing = () => {
                 <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Job Title" required />
                 <input type="text" name="company" value={formData.company} onChange={handleChange} placeholder="Company Name" required />
                 <input type="text" name="location" value={formData.location} onChange={handleChange} placeholder="Location" />
-                <input type="text" name="jobType" value={formData.jobType} onChange={handleChange} placeholder="Job Type" />
+                {/* Updated jobType input */}
+                <select name="jobType" value={formData.jobType} onChange={handleChange} required>
+                    <option value="">Select Job Type</option>
+                    <option value="Full Time">Full Time</option>
+                    <option value="Part Time">Part Time</option>
+                    <option value="Internship">Internship</option>
+                </select>
                 <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Job Description" required />
                 <textarea name="requirements" value={formData.requirements} onChange={handleChange} placeholder="Requirements" />
                 <input type="text" name="salaryRange" value={formData.salaryRange} onChange={handleChange} placeholder="Salary Range" />
@@ -82,7 +88,7 @@ const AddJobListing = () => {
                 </div>
             </div>}
         </div>
-    );
+    );    
 };
 
 export default AddJobListing;
