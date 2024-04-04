@@ -12,7 +12,9 @@ const JobListingsPage = () => {
       try {
         // Adjust the endpoint as necessary to match your backend API
         const response = await axios.get(`http://localhost:5000/api/joblistings?category=${encodeURIComponent(category)}`);
-        setJobListings(response.data);
+        // Filter out internships from the job listings
+        const filteredListings = response.data.filter(listing => listing.jobType !== 'Internship');
+        setJobListings(filteredListings);
       } catch (error) {
         console.error('Error fetching job listings:', error);
       }

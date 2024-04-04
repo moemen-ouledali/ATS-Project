@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // Import Link
-import styles from './CardComponent.module.css';
-import dev from "../../src/Media/development.png";
+import styles from './CardComponent.module.css'; // Ensure the path is correct
+import dev from "../../src/Media/development.png"; // Verify image paths
 import uiux from "../../src/Media/uiux.png";
 import mang from "../../src/Media/management.png";
 
@@ -15,12 +15,10 @@ const CardComponent = () => {
   return (
     <div className={styles.cardsContainer}>
       {cards.map((card, index) => (
-        <Link to={`/jobs/${encodeURIComponent(card.category)}`} key={index} className={styles.cardLink}> {/* Use Link to navigate */}
-          <div className={styles.cards}>
-            <figure className={styles.card}>
-              <img src={card.imgSrc} alt={card.title} className={styles.cardImage} />
-              <figcaption className={styles.cardTitle}>{card.title}</figcaption>
-            </figure>
+        <Link to={`/jobs/${encodeURIComponent(card.category)}`} key={index} className={styles.cardLink}>
+          <div className={styles.card}>
+            <img src={card.imgSrc} alt={card.title} className={styles.cardImage} />
+            <figcaption className={styles.cardTitle}>{card.title}</figcaption>
           </div>
         </Link>
       ))}

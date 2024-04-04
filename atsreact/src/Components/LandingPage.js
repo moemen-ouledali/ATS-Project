@@ -5,7 +5,10 @@ import '../../src/bootstrap LP/css/styles.css'; // Adjust the path according to 
 import profileImg from '../bootstrap LP/assets/profile.png'; // Adjust the path
 
 import CardComponent from './CardComponent'; // Import CardComponent
-import {Link} from 'react-scroll';
+import { Link as ScrollLink } from 'react-scroll';
+import { Link as RouterLink } from 'react-router-dom';
+
+
 
 import CallToAction from './CallToAction'; 
 
@@ -63,9 +66,9 @@ const LandingPage = () => {
 
             <div className="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
   {/* Updated button to call scrollToCards on click */}
-  <Link to="cardComponentSection" spy={true} smooth={true} offset={-200} duration={900} className="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder">
+  <ScrollLink to="cardComponentSection" spy={true} smooth={true} offset={-200} duration={900} className="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder">
   Apply for a Job
-</Link>
+</ScrollLink>
 
 
 
@@ -253,6 +256,16 @@ const LandingPage = () => {
 
 
 
+
+{/* Adding space using inline style */}
+<div style={{ marginTop: '50px' }}> {/* Adjust the value as needed */}
+  <CallToAction />
+</div>
+
+
+
+
+
   <div className="text-center my-5">
             <h2 className="display-5 fw-bolder">
               <span className="text-gradient d-inline">Check Our Current Job Offers ! </span>
@@ -266,6 +279,10 @@ const LandingPage = () => {
 
 
 
+
+
+
+
 {/* CardComponent section */}
 <div id="cardComponentSection" ref={cardComponentRef}>
         <CardComponent />
@@ -274,17 +291,11 @@ const LandingPage = () => {
 
       
       <div className="fs-3 fw-light text-muted text-center">
-  Or <Link to="/all-jobs">Click Here</Link> to see the complete list.
+  Or <RouterLink to="/all-jobs">Click Here</RouterLink> to see the complete list.
 </div>
 
       
 
-
-
-{/* Adding space using inline style */}
-<div style={{ marginTop: '50px' }}> {/* Adjust the value as needed */}
-  <CallToAction />
-</div>
 
 
       
