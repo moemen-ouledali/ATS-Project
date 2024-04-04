@@ -21,10 +21,10 @@ import JobApplicants from './Components/JobApplicants';
 import LandingPage from './Components/LandingPage';
 import CardComponent from './Components/CardComponent';
 import JobListingsPage from './Components/JobListingsPage';
-import InternshipListings from './Components/InternshipListings'
+import InternshipListings from './Components/InternshipListings';
 import AllJobs from './Components/AllJobs';
 
-import './App.css';
+import NewLoginPage from "./Components/NewLoginPage"
 
 function App() {
   const { authToken } = useContext(AuthContext);
@@ -55,6 +55,7 @@ function App() {
         <Route path="/jobs/:category" element={<JobListingsPage />} />
         <Route path="/internships" element={<InternshipListings />} />
         <Route path="/all-jobs" element={<AllJobs />} />
+
 
 
       </Routes>

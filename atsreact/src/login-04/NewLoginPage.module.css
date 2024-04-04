@@ -1,10 +1,10 @@
 :root {
     --primary: #605DFF;
-    --primary-dark: #4a00e0;
-    --primary-light: #5DA8FF;
+    --primaryDark: #4a00e0;
+    --primaryLight: #5DA8FF;
     --secondary: #1D1D1D;
-    --social-background: #E9E9E9;
-    --social-background-hover: #dddddd;
+    --socialBackground: #E9E9E9;
+    --socialBackgroundHover: #dddddd;
     --text: #1F2346;
     --white: #FFFFFF;
     --violet: #8e2de2;
@@ -26,24 +26,22 @@ body {
     justify-content: center;
     align-items: center;
     background: var(--violet);
-    background: -webkit-linear-gradient(to right, var(--violet),
-            var(--primary-dark));
-    background: linear-gradient(to right, var(--violet),
-            var(--primary-dark));
+    background: -webkit-linear-gradient(to right, var(--violet), var(--primaryDark));
+    background: linear-gradient(to right, var(--violet), var(--primaryDark));
 }
 
-.socials-row {
+.socialsRow {
     display: flex;
     gap: 16px;
     flex-wrap: wrap;
 }
 
-.socials-row img {
+.socialsRow img {
     width: 24px;
     height: 24px;
 }
 
-.socials-row>a {
+.socialsRow a {
     padding: 8px;
     border-radius: 99px;
     width: 100%;
@@ -56,20 +54,20 @@ body {
     font-size: 1.1rem;
     color: var(--text);
     padding: 8px;
-    background-color: var(--social-background);
+    background-color: var(--socialBackground);
     font-weight: 700;
 }
 
-.socials-row>a:hover {
-    background-color: var(--social-background-hover);
+.socialsRow a:hover {
+    background-color: var(--socialBackgroundHover);
 }
 
-.login-welcome-row {
+.loginWelcomeRow {
     margin-bottom: 1rem;
     text-align: center;
 }
 
-.welcome-message {
+.welcomeMessage {
     max-width: 360px;
 }
 
@@ -78,7 +76,7 @@ body {
     margin: 0 auto;
 }
 
-.my-form {
+.myForm {
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -92,7 +90,7 @@ body {
     height: fit-content;
 }
 
-.my-form__button {
+.myFormButton {
     background-color: var(--primary);
     color: white;
     white-space: nowrap;
@@ -115,18 +113,17 @@ body {
     -webkit-transition: all .3s ease;
 }
 
-.my-form__button:hover {
-    background-color: var(--primary-dark);
+.myFormButton:hover {
+    background-color: var(--primaryDark);
 }
 
-/*? input wrapper */
-.input__wrapper {
+.inputWrapper {
     position: relative;
     padding: 15px 0 0;
     margin-bottom: 0.5rem;
 }
 
-.input__field {
+.inputField {
     font-size: 1.5rem;
     color: var(--text);
     padding: 6px 0px;
@@ -144,24 +141,23 @@ body {
     transition: border-color 0.2s;
 }
 
-.input__field::placeholder {
+.inputField::placeholder {
     color: transparent;
 }
 
-
-.input__label {
+.inputLabel {
     user-select: none;
 }
 
-.input__field:placeholder-shown~.input__label {
+.inputField:placeholder-shown ~ .inputLabel {
     cursor: text;
     color: var(--text);
     top: 0.8rem;
     font-size: 1.2rem;
 }
 
-.input__label,
-.input__field:focus~.input__label {
+.inputLabel,
+.inputField:focus ~ .inputLabel {
     position: absolute;
     top: -0.8rem;
     display: block;
@@ -170,19 +166,19 @@ body {
     transition: 0.3s;
 }
 
-.input__field:focus~.input__label {
+.inputField:focus ~ .inputLabel {
     color: var(--primary);
 }
 
-.input__field:focus {
+.inputField:focus {
     border-bottom: 3px solid var(--primary);
 }
 
-.input__field:focus~svg {
+.inputField:focus ~ svg {
     stroke: var(--primary);
 }
 
-.input__icon {
+.inputIcon {
     position: absolute;
     right: -14px;
     bottom: -11px;
@@ -194,13 +190,11 @@ body {
     cursor: pointer;
 }
 
-.input__icon:hover {
+.inputIcon:hover {
     border-radius: 50%;
 }
 
-/* my form actions */
-
-.my-form__actions {
+.myFormActions {
     display: flex;
     flex-direction: column;
     align-self: center;
@@ -209,17 +203,17 @@ body {
     margin-top: 8px;
 }
 
-.my-form__actions a {
+.myFormActions a {
     color: var(--secondary);
     font-weight: 600;
     text-decoration: none;
 }
 
-.my-form__actions a:hover {
+.myFormActions a:hover {
     text-decoration: underline;
 }
 
-.my-form__row {
+.myFormRow {
     display: flex;
     gap: 8px;
     justify-content: space-between;

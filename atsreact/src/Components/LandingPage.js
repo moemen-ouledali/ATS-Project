@@ -15,9 +15,6 @@ import CallToAction from './CallToAction';
 
 
 
-
-
-
 import 'bootstrap/dist/css/bootstrap.min.css'; // This assumes you've installed Bootstrap via npm
 import '../App.css'
 
@@ -275,6 +272,8 @@ const LandingPage = () => {
             
 
             </div>
+
+
 
 
 
