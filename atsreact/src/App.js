@@ -24,8 +24,6 @@ import JobListingsPage from './Components/JobListingsPage';
 import InternshipListings from './Components/InternshipListings';
 import AllJobs from './Components/AllJobs';
 
-import NewLoginPage from "./Components/NewLoginPage"
-
 function App() {
   const { authToken } = useContext(AuthContext);
   const userRole = localStorage.getItem('role');
@@ -55,6 +53,7 @@ function App() {
         <Route path="/jobs/:category" element={<JobListingsPage />} />
         <Route path="/internships" element={<InternshipListings />} />
         <Route path="/all-jobs" element={<AllJobs />} />
+        
 
 
 
