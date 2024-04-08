@@ -15,7 +15,7 @@ const RegisterForm = () => {
     e.preventDefault();
     try {
       // Adjust the endpoint and body as necessary for your backend API
-      const response = await axios.post('http://localhost:5000/auth/register', {
+      await axios.post('http://localhost:5000/auth/register', {
         username,
         email,
         password,
@@ -25,6 +25,7 @@ const RegisterForm = () => {
       // Navigate or display a success message
       navigate('/login'); // or '/dashboard' depending on your flow
     } catch (error) {
+
       setMessage("Registration failed. Please try again.");
       console.error("Registration error:", error);
     }
