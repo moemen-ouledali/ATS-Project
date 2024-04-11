@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
-import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography } from '@mui/material';
+import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography, Button, CardActions } from '@mui/material';
 
 // Importing all images
 import image1 from '../Media/cards media/1.png';
@@ -68,6 +68,11 @@ const JobListingsPage = () => {
                   </Typography>
                 </CardContent>
               </CardActionArea>
+              <CardActions>
+                <Button size="small" color="primary" component={RouterLink} to={`/job/${listing._id}`}>
+                  Learn More
+                </Button>
+              </CardActions>
             </Card>
           </Grid>
         ))

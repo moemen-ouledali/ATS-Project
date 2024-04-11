@@ -16,13 +16,13 @@ import LoggedOutNav from './Components/LoggedOutNav';
 import ManagerNav from './Components/ManagerNav';
 import CandidateNav from './Components/CandidateNav';
 
-import JobDetails from './Components/JobDetails';
 import JobApplicants from './Components/JobApplicants';
 import LandingPage from './Components/LandingPage';
 import CardComponent from './Components/CardComponent';
 import JobListingsPage from './Components/JobListingsPage';
 import InternshipListings from './Components/InternshipListings';
 import AllJobs from './Components/AllJobs';
+import JobDetailsPage from './Components/JobDetailsPage';
 
 function App() {
   const { authToken } = useContext(AuthContext);
@@ -41,7 +41,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/Home" element={<HomePage />} />
-        <Route path="/job/:jobId" element={<JobDetails />} />
+        <Route path="/job/:id" element={<JobDetailsPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/candidate_dashboard" element={<CandidateDashboard />} />
         <Route path="/hr_manager_dashboard" element={<HRManagerDashboard />} />
