@@ -14,8 +14,9 @@ const jobApplicationsRoutes = require('./routes/jobApplicationsRoutes');
 
 // Use routes
 app.use('/auth', authRoutes);
-app.use('/api/joblistings', jobListingsRoutes); // Use job listings routes
+app.use('/api/jobs', jobListingsRoutes);
 app.use('/api/jobapplications', jobApplicationsRoutes);
+
 
 app.get('/', (req, res) => {
     res.send('Server is up and running');
