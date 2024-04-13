@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../AuthContext'; // Adjust the path to your AuthContext if needed
-import './assets/css/LoginForm.css'; // Ensure the CSS path matches your project structure
+import { AuthContext } from '../../AuthContext'; // Adjust the path to your AuthContext if needed
+import '../assets/css/LoginForm.css'; // Ensure the CSS path matches your project structure
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');

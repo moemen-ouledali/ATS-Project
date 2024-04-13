@@ -1,8 +1,8 @@
 // atsreact/src/Add-Ons/toast-notification-01/ToastNotification.js
 
 import React from 'react';
-import '../Add-Ons/toast-notification-01/style.css'; // Make sure the path is correct
-import checkCircleIcon from '../Add-Ons/toast-notification-01/assets/check-circle.svg'; // Adjust path as necessary
+import '../../Add-Ons/toast-notification-01/style.css'; // Make sure the path is correct
+import checkCircleIcon from '../../Add-Ons/toast-notification-01/assets/check-circle.svg'; // Adjust path as necessary
 
 const ToastNotification = ({ message, onClose }) => {
   // Automatically close the notification after 3 seconds

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import LogoutButton from './LogoutButton'; // Adjust the import path as necessary
-import beeCodersLogo from '../../src/Media/BeeCodersLogo.png'; // Adjust the import path to where your logo is located
+import beeCodersLogo from '../../Media/BeeCodersLogo.png'; // Adjust the import path to where your logo is located
 
 // Import Bootstrap CSS
 import 'bootstrap/dist/css/bootstrap.min.css';
 // Import your project's CSS
-import '../../src/bootstrap LP/css/styles.css'; // Adjust the path according to your project structure
-import '../App.css';
+import '../../bootstrap LP/css/styles.css'; // Adjust the path according to your project structure
+import '../../App.css';
 
 const ManagerNav = () => {
   return (

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { AuthContext } from '../AuthContext';
+import { AuthContext } from '../../AuthContext';
 import axios from 'axios';
 
 const CandidateDashboard = () => {

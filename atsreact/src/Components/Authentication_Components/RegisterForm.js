@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // If you need to navigate after register
-import './assets/css/LoginForm.css'; // Assuming this CSS file has styles for your form
+import '../assets/css/LoginForm.css'; // Assuming this CSS file has styles for your form
 
 const RegisterForm = () => {
   const [username, setUsername] = useState('');

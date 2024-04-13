@@ -1,8 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 // Import CSS
-import '../../src/bootstrap LP/css/styles.css'; // Adjust the path according to your project structure
+import '../../bootstrap LP/css/styles.css'; // Adjust the path according to your project structure
 // Import images
-import profileImg from '../bootstrap LP/assets/profile.png'; // Adjust the path
+import profileImg from '../../bootstrap LP/assets/profile.png'; // Adjust the path
 
 import CardComponent from './CardComponent'; // Import CardComponent
 import { Link as ScrollLink } from 'react-scroll';
@@ -16,7 +16,7 @@ import CallToAction from './CallToAction';
 
 
 import 'bootstrap/dist/css/bootstrap.min.css'; // This assumes you've installed Bootstrap via npm
-import '../App.css'
+import '../../App.css'
 
 
 

@@ -4,14 +4,14 @@ import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography } from '
 import { Link as RouterLink } from 'react-router-dom';
 
 // Assuming the path to the images folder is correct. Adjust if necessary.
-import image1 from '../Media/cards media/1.png';
-import image2 from '../Media/cards media/2.png';
-import image3 from '../Media/cards media/3.png';
-import image4 from '../Media/cards media/4.png';
-import image5 from '../Media/cards media/5.png';
-import image6 from '../Media/cards media/6.png';
-import image7 from '../Media/cards media/7.png';
-import image8 from '../Media/cards media/8.png';
+import image1 from '../../Media/cards media/1.png';
+import image2 from '../../Media/cards media/2.png';
+import image3 from '../../Media/cards media/3.png';
+import image4 from '../../Media/cards media/4.png';
+import image5 from '../../Media/cards media/5.png';
+import image6 from '../../Media/cards media/6.png';
+import image7 from '../../Media/cards media/7.png';
+import image8 from '../../Media/cards media/8.png';
 
 const cardImages = [image1, image2, image3, image4, image5, image6, image7, image8];
 

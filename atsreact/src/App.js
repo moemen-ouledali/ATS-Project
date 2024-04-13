@@ -5,24 +5,22 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
-import LoginForm from './Components/LoginForm';
-import RegisterForm from './Components/RegisterForm';
-import Dashboard from './Components/Dashboard';
-import CandidateDashboard from './Components/CandidateDashboard';
-import HRManagerDashboard from './Components/HRManagerDashboard';
-import EditProfileForm from './Components/EditProfileForm';
-import HomePage from './Components/HomePage';
-import LoggedOutNav from './Components/LoggedOutNav';
-import ManagerNav from './Components/ManagerNav';
-import CandidateNav from './Components/CandidateNav';
+import LoginForm from './Components/Authentication_Components/LoginForm';
+import RegisterForm from './Components/Authentication_Components/RegisterForm';
+import CandidateDashboard from './Components/Candidate_Components/CandidateDashboard';
+import HRManagerDashboard from './Components/Manager_Components/HRManagerDashboard';
+import EditProfileForm from './Components/User_Components/EditProfileForm';
+import LoggedOutNav from './Components/NavigationBar_Components/LoggedOutNav';
+import ManagerNav from './Components/NavigationBar_Components/ManagerNav';
+import CandidateNav from './Components/NavigationBar_Components/CandidateNav';
 
-import JobApplicants from './Components/JobApplicants';
-import LandingPage from './Components/LandingPage';
-import CardComponent from './Components/CardComponent';
-import JobListingsPage from './Components/JobListingsPage';
-import InternshipListings from './Components/InternshipListings';
-import AllJobs from './Components/AllJobs';
-import JobDetailsPage from './Components/JobDetailsPage';
+import JobApplicants from './Components/Manager_Components/JobApplicants';
+import LandingPage from '../src/Components/LandingPage_Components/LandingPage';
+import CardComponent from './Components/LandingPage_Components/CardComponent';
+import JobListingsPage from './Components/Detailed_Components/JobListingsPage';
+import InternshipListings from './Components/Detailed_Components/InternshipListings';
+import AllJobs from './Components/Detailed_Components/AllJobs';
+import JobDetailsPage from './Components/Detailed_Components/JobDetailsPage';
 
 function App() {
   const { authToken } = useContext(AuthContext);
@@ -40,9 +38,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
-        <Route path="/Home" element={<HomePage />} />
         <Route path="/job/:id" element={<JobDetailsPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/candidate_dashboard" element={<CandidateDashboard />} />
         <Route path="/hr_manager_dashboard" element={<HRManagerDashboard />} />
         <Route path="/edit-profile" element={<EditProfileForm />} />

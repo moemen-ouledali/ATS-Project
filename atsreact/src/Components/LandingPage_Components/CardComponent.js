@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // Import Link
 import styles from './CardComponent.module.css'; // Ensure the path is correct
-import dev from "../../src/Media/development.png"; // Verify image paths
-import uiux from "../../src/Media/uiux.png";
-import mang from "../../src/Media/management.png";
+import dev from "../../Media/development.png"; // Verify image paths
+import uiux from "../../Media/uiux.png";
+import mang from "../../Media/management.png";
 
 const CardComponent = () => {
   const cards = [

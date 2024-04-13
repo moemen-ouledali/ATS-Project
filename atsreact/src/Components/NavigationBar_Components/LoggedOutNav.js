@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import beeCodersLogo from '../../src/Media/BeeCodersLogo.png'; // Adjust the import path to where your logo is located
+import beeCodersLogo from '../../Media/BeeCodersLogo.png'; // Adjust the import path to where your logo is located
 
 
 
 // Import CSS
-import '../../src/bootstrap LP/css/styles.css'; // Adjust the path according to your project structure
+import '../../bootstrap LP/css/styles.css'; // Adjust the path according to your project structure
 // Import images
 
 
@@ -13,7 +13,7 @@ import '../../src/bootstrap LP/css/styles.css'; // Adjust the path according to 
 
 
 import 'bootstrap/dist/css/bootstrap.min.css'; // This assumes you've installed Bootstrap via npm
-import '../App.css'
+import '../../App.css'
 
 const LoggedOutNav = () => {
   return (
