@@ -17,6 +17,20 @@ app.use('/auth', authRoutes);
 app.use('/api/jobs', jobListingsRoutes);
 app.use('/api/jobapplications', jobApplicationsRoutes);
 
+// Add a route to get a job listing by ID
+app.get('/api/jobs/:jobId', async (req, res) => {
+    const jobId = req.params.jobId;
+    try {
+        const job = await JobListing.findById(jobId);
+        if (!job) {
+            return res.status(404).json({ message: 'Job listing not found' });
+        }
+        res.json(job);
+    } catch (error) {
+        console.error('Error fetching job listing by ID:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 app.get('/', (req, res) => {
     res.send('Server is up and running');
