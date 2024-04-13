@@ -30,7 +30,7 @@ const InternshipListings = () => {
   useEffect(() => {
     const fetchInternships = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/joblistings', {
+        const response = await axios.get('http://localhost:5000/api/jobs', {
           params: { jobType: 'Internship' }
         });
         setInternships(response.data);

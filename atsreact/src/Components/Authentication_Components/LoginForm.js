@@ -20,15 +20,14 @@ const LoginForm = () => {
       });
 
       if (response.data.token) {
-        setTokenAndRole(response.data.token, response.data.role, response.data.userId); // Adapt if your response structure is different
-        localStorage.setItem('userId', response.data.userId); // Adjust according to your authentication mechanism
-        navigate('/dashboard'); // Adjust as necessary
+        setTokenAndRole(response.data.token, response.data.role, response.data.userId);
+        localStorage.setItem('userId', response.data.userId);
+        navigate('/');
       } else {
         setMessage("Login failed. Please try again.");
       }
     } catch (error) {
-      // Check if the backend response can be interpreted as an incorrect password
-      if (error.response && error.response.status === 401) { // Adjust the condition based on your backend response
+      if (error.response && error.response.status === 401) {
         setMessage("Incorrect Password");
       } else {
         setMessage("Login failed. Please try again.");
@@ -76,7 +75,7 @@ const LoginForm = () => {
               <div className="d-flex justify-content-between align-items-center">
                 <div className="form-check mb-0">
                   <input className="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
-                  <label className="form-check-label" for="form2Example3">
+                  <label className="form-check-label" htmlFor="form2Example3">
                     Remember me
                   </label>
                 </div>

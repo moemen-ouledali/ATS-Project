@@ -10,7 +10,7 @@ const AllJobs = () => {
     const fetchJobs = async () => {
       try {
         // Update the URL to match your server's address and port
-        const response = await axios.get('http://localhost:5000/api/joblistings');
+        const response = await axios.get('http://localhost:5000/api/jobs');
         // Filter out internships from the job listings
         const nonInternshipJobs = response.data.filter(job => job.jobType !== 'Internship');
         setJobs(nonInternshipJobs);

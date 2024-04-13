@@ -7,7 +7,7 @@ const JWT_SECRET = '6969'; // Place this in your environment variables or config
 
 // POST /register - Register a new user
 router.post('/register', async (req, res) => {
-    const { username, email, password, role } = req.body;
+    const { role, firstName, lastName, email, dateOfBirth, password, phoneNumber, city, highestEducationLevel } = req.body;
 
     try {
         let existingUser = await User.findOne({ email });
@@ -16,10 +16,15 @@ router.post('/register', async (req, res) => {
         }
 
         const newUser = new User({
-            username,
+            role,
+            firstName,
+            lastName,
             email,
+            dateOfBirth,
             password,
-            role
+            phoneNumber,
+            city,
+            highestEducationLevel
         });
 
         await newUser.save();
@@ -30,10 +35,8 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// POST /login - User login
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
-
     try {
         const user = await User.findOne({ email });
         if (!user || password !== user.password) {
@@ -43,11 +46,11 @@ router.post('/login', async (req, res) => {
         // Generate a token
         const token = jwt.sign(
             { userId: user._id, role: user.role },
-            JWT_SECRET,
-            { expiresIn: '1h' } // Specifies the token expiration time
+            'your_jwt_secret', // replace with your JWT secret
+            { expiresIn: '1h' }
         );
 
-        res.status(200).json({ token, role: user.role, userId: user._id.toString() });
+        res.json({ token, role: user.role, userId: user._id.toString() });
     } catch (error) {
         console.error("Error logging in user:", error);
         res.status(500).json({ message: "Internal server error" });

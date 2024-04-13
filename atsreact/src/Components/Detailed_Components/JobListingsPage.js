@@ -31,7 +31,7 @@ const JobListingsPage = () => {
   useEffect(() => {
     const fetchJobListings = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/joblistings?category=${encodeURIComponent(category)}`);
+        const response = await axios.get(`http://localhost:5000/api/jobs?category=${encodeURIComponent(category)}`);
         // Filter out internships from the fetched job listings before setting state.
         const nonInternshipJobs = response.data.filter(listing => listing.jobType.toLowerCase() !== 'internship');
         setJobListings(nonInternshipJobs);

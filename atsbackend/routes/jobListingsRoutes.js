@@ -47,11 +47,17 @@ router.get('/', async (req, res) => {
     let filter = {};
     const { category, jobType } = req.query;
 
+    console.log("Queried Category:", category); // Debugging line to see what category is received
+    console.log("Queried Job Type:", jobType); // Debugging line to see what job type is received
+
     if (category) filter.category = category;
     if (jobType) filter.jobType = jobType;
 
+    console.log("Filter being applied:", filter); // Shows the full filter being applied to the find operation
+
     try {
         const listings = await JobListing.find(filter);
+        console.log("Number of listings found:", listings.length); // Indicates how many listings were found
         res.json(listings);
     } catch (error) {
         console.error('Failed to get job listings:', error);
@@ -74,4 +80,3 @@ router.get('/:id', async (req, res) => {
 });
 
 module.exports = router;
-

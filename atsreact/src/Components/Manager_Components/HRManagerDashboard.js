@@ -19,7 +19,7 @@ const HRManagerDashboard = () => {
 
     const fetchJobListings = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/joblistings');
+            const response = await axios.get('http://localhost:5000/api/jobs');
             setJobListings(response.data);
         } catch (error) {
             console.error('Failed to fetch job listings:', error);
@@ -28,7 +28,7 @@ const HRManagerDashboard = () => {
 
     const deleteJobListing = async (id) => {
         try {
-            await axios.delete(`http://localhost:5000/api/joblistings/${id}`);
+            await axios.delete(`http://localhost:5000/api/jobs/${id}`);
             fetchJobListings();
             setToastMessage('Job listing deleted successfully');
             setShowToast(true);
@@ -45,7 +45,7 @@ const HRManagerDashboard = () => {
 
     const handleSave = async (id, updatedListing) => {
         try {
-            await axios.put(`http://localhost:5000/api/joblistings/${id}`, updatedListing);
+            await axios.put(`http://localhost:5000/api/jobs/${id}`, updatedListing);
             fetchJobListings();
             setEditingId(null);
             setToastMessage('Job listing updated successfully');
