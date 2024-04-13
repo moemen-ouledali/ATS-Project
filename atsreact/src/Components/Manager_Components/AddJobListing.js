@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import { AuthContext } from '../AuthContext';
+import { AuthContext } from '../../AuthContext';
 import '../Add-Ons/toast-notification-01/style.css';
 
 const AddJobListing = () => {

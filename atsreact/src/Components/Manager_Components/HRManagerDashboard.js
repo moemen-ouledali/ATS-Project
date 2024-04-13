@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AddJobListing from './AddJobListing';
-import EditJobListing from './EditJobListing';
-import ToastNotification from './ToastNotification';
+import EditJobListing from '../EditJobListing';
+import ToastNotification from '../ToastNotification';
 import { useNavigate } from 'react-router-dom';
 
 const HRManagerDashboard = () => {
