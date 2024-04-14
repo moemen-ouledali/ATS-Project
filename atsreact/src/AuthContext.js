@@ -7,25 +7,33 @@ export const AuthProvider = ({ children }) => {
   const [userRole, setUserRole] = useState(localStorage.getItem('role'));
   const [userId, setUserId] = useState(localStorage.getItem('userId'));
   const [userDetails, setUserDetails] = useState({
-    fullName: localStorage.getItem('fullName'),
-    email: localStorage.getItem('email'),
-    phoneNumber: localStorage.getItem('phoneNumber')
+    fullName: localStorage.getItem('fullName') || '',
+    email: localStorage.getItem('email') || '',
+    phoneNumber: localStorage.getItem('phoneNumber') || ''
   });
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
-    const id = localStorage.getItem('userId');
-    const fullName = localStorage.getItem('fullName');
-    const email = localStorage.getItem('email');
-    const phoneNumber = localStorage.getItem('phoneNumber');
+  // Function to update context based on local storage values
+  const updateAuthContextFromStorage = () => {
+    setAuthToken(localStorage.getItem('token'));
+    setUserRole(localStorage.getItem('role'));
+    setUserId(localStorage.getItem('userId'));
+    setUserDetails({
+      fullName: localStorage.getItem('fullName') || '',
+      email: localStorage.getItem('email') || '',
+      phoneNumber: localStorage.getItem('phoneNumber') || ''
+    });
+  };
 
-    if (token && role && id) {
-      setAuthToken(token);
-      setUserRole(role);
-      setUserId(id);
-      setUserDetails({ fullName, email, phoneNumber });
-    }
+  useEffect(() => {
+    updateAuthContextFromStorage(); // Initial update from storage
+
+    // Listener for local storage changes
+    window.addEventListener('storage', updateAuthContextFromStorage);
+
+    // Cleanup listener
+    return () => {
+      window.removeEventListener('storage', updateAuthContextFromStorage);
+    };
   }, []);
 
   const setTokenAndRole = (token, role, id, fullName, email, phoneNumber) => {
@@ -36,10 +44,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('email', email);
     localStorage.setItem('phoneNumber', phoneNumber);
 
-    setAuthToken(token);
-    setUserRole(role);
-    setUserId(id);
-    setUserDetails({ fullName, email, phoneNumber });
+    updateAuthContextFromStorage(); // Update context after setting local storage
   };
 
   const logout = () => {
@@ -50,10 +55,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('email');
     localStorage.removeItem('phoneNumber');
 
-    setAuthToken(null);
-    setUserRole(null);
-    setUserId(null);
-    setUserDetails({});
+    updateAuthContextFromStorage(); // Update context after clearing local storage
   };
 
   const authContextValue = {
@@ -71,3 +73,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;

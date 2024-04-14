@@ -20,9 +20,15 @@ const LoginForm = () => {
       });
 
       if (response.data.token) {
-        setTokenAndRole(response.data.token, response.data.role, response.data.userId);
+        // Assuming your response data includes fullName, email, phoneNumber along with token, role, and userId
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('role', response.data.role);
         localStorage.setItem('userId', response.data.userId);
-        navigate('/');
+        localStorage.setItem('fullName', response.data.fullName); // Store fullName
+        localStorage.setItem('email', response.data.email); // Store email
+        localStorage.setItem('phoneNumber', response.data.phoneNumber); // Store phoneNumber
+        setTokenAndRole(response.data.token, response.data.role, response.data.userId);
+        navigate('/'); // Redirect to homepage or dashboard after login
       } else {
         setMessage("Login failed. Please try again.");
       }
@@ -45,23 +51,6 @@ const LoginForm = () => {
           </div>
           <div className="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
             <form onSubmit={handleSubmit}>
-              <div className="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
-                <p className="lead fw-normal mb-0 me-3">Sign in with</p>
-                <button type="button" className="btn btn-primary btn-floating mx-1">
-                  <i className="fab fa-facebook-f"></i>
-                </button>
-                <button type="button" className="btn btn-primary btn-floating mx-1">
-                  <i className="fab fa-twitter"></i>
-                </button>
-                <button type="button" className="btn btn-primary btn-floating mx-1">
-                  <i className="fab fa-linkedin-in"></i>
-                </button>
-              </div>
-
-              <div className="divider d-flex align-items-center my-4">
-                <p className="text-center fw-bold mx-3 mb-0">Or</p>
-              </div>
-
               <div className="form-outline mb-4">
                 <input type="email" id="form3Example3" className="form-control form-control-lg" placeholder="Enter a valid email address" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 <label className="form-label" htmlFor="form3Example3">Email address</label>
@@ -70,16 +59,6 @@ const LoginForm = () => {
               <div className="form-outline mb-3">
                 <input type="password" id="form3Example4" className="form-control form-control-lg" placeholder="Enter password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 <label className="form-label" htmlFor="form3Example4">Password</label>
-              </div>
-
-              <div className="d-flex justify-content-between align-items-center">
-                <div className="form-check mb-0">
-                  <input className="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
-                  <label className="form-check-label" htmlFor="form2Example3">
-                    Remember me
-                  </label>
-                </div>
-                <a href="#!" className="text-body">Forgot password?</a>
               </div>
 
               <div className="text-center text-lg-start mt-4 pt-2">

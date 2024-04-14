@@ -19,11 +19,9 @@ const JobDetailsPage = () => {
         resume: null
     });
 
-    // Accessing the userDetails from AuthContext
     const { userDetails } = useContext(AuthContext);
 
     useEffect(() => {
-        // Fetch job details
         const fetchJobDetails = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/api/jobs/${id}`);
@@ -33,9 +31,11 @@ const JobDetailsPage = () => {
             }
         };
         fetchJobDetails();
+    }, [id]);
 
-        // If user details are available, set them to the application state
-        if (userDetails && userDetails.fullName && userDetails.email) {
+    useEffect(() => {
+        console.log("User Details from Context:", userDetails); // Debugging line
+        if (userDetails.fullName && userDetails.email && userDetails.phoneNumber) {
             setApplication(prev => ({
                 ...prev,
                 fullName: userDetails.fullName,
@@ -43,7 +43,7 @@ const JobDetailsPage = () => {
                 phoneNumber: userDetails.phoneNumber
             }));
         }
-    }, [id, userDetails]);
+    }, [userDetails]); // Dependency on userDetails to update form state as soon as it changes
 
     const handleChange = (event) => {
         const { name, value, files } = event.target;
@@ -56,7 +56,6 @@ const JobDetailsPage = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // Here you would typically handle the submission to the backend
         console.log('Submitted Application:', application);
         alert('Form submitted! Check the console for form data.');
     };
@@ -64,7 +63,7 @@ const JobDetailsPage = () => {
     return (
         <div>
             <Typography variant="h4" style={{ marginBottom: 20 }}>Apply for {jobDetails.title || 'the position'}</Typography>
-            <Typography variant="h6">{jobDetails.description || 'No description available'}</Typography> {/* Display job description */}
+            <Typography variant="h6">{jobDetails.description || 'No description available'}</Typography>
             <form onSubmit={handleSubmit}>
                 <TextField
                     label="Full Name"
