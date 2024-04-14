@@ -3,7 +3,8 @@ const router = express.Router();
 const User = require('../models/User');
 const jwt = require('jsonwebtoken'); // Import jsonwebtoken
 
-const JWT_SECRET = '6969'; // Place this in your environment variables or config file
+// It's better to keep your secrets outside your codebase
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_here'; // Use environment variable for JWT secret
 
 // POST /register - Register a new user
 router.post('/register', async (req, res) => {
@@ -35,36 +36,38 @@ router.post('/register', async (req, res) => {
     }
 });
 
+// POST /login - Log in a user and return JWT
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ email });
-        if (!user || password !== user.password) {
+        if (!user || password !== user.password) { // This should ideally be a hashed password check
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
         // Generate a token
         const token = jwt.sign(
             { userId: user._id, role: user.role },
-            'your_jwt_secret', // replace with your JWT secret
+            JWT_SECRET,
             { expiresIn: '1h' }
         );
 
-        res.json({ token, role: user.role, userId: user._id.toString() });
+        // Include additional user details in the response
+        res.json({
+            token,
+            role: user.role,
+            userId: user._id.toString(),
+            fullName: `${user.firstName} ${user.lastName}`, // Combining first and last name
+            email: user.email,
+            phoneNumber: user.phoneNumber
+        });
     } catch (error) {
         console.error("Error logging in user:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 });
 
-// GET /user/:id - Get user details by ID
-router.get('/user/:id', async (req, res) => {
-    // your existing code...
-});
-
-// PUT /user/:id - Update user details
-router.put('/user/:id', async (req, res) => {
-    // your existing code...
-});
+// Other routes (GET /user/:id, PUT /user/:id) should also be updated to handle user details appropriately
+// Ensure you replace this comment with your existing GET and PUT handlers if they are used in your application.
 
 module.exports = router;

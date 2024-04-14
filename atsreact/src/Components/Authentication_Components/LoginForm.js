@@ -27,7 +27,7 @@ const LoginForm = () => {
         localStorage.setItem('fullName', response.data.fullName); // Store fullName
         localStorage.setItem('email', response.data.email); // Store email
         localStorage.setItem('phoneNumber', response.data.phoneNumber); // Store phoneNumber
-        setTokenAndRole(response.data.token, response.data.role, response.data.userId);
+        setTokenAndRole(response.data.token, response.data.role, response.data.userId, response.data.fullName, response.data.email, response.data.phoneNumber);
         navigate('/'); // Redirect to homepage or dashboard after login
       } else {
         setMessage("Login failed. Please try again.");
