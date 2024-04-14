@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('phoneNumber', phoneNumber);
 
     updateAuthContextFromStorage(); // Update context after setting local storage
-  };
+};
 
   const logout = () => {
     localStorage.removeItem('token');

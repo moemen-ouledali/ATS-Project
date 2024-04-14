@@ -5,10 +5,12 @@ import { TextField, Button, Typography, MenuItem, FormControl, Select, InputLabe
 import { AuthContext } from '../../AuthContext'; // Ensure the path is correct
 
 const JobDetailsPage = () => {
-    const { id } = useParams();
+    const { id } = useParams(); // This is the jobID
     const [jobDetails, setJobDetails] = useState({});
-    const [showForm, setShowForm] = useState(false); // State to control the visibility of the form
+    const [showForm, setShowForm] = useState(false);
     const [application, setApplication] = useState({
+        jobID: id,
+        applicantID: '',
         fullName: '',
         age: '',
         educationLevel: '',
@@ -35,15 +37,17 @@ const JobDetailsPage = () => {
     }, [id]);
 
     useEffect(() => {
-        if (userDetails.fullName && userDetails.email && userDetails.phoneNumber) {
+        if (userDetails && userDetails.userId) {
             setApplication(prev => ({
                 ...prev,
                 fullName: userDetails.fullName,
                 email: userDetails.email,
-                phoneNumber: userDetails.phoneNumber
+                phoneNumber: userDetails.phoneNumber,
+                applicantID: userDetails.userId  // Ensure this is added
             }));
         }
     }, [userDetails]);
+    
 
     const handleChange = (event) => {
         const { name, value, files } = event.target;
@@ -54,19 +58,48 @@ const JobDetailsPage = () => {
         }
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log('Submitted Application:', application);
-        alert('Form submitted! Check the console for form data.');
+        const formData = new FormData();
+        // Append all entries except the resume
+        Object.entries(application).forEach(([key, value]) => {
+            if (key !== 'resume') {
+                formData.append(key, value);
+            }
+        });
+    
+        // Append the resume if it's present and it's a file
+        if (application.resume instanceof File) {
+            formData.append('resume', application.resume);
+        }
+    
+        // Explicitly check if applicantID is being sent
+        if (!formData.has('applicantID')) {
+            formData.append('applicantID', application.applicantID);
+        }
+    
+        try {
+            const response = await axios.post('http://localhost:5000/api/jobapplications/apply', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            console.log('Server Response:', response);
+            alert('Application submitted successfully!');
+        } catch (error) {
+            console.error('Failed to submit application:', error);
+            alert('Failed to submit application. Check console for more information.');
+        }
     };
+    
 
-    const toggleFormVisibility = () => setShowForm(!showForm); // Function to toggle form visibility
+    const toggleFormVisibility = () => setShowForm(!showForm);
 
     return (
         <div>
             <Typography variant="h4" style={{ marginBottom: 20 }}>Apply for {jobDetails.title || 'the position'}</Typography>
             <Typography variant="h6">{jobDetails.description || 'No description available'}</Typography>
-            <Button variant="contained" color="primary" onClick={toggleFormVisibility}>Apply Now</Button> {/* Button to show/hide the form */}
+            <Button variant="contained" color="primary" onClick={toggleFormVisibility}>Apply Now</Button>
             {showForm && (
                 <form onSubmit={handleSubmit}>
                     <TextField
