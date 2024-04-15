@@ -1,7 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useContext } from 'react'; // Ensure useContext is imported here
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider, AuthContext } from './AuthContext'; // Ensure AuthContext is imported correctly
+import { AuthProvider } from './AuthContext'; // Ensure AuthContext is imported correctly
+import AuthContext from './AuthContext'; // Assuming AuthContext is a default export
 import LoginForm from './Components/Authentication_Components/LoginForm';
 import RegisterForm from './Components/Authentication_Components/RegisterForm';
 import CandidateDashboard from './Components/Candidate_Components/CandidateDashboard';
