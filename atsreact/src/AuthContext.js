@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }) => {
 
   // Function to update context based on local storage values
   const updateAuthContextFromStorage = () => {
+    console.log("Updating Auth Context from Storage");
     setAuthToken(localStorage.getItem('token'));
     setUserRole(localStorage.getItem('role'));
     setUserId(localStorage.getItem('userId'));
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }) => {
       email: localStorage.getItem('email') || '',
       phoneNumber: localStorage.getItem('phoneNumber') || ''
     });
+    console.log("Updated userDetails:", userDetails);
   };
 
   useEffect(() => {
@@ -37,6 +39,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const setTokenAndRole = (token, role, id, fullName, email, phoneNumber) => {
+    console.log("Setting token, role, and user details");
     localStorage.setItem('token', token);
     localStorage.setItem('role', role);
     localStorage.setItem('userId', id);
@@ -45,9 +48,10 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('phoneNumber', phoneNumber);
 
     updateAuthContextFromStorage(); // Update context after setting local storage
-};
+  };
 
   const logout = () => {
+    console.log("Logging out and clearing local storage");
     localStorage.removeItem('token');
     localStorage.removeItem('role');
     localStorage.removeItem('userId');

@@ -24,6 +24,7 @@ const JobDetailsPage = () => {
 
     const { userDetails } = useContext(AuthContext);
 
+    // Fetch job details
     useEffect(() => {
         const fetchJobDetails = async () => {
             try {
@@ -36,15 +37,20 @@ const JobDetailsPage = () => {
         fetchJobDetails();
     }, [id]);
 
+    // Set user details to application form
     useEffect(() => {
+        console.log("Current userDetails from AuthContext:", userDetails);  // This will show what userDetails contains
+    
         if (userDetails && userDetails.userId) {
             setApplication(prev => ({
                 ...prev,
+                applicantID: userDetails.userId,  // This should be the MongoDB ObjectId
                 fullName: userDetails.fullName,
                 email: userDetails.email,
-                phoneNumber: userDetails.phoneNumber,
-                applicantID: userDetails.userId  // Ensure this is added
+                phoneNumber: userDetails.phoneNumber
             }));
+        } else {
+            console.log("User details are incomplete or missing:", userDetails);
         }
     }, [userDetails]);
     
@@ -61,23 +67,14 @@ const JobDetailsPage = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData();
-        // Append all entries except the resume
-        Object.entries(application).forEach(([key, value]) => {
-            if (key !== 'resume') {
-                formData.append(key, value);
+        Object.keys(application).forEach(key => {
+            if (key === 'resume' && application[key]) {
+                formData.append(key, application[key], application[key].name);
+            } else {
+                formData.append(key, application[key]);
             }
         });
-    
-        // Append the resume if it's present and it's a file
-        if (application.resume instanceof File) {
-            formData.append('resume', application.resume);
-        }
-    
-        // Explicitly check if applicantID is being sent
-        if (!formData.has('applicantID')) {
-            formData.append('applicantID', application.applicantID);
-        }
-    
+
         try {
             const response = await axios.post('http://localhost:5000/api/jobapplications/apply', formData, {
                 headers: {
@@ -91,7 +88,6 @@ const JobDetailsPage = () => {
             alert('Failed to submit application. Check console for more information.');
         }
     };
-    
 
     const toggleFormVisibility = () => setShowForm(!showForm);
 
@@ -102,30 +98,11 @@ const JobDetailsPage = () => {
             <Button variant="contained" color="primary" onClick={toggleFormVisibility}>Apply Now</Button>
             {showForm && (
                 <form onSubmit={handleSubmit}>
-                    <TextField
-                        label="Full Name"
-                        name="fullName"
-                        value={application.fullName}
-                        fullWidth
-                        margin="normal"
-                        InputProps={{ readOnly: true }}
-                    />
-                    <TextField
-                        label="Age"
-                        name="age"
-                        value={application.age}
-                        onChange={handleChange}
-                        fullWidth
-                        margin="normal"
-                        type="number"
-                    />
+                    <TextField label="Full Name" name="fullName" value={application.fullName} fullWidth margin="normal" InputProps={{ readOnly: true }} />
+                    <TextField label="Age" name="age" value={application.age} onChange={handleChange} fullWidth margin="normal" type="number" />
                     <FormControl fullWidth margin="normal">
                         <InputLabel>Highest Level of Education</InputLabel>
-                        <Select
-                            value={application.educationLevel}
-                            onChange={handleChange}
-                            input={<OutlinedInput label="Highest Level of Education" name="educationLevel" />}
-                        >
+                        <Select value={application.educationLevel} onChange={handleChange} input={<OutlinedInput label="Highest Level of Education" name="educationLevel" />}>
                             <MenuItem value="Baccalaureate">Baccalaureate</MenuItem>
                             <MenuItem value="License">License</MenuItem>
                             <MenuItem value="Engineering">Engineering</MenuItem>
@@ -133,64 +110,20 @@ const JobDetailsPage = () => {
                     </FormControl>
                     <FormControl fullWidth margin="normal">
                         <InputLabel>Years of Professional Experience</InputLabel>
-                        <Select
-                            value={application.experience}
-                            onChange={handleChange}
-                            input={<OutlinedInput label="Years of Professional Experience" name="experience" />}
-                        >
+                        <Select value={application.experience} onChange={handleChange} input={<OutlinedInput label="Years of Professional Experience" name="experience" />}>
                             <MenuItem value="0">0</MenuItem>
                             <MenuItem value="1-3">1-3</MenuItem>
                             <MenuItem value="4-6">4-6</MenuItem>
                             <MenuItem value="7+">7+</MenuItem>
                         </Select>
                     </FormControl>
-                    <TextField
-                        label="University"
-                        name="university"
-                        value={application.university}
-                        onChange={handleChange}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Email Address"
-                        name="email"
-                        value={application.email}
-                        fullWidth
-                        margin="normal"
-                        InputProps={{ readOnly: true }}
-                    />
-                    <TextField
-                        label="Phone Number"
-                        name="phoneNumber"
-                        value={application.phoneNumber}
-                        onChange={handleChange}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Motivation Letter"
-                        name="motivationLetter"
-                        value={application.motivationLetter}
-                        onChange={handleChange}
-                        fullWidth
-                        margin="normal"
-                        multiline
-                        rows={4}
-                    />
-                    <Button
-                        variant="contained"
-                        component="label"
-                        style={{ marginTop: 20, marginBottom: 20 }}
-                    >
+                    <TextField label="University" name="university" value={application.university} onChange={handleChange} fullWidth margin="normal" />
+                    <TextField label="Email Address" name="email" value={application.email} fullWidth margin="normal" InputProps={{ readOnly: true }} />
+                    <TextField label="Phone Number" name="phoneNumber" value={application.phoneNumber} onChange={handleChange} fullWidth margin="normal" />
+                    <TextField label="Motivation Letter" name="motivationLetter" value={application.motivationLetter} onChange={handleChange} fullWidth margin="normal" multiline rows={4} />
+                    <Button variant="contained" component="label" style={{ marginTop: 20, marginBottom: 20 }}>
                         Upload Resume (PDF)
-                        <input
-                            type="file"
-                            name="resume"
-                            hidden
-                            accept=".pdf"
-                            onChange={handleChange}
-                        />
+                        <input type="file" name="resume" hidden accept=".pdf" onChange={handleChange} />
                     </Button>
                     <Button type="submit" variant="contained" color="primary" fullWidth>Submit Application</Button>
                 </form>
