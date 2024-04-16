@@ -2,9 +2,9 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
-import { AuthProvider } from './AuthContext';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { AuthProvider } from './AuthContext'; // Ensure this import is correct
 
 
 // Correct way to use createRoot in React 18
@@ -13,7 +13,7 @@ const root = createRoot(container); // Create a root.
 root.render(
   <React.StrictMode>
     <AuthProvider>
-      <App />
+    <App />
     </AuthProvider>
   </React.StrictMode>
 );

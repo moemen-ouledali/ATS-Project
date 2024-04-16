@@ -1,8 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useContext } from 'react'; // Ensure useContext is imported here
+import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './AuthContext'; // Ensure AuthContext is imported correctly
-import AuthContext from './AuthContext'; // Assuming AuthContext is a default export
+import { AuthProvider, AuthContext } from './AuthContext';
 import LoginForm from './Components/Authentication_Components/LoginForm';
 import RegisterForm from './Components/Authentication_Components/RegisterForm';
 import CandidateDashboard from './Components/Candidate_Components/CandidateDashboard';
@@ -19,9 +18,25 @@ import InternshipListings from './Components/Detailed_Components/InternshipListi
 import AllJobs from './Components/Detailed_Components/AllJobs';
 import JobDetailsPage from './Components/Detailed_Components/JobDetailsPage';
 
+
+
+function DynamicNavigation() {
+    const { authToken, userRole } = useContext(AuthContext);
+
+    console.log(`AuthToken: ${authToken}, UserRole: ${userRole}`);  // This helps you debug the values being passed.
+
+    if (!authToken) {
+        console.error('No auth token found or AuthContext is not available');
+        return <LoggedOutNav />;
+    }
+
+    return userRole === 'manager' ? <ManagerNav /> : userRole === 'candidate' ? <CandidateNav /> : <LoggedOutNav />;
+}
+
+
 function App() {
     return (
-        <AuthProvider> {/* Wrap all components in AuthProvider */}
+        <AuthProvider>
             <Router>
                 <DynamicNavigation />
                 <Routes>
@@ -44,12 +59,6 @@ function App() {
     );
 }
 
-function DynamicNavigation() {
-    const { authToken, userRole } = useContext(AuthContext); // use AuthContext directly here
 
-    console.log(`AuthToken: ${authToken}, UserRole: ${userRole}`);
-    if (!authToken) return <LoggedOutNav />;
-    return userRole === 'candidate' ? <CandidateNav /> : <ManagerNav />;
-}
 
 export default App;

@@ -6,23 +6,23 @@ import { AuthContext } from '../../AuthContext'; // Ensure the path is correct
 
 const JobDetailsPage = () => {
     const { id } = useParams(); // This is the jobID
+    const { userDetails } = useContext(AuthContext);
+    
     const [jobDetails, setJobDetails] = useState({});
     const [showForm, setShowForm] = useState(false);
     const [application, setApplication] = useState({
         jobID: id,
-        applicantID: '',
-        fullName: '',
+        applicantID: userDetails.userId || '',
+        fullName: userDetails.fullName || '',
         age: '',
         educationLevel: '',
         experience: '',
         university: '',
-        email: '',
-        phoneNumber: '',
+        email: userDetails.email || '',
+        phoneNumber: userDetails.phoneNumber || '',
         motivationLetter: '',
         resume: null
     });
-
-    const { userDetails } = useContext(AuthContext);
 
     // Fetch job details
     useEffect(() => {
@@ -37,23 +37,16 @@ const JobDetailsPage = () => {
         fetchJobDetails();
     }, [id]);
 
-    // Set user details to application form
+    // Update form fields if userDetails change
     useEffect(() => {
-        console.log("Current userDetails from AuthContext:", userDetails);  // This will show what userDetails contains
-    
-        if (userDetails && userDetails.userId) {
-            setApplication(prev => ({
-                ...prev,
-                applicantID: userDetails.userId,  // This should be the MongoDB ObjectId
-                fullName: userDetails.fullName,
-                email: userDetails.email,
-                phoneNumber: userDetails.phoneNumber
-            }));
-        } else {
-            console.log("User details are incomplete or missing:", userDetails);
-        }
+        setApplication(prev => ({
+            ...prev,
+            applicantID: userDetails.userId || '',
+            fullName: userDetails.fullName || '',
+            email: userDetails.email || '',
+            phoneNumber: userDetails.phoneNumber || ''
+        }));
     }, [userDetails]);
-    
 
     const handleChange = (event) => {
         const { name, value, files } = event.target;
