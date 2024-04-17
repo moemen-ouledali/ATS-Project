@@ -50,23 +50,20 @@ export const AuthProvider = ({ children }) => {
     }, [updateAuthContextFromStorage]);
 
     const setTokenAndRole = (token, role, id, fullName, email, phoneNumber) => {
-      localStorage.setItem('token', token);
-      localStorage.setItem('role', role);
-      localStorage.setItem('userId', id);
-      localStorage.setItem('fullName', fullName);
-      localStorage.setItem('email', email);
-      localStorage.setItem('phoneNumber', phoneNumber);
-  
-      // Immediately update context states
-      setAuthToken(token);
-      setUserRole(role);
-      setUserId(id);
-      setUserDetails({ fullName, email, phoneNumber });
-  };
-  
+        console.log("Role from login:", role);  // Log the role as it is set during the login process
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', role);
+        localStorage.setItem('userId', id);
+        localStorage.setItem('fullName', fullName);
+        localStorage.setItem('email', email);
+        localStorage.setItem('phoneNumber', phoneNumber);
+        updateAuthContextFromStorage(); // This triggers the context update
+        console.log("Auth context updated with:", { token, role, id, fullName, email, phoneNumber });
+    };
+    
 
     const logout = () => {
-        console.log("Logging out and clearing local storage...");
+        console.log("Logging out and clearing local storage");
         localStorage.clear(); // Clears all local storage items
         setAuthToken(null);
         setUserRole(null);

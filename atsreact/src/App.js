@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './AuthContext';
 import LoginForm from './Components/Authentication_Components/LoginForm';
@@ -56,6 +56,30 @@ function App() {
                 </Routes>
             </Router>
         </AuthProvider>
+    );
+}
+
+function DynamicNavigation() {
+    const { authToken, userRole } = useContext(AuthContext);
+    console.log(`UserRole: ${userRole}`);  // Check the logged user role
+    const [renderKey, setRenderKey] = useState(0); // Used to force a rerender
+
+    useEffect(() => {
+        console.log("Current user role:", userRole); // Debug output to monitor changes
+        // Only force a rerender if certain conditions are met
+        if (authToken && userRole) {
+            setRenderKey(prev => prev + 1); // Increment key to force rerender
+        }
+    }, [authToken, userRole]);
+
+    if (!authToken) {
+        return <LoggedOutNav />;
+    }
+
+    return (
+        <div key={renderKey}>
+            {userRole === 'Manager' ? <ManagerNav /> : <CandidateNav />}
+        </div>
     );
 }
 
