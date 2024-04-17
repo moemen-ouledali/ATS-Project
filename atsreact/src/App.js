@@ -59,38 +59,24 @@ function App() {
     );
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 function DynamicNavigation() {
     const { authToken, userRole } = useContext(AuthContext);
-    console.log(`UserRole: ${userRole}`);  // Check the logged user role
-    const [renderKey, setRenderKey] = useState(0); // Used to force a rerender
 
-    useEffect(() => {
-        console.log("Current user role:", userRole); // Debug output to monitor changes
-        // Only force a rerender if certain conditions are met
-        if (authToken && userRole) {
-            setRenderKey(prev => prev + 1); // Increment key to force rerender
-        }
-    }, [authToken, userRole]);
+    console.log(`AuthToken: ${authToken}, UserRole: ${userRole}`); // Debugging output
 
     if (!authToken) {
+        console.error('No auth token found or AuthContext is not available');
         return <LoggedOutNav />;
     }
 
-    return (
-        <div key={renderKey}>
-            {userRole === 'Manager' ? <ManagerNav /> : <CandidateNav />}
-        </div>
-    );
+    switch (userRole) {
+        case 'manager':
+            return <ManagerNav />;
+        case 'candidate':
+            return <CandidateNav />;
+        default:
+            return <LoggedOutNav />;
+    }
 }
-=======
-
->>>>>>> parent of af34368 (test navbar)
-
-
-=======
-
->>>>>>> parent of af34368 (test navbar)
 
 export default App;
