@@ -1,16 +1,16 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 
 export const AuthContext = createContext({
-    authToken: null, // Set initial default values for authentication token
-    userRole: null, // User role (e.g., 'manager', 'candidate')
-    userId: null, // User ID
-    userDetails: { // User details object
+    authToken: null,  // Set initial default values for authentication token
+    userRole: null,   // User role (e.g., 'manager', 'candidate')
+    userId: null,     // User ID
+    userDetails: {    // User details object
         fullName: '',
         email: '',
         phoneNumber: ''
     },
     setTokenAndRole: () => {}, // Function to set the token and user role
-    logout: () => {}, // Function to handle logout
+    logout: () => {},          // Function to handle logout
     updateAuthContextFromStorage: () => {} // Function to update context from local storage
 });
 
@@ -37,32 +37,22 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
-      console.log('Checking storage update:');
-
         updateAuthContextFromStorage(); // Initial update from storage
-        // Listener for local storage changes
-        window.addEventListener('storage', updateAuthContextFromStorage);
-        // Cleanup listener on component unmount
+        window.addEventListener('storage', updateAuthContextFromStorage); // Listener for local storage changes
         return () => {
-            window.removeEventListener('storage', updateAuthContextFromStorage);
+            window.removeEventListener('storage', updateAuthContextFromStorage); // Cleanup listener
         };
     }, [updateAuthContextFromStorage]);
 
     const setTokenAndRole = (token, role, id, fullName, email, phoneNumber) => {
-      localStorage.setItem('token', token);
-      localStorage.setItem('role', role);
-      localStorage.setItem('userId', id);
-      localStorage.setItem('fullName', fullName);
-      localStorage.setItem('email', email);
-      localStorage.setItem('phoneNumber', phoneNumber);
-  
-      // Immediately update context states
-      setAuthToken(token);
-      setUserRole(role);
-      setUserId(id);
-      setUserDetails({ fullName, email, phoneNumber });
-  };
-  
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', role);
+        localStorage.setItem('userId', id);
+        localStorage.setItem('fullName', fullName);
+        localStorage.setItem('email', email);
+        localStorage.setItem('phoneNumber', phoneNumber);
+        updateAuthContextFromStorage(); // Immediately update context states
+    };
 
     const logout = () => {
         console.log("Logging out and clearing local storage");

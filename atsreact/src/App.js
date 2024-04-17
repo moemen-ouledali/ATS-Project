@@ -18,22 +18,6 @@ import InternshipListings from './Components/Detailed_Components/InternshipListi
 import AllJobs from './Components/Detailed_Components/AllJobs';
 import JobDetailsPage from './Components/Detailed_Components/JobDetailsPage';
 
-
-
-function DynamicNavigation() {
-    const { authToken, userRole } = useContext(AuthContext);
-
-    console.log(`AuthToken: ${authToken}, UserRole: ${userRole}`);  // This helps you debug the values being passed.
-
-    if (!authToken) {
-        console.error('No auth token found or AuthContext is not available');
-        return <LoggedOutNav />;
-    }
-
-    return userRole === 'manager' ? <ManagerNav /> : userRole === 'candidate' ? <CandidateNav /> : <LoggedOutNav />;
-}
-
-
 function App() {
     return (
         <AuthProvider>
@@ -59,6 +43,24 @@ function App() {
     );
 }
 
+function DynamicNavigation() {
+    const { authToken, userRole } = useContext(AuthContext);
 
+    console.log(`AuthToken: ${authToken}, UserRole: ${userRole}`); // Debugging output
+
+    if (!authToken) {
+        console.error('No auth token found or AuthContext is not available');
+        return <LoggedOutNav />;
+    }
+
+    switch (userRole) {
+        case 'manager':
+            return <ManagerNav />;
+        case 'candidate':
+            return <CandidateNav />;
+        default:
+            return <LoggedOutNav />;
+    }
+}
 
 export default App;
