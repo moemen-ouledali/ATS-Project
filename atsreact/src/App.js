@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './AuthContext';
 import LoginForm from './Components/Authentication_Components/LoginForm';
@@ -45,22 +45,28 @@ function App() {
 
 function DynamicNavigation() {
     const { authToken, userRole } = useContext(AuthContext);
+    console.log(`UserRole: ${userRole}`);  // Check the logged user role
+    const [renderKey, setRenderKey] = useState(0); // Used to force a rerender
 
-    console.log(`AuthToken: ${authToken}, UserRole: ${userRole}`); // Debugging output
+    useEffect(() => {
+        console.log("Current user role:", userRole); // Debug output to monitor changes
+        // Only force a rerender if certain conditions are met
+        if (authToken && userRole) {
+            setRenderKey(prev => prev + 1); // Increment key to force rerender
+        }
+    }, [authToken, userRole]);
 
     if (!authToken) {
-        console.error('No auth token found or AuthContext is not available');
         return <LoggedOutNav />;
     }
 
-    switch (userRole) {
-        case 'manager':
-            return <ManagerNav />;
-        case 'candidate':
-            return <CandidateNav />;
-        default:
-            return <LoggedOutNav />;
-    }
+    return (
+        <div key={renderKey}>
+            {userRole === 'Manager' ? <ManagerNav /> : <CandidateNav />}
+        </div>
+    );
 }
+
+
 
 export default App;

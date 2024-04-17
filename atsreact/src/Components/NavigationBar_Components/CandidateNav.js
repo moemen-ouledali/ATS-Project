@@ -28,14 +28,14 @@ const CandidateNav = () => {
                 <div className="collapse navbar-collapse" id="navbarSupportedCandidate">
                     <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li className="nav-item">
-                            <Link className="nav-link" to="/candidate_dashboard">Dashboard</Link>
+                            <Link className="nav-link" to="/candidate_dashboard">Dashboard Candidate</Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link" to="/edit-profile">Edit Profile</Link>
+                            <Link className="nav-link" to="/edit-profile">Edit Profile Candidate ! </Link>
                         </li>
                         <li className="nav-item">
                             <button onClick={handleLogout} className="nav-link btn btn-link" style={{ padding: 0, border: 'none', background: 'none' }}>
-                                Logout
+                                Logout Candidate
                             </button>
                         </li>
                     </ul>

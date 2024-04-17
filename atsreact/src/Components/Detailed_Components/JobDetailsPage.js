@@ -12,14 +12,14 @@ const JobDetailsPage = () => {
     const [showForm, setShowForm] = useState(false);
     const [application, setApplication] = useState({
         jobID: id,
-        applicantID: userDetails.userId || '',
-        fullName: userDetails.fullName || '',
+        applicantID: '',
+        fullName: '',
         age: '',
         educationLevel: '',
         experience: '',
         university: '',
-        email: userDetails.email || '',
-        phoneNumber: userDetails.phoneNumber || '',
+        email: '',
+        phoneNumber: '',
         motivationLetter: '',
         resume: null
     });
@@ -46,7 +46,7 @@ const JobDetailsPage = () => {
             email: userDetails.email || '',
             phoneNumber: userDetails.phoneNumber || ''
         }));
-    }, [userDetails]);
+    }, [userDetails]); // Removing application from the dependencies
 
     const handleChange = (event) => {
         const { name, value, files } = event.target;
