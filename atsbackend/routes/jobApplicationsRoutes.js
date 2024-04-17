@@ -5,6 +5,7 @@ const pdfParse = require('pdf-parse');
 const JobApplication = require('../models/JobApplication');
 const User = require('../models/User'); // Ensure User model is imported if needed for population
 
+
 // Setup multer for in-memory buffer storage for immediate PDF text extraction
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -12,6 +13,7 @@ const upload = multer({ storage: storage });
 router.post('/apply', upload.single('resume'), async (req, res) => {
     const { jobID, applicantID, fullName, email, phoneNumber, educationLevel, experience, university, motivationLetter } = req.body;
     const resumeFile = req.file;
+    console.log('Received application data:', req.body);  // Debug incoming form data
 
     try {
         let resumeText = '';

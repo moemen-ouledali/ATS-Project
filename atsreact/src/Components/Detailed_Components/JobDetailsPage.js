@@ -12,20 +12,20 @@ const JobDetailsPage = () => {
     const [showForm, setShowForm] = useState(false);
     const [application, setApplication] = useState({
         jobID: id,
-        applicantID: '',
-        fullName: '',
+        applicantID: userDetails.userId || '',
+        fullName: userDetails.fullName || '',
         age: '',
         educationLevel: '',
         experience: '',
         university: '',
-        email: '',
-        phoneNumber: '',
+        email: userDetails.email || '',
+        phoneNumber: userDetails.phoneNumber || '',
         motivationLetter: '',
         resume: null
     });
 
-    // Fetch job details
     useEffect(() => {
+        console.log("Fetching job details for ID:", id);
         const fetchJobDetails = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/api/jobs/${id}`);
@@ -37,42 +37,36 @@ const JobDetailsPage = () => {
         fetchJobDetails();
     }, [id]);
 
-    // Update form fields if userDetails change
     useEffect(() => {
+        console.log("Updating application form with userDetails:", userDetails);
         setApplication(prev => ({
             ...prev,
             applicantID: userDetails.userId || '',
-            fullName: userDetails.fullName || '',
-            email: userDetails.email || '',
-            phoneNumber: userDetails.phoneNumber || ''
+            fullName: userDetails.fullName,
+            email: userDetails.email,
+            phoneNumber: userDetails.phoneNumber
         }));
-    }, [userDetails]); // Removing application from the dependencies
+    }, [userDetails]);
 
     const handleChange = (event) => {
         const { name, value, files } = event.target;
-        if (name === "resume") {
-            setApplication(prev => ({ ...prev, resume: files[0] }));
-        } else {
-            setApplication(prev => ({ ...prev, [name]: value }));
-        }
+        setApplication(prev => ({ ...prev, [name]: value, resume: name === "resume" ? files[0] : prev.resume }));
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        console.log("Preparing to submit application with the following details:", application);
+    
         const formData = new FormData();
         Object.keys(application).forEach(key => {
-            if (key === 'resume' && application[key]) {
-                formData.append(key, application[key], application[key].name);
-            } else {
-                formData.append(key, application[key]);
-            }
+            formData.append(key, application[key]);
         });
-
+    
+        console.log("Form Data prepared for submission:", Object.fromEntries(formData.entries())); // Note: formData.entries() is not supported in all environments
+    
         try {
             const response = await axios.post('http://localhost:5000/api/jobapplications/apply', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
             console.log('Server Response:', response);
             alert('Application submitted successfully!');
@@ -95,7 +89,7 @@ const JobDetailsPage = () => {
                     <TextField label="Age" name="age" value={application.age} onChange={handleChange} fullWidth margin="normal" type="number" />
                     <FormControl fullWidth margin="normal">
                         <InputLabel>Highest Level of Education</InputLabel>
-                        <Select value={application.educationLevel} onChange={handleChange} input={<OutlinedInput label="Highest Level of Education" name="educationLevel" />}>
+                        <Select name="educationLevel" value={application.educationLevel} onChange={handleChange} input={<OutlinedInput label="Highest Level of Education" />}>
                             <MenuItem value="Baccalaureate">Baccalaureate</MenuItem>
                             <MenuItem value="License">License</MenuItem>
                             <MenuItem value="Engineering">Engineering</MenuItem>
@@ -103,7 +97,7 @@ const JobDetailsPage = () => {
                     </FormControl>
                     <FormControl fullWidth margin="normal">
                         <InputLabel>Years of Professional Experience</InputLabel>
-                        <Select value={application.experience} onChange={handleChange} input={<OutlinedInput label="Years of Professional Experience" name="experience" />}>
+                        <Select name="experience" value={application.experience} onChange={handleChange} input={<OutlinedInput label="Years of Professional Experience" />}>
                             <MenuItem value="0">0</MenuItem>
                             <MenuItem value="1-3">1-3</MenuItem>
                             <MenuItem value="4-6">4-6</MenuItem>
