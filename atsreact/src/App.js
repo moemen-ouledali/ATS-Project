@@ -59,24 +59,6 @@ function App() {
     );
 }
 
-function DynamicNavigation() {
-    const { authToken, userRole } = useContext(AuthContext);
 
-    console.log(`AuthToken: ${authToken}, UserRole: ${userRole}`); // Debugging output
-
-    if (!authToken) {
-        console.error('No auth token found or AuthContext is not available');
-        return <LoggedOutNav />;
-    }
-
-    switch (userRole) {
-        case 'manager':
-            return <ManagerNav />;
-        case 'candidate':
-            return <CandidateNav />;
-        default:
-            return <LoggedOutNav />;
-    }
-}
 
 export default App;
