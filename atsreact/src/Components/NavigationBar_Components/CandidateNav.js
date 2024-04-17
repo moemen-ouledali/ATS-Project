@@ -11,6 +11,7 @@ import '../../App.css';
 
 const CandidateNav = () => {
 <<<<<<< HEAD
+<<<<<<< HEAD
     const { logout } = useContext(AuthContext); // Use logout from AuthContext
     const navigate = useNavigate(); // Use useNavigate for redirection
     
@@ -49,6 +50,8 @@ const CandidateNav = () => {
         </nav>
     );
 =======
+=======
+>>>>>>> parent of af34368 (test navbar)
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-white py-3">
       <div className="container px-5">
@@ -82,6 +85,9 @@ const CandidateNav = () => {
       </div>
     </nav>
   );
+<<<<<<< HEAD
+>>>>>>> parent of af34368 (test navbar)
+=======
 >>>>>>> parent of af34368 (test navbar)
 };
 

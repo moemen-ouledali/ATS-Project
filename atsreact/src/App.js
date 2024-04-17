@@ -60,6 +60,7 @@ function App() {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 function DynamicNavigation() {
     const { authToken, userRole } = useContext(AuthContext);
     console.log(`UserRole: ${userRole}`);  // Check the logged user role
@@ -88,5 +89,8 @@ function DynamicNavigation() {
 >>>>>>> parent of af34368 (test navbar)
 
 
+=======
+
+>>>>>>> parent of af34368 (test navbar)
 
 export default App;

@@ -2,15 +2,21 @@ import React, { createContext, useState, useEffect, useCallback } from 'react';
 
 export const AuthContext = createContext({
 <<<<<<< HEAD
+<<<<<<< HEAD
     authToken: null,  // Initial default values for authentication token
     userRole: null,   // User role (e.g., 'manager', 'candidate')
     userId: null,     // User ID
     userDetails: {    // User details object
 =======
+=======
+>>>>>>> parent of af34368 (test navbar)
     authToken: null, // Set initial default values for authentication token
     userRole: null, // User role (e.g., 'manager', 'candidate')
     userId: null, // User ID
     userDetails: { // User details object
+<<<<<<< HEAD
+>>>>>>> parent of af34368 (test navbar)
+=======
 >>>>>>> parent of af34368 (test navbar)
         fullName: '',
         email: '',
@@ -46,7 +52,12 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
 <<<<<<< HEAD
+<<<<<<< HEAD
         console.log("Setting up AuthContext with initial values...");
+=======
+      console.log('Checking storage update:');
+
+>>>>>>> parent of af34368 (test navbar)
 =======
       console.log('Checking storage update:');
 
@@ -57,8 +68,12 @@ export const AuthProvider = ({ children }) => {
         // Cleanup listener on component unmount
         return () => {
 <<<<<<< HEAD
+<<<<<<< HEAD
             window.removeEventListener('storage', updateAuthContextFromStorage); // Cleanup listener
             console.log("Cleaning up listeners in AuthContext...");
+=======
+            window.removeEventListener('storage', updateAuthContextFromStorage);
+>>>>>>> parent of af34368 (test navbar)
 =======
             window.removeEventListener('storage', updateAuthContextFromStorage);
 >>>>>>> parent of af34368 (test navbar)
@@ -66,6 +81,7 @@ export const AuthProvider = ({ children }) => {
     }, [updateAuthContextFromStorage]);
 
     const setTokenAndRole = (token, role, id, fullName, email, phoneNumber) => {
+<<<<<<< HEAD
 <<<<<<< HEAD
         console.log("Setting token and role from login/register:", { token, role, id, fullName, email, phoneNumber });
         localStorage.setItem('token', token);
@@ -77,6 +93,8 @@ export const AuthProvider = ({ children }) => {
         updateAuthContextFromStorage(); // This triggers the context update
     };
 =======
+=======
+>>>>>>> parent of af34368 (test navbar)
       localStorage.setItem('token', token);
       localStorage.setItem('role', role);
       localStorage.setItem('userId', id);
@@ -91,6 +109,9 @@ export const AuthProvider = ({ children }) => {
       setUserDetails({ fullName, email, phoneNumber });
   };
   
+<<<<<<< HEAD
+>>>>>>> parent of af34368 (test navbar)
+=======
 >>>>>>> parent of af34368 (test navbar)
 
     const logout = () => {
