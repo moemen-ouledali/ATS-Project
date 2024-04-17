@@ -1,16 +1,23 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 
 export const AuthContext = createContext({
+<<<<<<< HEAD
     authToken: null,  // Initial default values for authentication token
     userRole: null,   // User role (e.g., 'manager', 'candidate')
     userId: null,     // User ID
     userDetails: {    // User details object
+=======
+    authToken: null, // Set initial default values for authentication token
+    userRole: null, // User role (e.g., 'manager', 'candidate')
+    userId: null, // User ID
+    userDetails: { // User details object
+>>>>>>> parent of af34368 (test navbar)
         fullName: '',
         email: '',
         phoneNumber: ''
     },
     setTokenAndRole: () => {}, // Function to set the token and user role
-    logout: () => {},          // Function to handle logout
+    logout: () => {}, // Function to handle logout
     updateAuthContextFromStorage: () => {} // Function to update context from local storage
 });
 
@@ -38,16 +45,28 @@ export const AuthProvider = ({ children }) => {
     }, [authToken, userRole, userId, userDetails]);
 
     useEffect(() => {
+<<<<<<< HEAD
         console.log("Setting up AuthContext with initial values...");
+=======
+      console.log('Checking storage update:');
+
+>>>>>>> parent of af34368 (test navbar)
         updateAuthContextFromStorage(); // Initial update from storage
-        window.addEventListener('storage', updateAuthContextFromStorage); // Listener for local storage changes
+        // Listener for local storage changes
+        window.addEventListener('storage', updateAuthContextFromStorage);
+        // Cleanup listener on component unmount
         return () => {
+<<<<<<< HEAD
             window.removeEventListener('storage', updateAuthContextFromStorage); // Cleanup listener
             console.log("Cleaning up listeners in AuthContext...");
+=======
+            window.removeEventListener('storage', updateAuthContextFromStorage);
+>>>>>>> parent of af34368 (test navbar)
         };
     }, [updateAuthContextFromStorage]);
 
     const setTokenAndRole = (token, role, id, fullName, email, phoneNumber) => {
+<<<<<<< HEAD
         console.log("Setting token and role from login/register:", { token, role, id, fullName, email, phoneNumber });
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
@@ -57,6 +76,22 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('phoneNumber', phoneNumber);
         updateAuthContextFromStorage(); // This triggers the context update
     };
+=======
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', role);
+      localStorage.setItem('userId', id);
+      localStorage.setItem('fullName', fullName);
+      localStorage.setItem('email', email);
+      localStorage.setItem('phoneNumber', phoneNumber);
+  
+      // Immediately update context states
+      setAuthToken(token);
+      setUserRole(role);
+      setUserId(id);
+      setUserDetails({ fullName, email, phoneNumber });
+  };
+  
+>>>>>>> parent of af34368 (test navbar)
 
     const logout = () => {
         console.log("Logging out and clearing local storage...");
