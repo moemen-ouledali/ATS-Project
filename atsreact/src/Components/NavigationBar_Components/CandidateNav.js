@@ -1,5 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react'; // Added useContext import
+import { Link, useNavigate } from 'react-router-dom'; // Added useNavigate import
+import { AuthContext } from '../../AuthContext'; // Adjust the import path as necessary
 import LogoutButton from './LogoutButton'; // Adjust the import path as necessary
 import beeCodersLogo from '../../Media/BeeCodersLogo.png'; // Adjust the import path to where your logo is located
 

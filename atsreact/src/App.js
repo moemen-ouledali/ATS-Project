@@ -30,7 +30,7 @@ function DynamicNavigation() {
         return <LoggedOutNav />;
     }
 
-    return userRole === 'manager' ? <ManagerNav /> : userRole === 'candidate' ? <CandidateNav /> : <LoggedOutNav />;
+    return userRole === 'Manager' ? <ManagerNav /> : userRole === 'Candidate' ? <CandidateNav /> : <LoggedOutNav />;
 }
 
 
@@ -58,31 +58,6 @@ function App() {
         </AuthProvider>
     );
 }
-
-function DynamicNavigation() {
-    const { authToken, userRole } = useContext(AuthContext);
-    console.log(`UserRole: ${userRole}`);  // Check the logged user role
-    const [renderKey, setRenderKey] = useState(0); // Used to force a rerender
-
-    useEffect(() => {
-        console.log("Current user role:", userRole); // Debug output to monitor changes
-        // Only force a rerender if certain conditions are met
-        if (authToken && userRole) {
-            setRenderKey(prev => prev + 1); // Increment key to force rerender
-        }
-    }, [authToken, userRole]);
-
-    if (!authToken) {
-        return <LoggedOutNav />;
-    }
-
-    return (
-        <div key={renderKey}>
-            {userRole === 'Manager' ? <ManagerNav /> : <CandidateNav />}
-        </div>
-    );
-}
-
 
 
 export default App;
