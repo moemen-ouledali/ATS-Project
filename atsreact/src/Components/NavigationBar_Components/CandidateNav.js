@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import LogoutButton from './LogoutButton'; // Adjust the import path as necessary
+import React, { useContext } from 'react';  // Import useContext
+import { Link, useNavigate } from 'react-router-dom';  // Import useNavigate and Link
+import { AuthContext } from '../../AuthContext'; // Adjust the path to where your AuthContext is located
 import beeCodersLogo from '../../Media/BeeCodersLogo.png'; // Adjust the import path to where your logo is located
 
 // Import Bootstrap CSS
@@ -35,7 +35,7 @@ const CandidateNav = () => {
                             <Link className="nav-link" to="/candidate_dashboard">Dashboard Candidate</Link>
                         </li>
                         <li className="nav-item">
-                            <Link className="nav-link" to="/edit-profile">Edit Profile Candidate ! </Link>
+                            <Link className="nav-link" to="/edit-profile">Edit Profile Candidate</Link>
                         </li>
                         <li className="nav-item">
                             <button onClick={handleLogout} className="nav-link btn btn-link" style={{ padding: 0, border: 'none', background: 'none' }}>

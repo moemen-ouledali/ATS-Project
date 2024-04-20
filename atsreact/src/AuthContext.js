@@ -1,17 +1,17 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 
 export const AuthContext = createContext({
-    authToken: null, // Set initial default values for authentication token
-    userRole: null, // User role (e.g., 'manager', 'candidate')
-    userId: null, // User ID
-    userDetails: { // User details object
+    authToken: null,
+    userRole: null,
+    userId: null,
+    userDetails: {
         fullName: '',
         email: '',
         phoneNumber: ''
     },
-    setTokenAndRole: () => {}, // Function to set the token and user role
-    logout: () => {}, // Function to handle logout
-    updateAuthContextFromStorage: () => {} // Function to update context from local storage
+    setTokenAndRole: () => {},
+    logout: () => {},
+    updateAuthContextFromStorage: () => {}
 });
 
 export const AuthProvider = ({ children }) => {
@@ -34,12 +34,10 @@ export const AuthProvider = ({ children }) => {
             email: localStorage.getItem('email') || '',
             phoneNumber: localStorage.getItem('phoneNumber') || ''
         });
-        console.log("Updated Auth Context:", { authToken, userRole, userId, userDetails });
-    }, [authToken, userRole, userId, userDetails]);
+    }, [setAuthToken, setUserRole, setUserId, setUserDetails]); // Corrected dependency array
 
     useEffect(() => {
-      console.log('Checking storage update:');
-
+        console.log('Checking storage update:');
         updateAuthContextFromStorage(); // Initial update from storage
         // Listener for local storage changes
         window.addEventListener('storage', updateAuthContextFromStorage);
@@ -50,7 +48,7 @@ export const AuthProvider = ({ children }) => {
     }, [updateAuthContextFromStorage]);
 
     const setTokenAndRole = (token, role, id, fullName, email, phoneNumber) => {
-        console.log("Role from login:", role);  // Log the role as it is set during the login process
+        console.log("Setting credentials and updating local storage with new data");
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         localStorage.setItem('userId', id);
@@ -58,13 +56,11 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('email', email);
         localStorage.setItem('phoneNumber', phoneNumber);
         updateAuthContextFromStorage(); // This triggers the context update
-        console.log("Auth context updated with:", { token, role, id, fullName, email, phoneNumber });
     };
     
-
     const logout = () => {
         console.log("Logging out and clearing local storage");
-        localStorage.clear(); // Clears all local storage items
+        localStorage.clear();
         setAuthToken(null);
         setUserRole(null);
         setUserId(null);

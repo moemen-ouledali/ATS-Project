@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './AuthContext';
 import LoginForm from './Components/Authentication_Components/LoginForm';
@@ -18,21 +18,28 @@ import InternshipListings from './Components/Detailed_Components/InternshipListi
 import AllJobs from './Components/Detailed_Components/AllJobs';
 import JobDetailsPage from './Components/Detailed_Components/JobDetailsPage';
 
-
-
 function DynamicNavigation() {
     const { authToken, userRole } = useContext(AuthContext);
+    const [renderKey, setRenderKey] = useState(0); // Used to force a rerender
 
-    console.log(`AuthToken: ${authToken}, UserRole: ${userRole}`);  // This helps you debug the values being passed.
+    useEffect(() => {
+        console.log(`AuthToken: ${authToken}, UserRole: ${userRole}`); // Debug output to monitor changes
+        if (authToken && userRole) {
+            setRenderKey(prev => prev + 1); // Increment key to force rerender
+        }
+    }, [authToken, userRole]);
 
     if (!authToken) {
         console.error('No auth token found or AuthContext is not available');
         return <LoggedOutNav />;
     }
 
-    return userRole === 'manager' ? <ManagerNav /> : userRole === 'candidate' ? <CandidateNav /> : <LoggedOutNav />;
+    return (
+        <div key={renderKey}>
+            {userRole === 'Manager' ? <ManagerNav /> : userRole === 'Candidate' ? <CandidateNav /> : <LoggedOutNav />}
+        </div>
+    );
 }
-
 
 function App() {
     return (
@@ -58,31 +65,5 @@ function App() {
         </AuthProvider>
     );
 }
-
-function DynamicNavigation() {
-    const { authToken, userRole } = useContext(AuthContext);
-    console.log(`UserRole: ${userRole}`);  // Check the logged user role
-    const [renderKey, setRenderKey] = useState(0); // Used to force a rerender
-
-    useEffect(() => {
-        console.log("Current user role:", userRole); // Debug output to monitor changes
-        // Only force a rerender if certain conditions are met
-        if (authToken && userRole) {
-            setRenderKey(prev => prev + 1); // Increment key to force rerender
-        }
-    }, [authToken, userRole]);
-
-    if (!authToken) {
-        return <LoggedOutNav />;
-    }
-
-    return (
-        <div key={renderKey}>
-            {userRole === 'Manager' ? <ManagerNav /> : <CandidateNav />}
-        </div>
-    );
-}
-
-
 
 export default App;
