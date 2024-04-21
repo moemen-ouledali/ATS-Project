@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const jobApplicationSchema = new mongoose.Schema({
     jobID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'JobListing', // Corrected to your actual Job model name
+        ref: 'JobListing', // Assuming 'JobListing' is your job listing model name
         required: true
     },
     applicantID: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Assuming 'User' is your User model
+        ref: 'User', // Assuming 'User' is your user model name
         required: true
     },
     status: {
@@ -51,5 +51,7 @@ const jobApplicationSchema = new mongoose.Schema({
 });
 
 const JobApplication = mongoose.model('JobApplication', jobApplicationSchema);
+
+console.log('JobApplication model loaded:', JobApplication);
 
 module.exports = JobApplication;
