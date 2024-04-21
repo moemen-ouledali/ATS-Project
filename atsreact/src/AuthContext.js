@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useContext, useCallback, createContext  } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 
-export const AuthContext = createContext();
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    // Ensure initial state setup includes all necessary user details
     const [authDetails, setAuthDetails] = useState({
         authToken: localStorage.getItem('token'),
         userRole: localStorage.getItem('role'),
-        userId: localStorage.getItem('userId'), // Make sure this is correctly retrieved
+        userId: localStorage.getItem('userId'),
         userDetails: {
             fullName: localStorage.getItem('fullName') || '',
             email: localStorage.getItem('email') || '',
@@ -15,21 +14,8 @@ export const AuthProvider = ({ children }) => {
         }
     });
 
-    useEffect(() => {
-        const handleStorageChange = () => {
-            console.log("Local storage changed, updating AuthContext...");
-            updateAuthContextFromStorage();
-        };
-    
-        window.addEventListener('storage', handleStorageChange);
-    
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-        };
-    }, []);
-    
-    // It's also useful to ensure that the update function does not redefine itself on every render
     const updateAuthContextFromStorage = useCallback(() => {
+        console.log("Updating Auth Context from local storage...");
         setAuthDetails({
             authToken: localStorage.getItem('token'),
             userRole: localStorage.getItem('role'),
@@ -41,10 +27,15 @@ export const AuthProvider = ({ children }) => {
             }
         });
     }, []);
-    
+
+    useEffect(() => {
+        updateAuthContextFromStorage(); // Initial update from storage
+        const handleStorageChange = () => updateAuthContextFromStorage();
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, [updateAuthContextFromStorage]);
 
     const setTokenAndRole = (token, role, userId, fullName, email, phoneNumber) => {
-        console.log(`Setting credentials: userId = ${userId}`); // Ensure this logs the correct userId after login
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         localStorage.setItem('userId', userId);
@@ -62,11 +53,26 @@ export const AuthProvider = ({ children }) => {
                 phoneNumber: phoneNumber
             }
         });
+    
+        console.log("Updated Auth Details:", {
+            authToken: token,
+            userRole: role,
+            userId: userId,
+            userDetails: {
+                fullName: fullName,
+                email: email,
+                phoneNumber: phoneNumber
+            }
+        });
     };
+
+    useEffect(() => {
+        console.log("Current user details from AuthContext:", authDetails.userDetails);
+    }, [authDetails]);
+    
     
 
     const logout = () => {
-        console.log("User logged out, clearing local storage and AuthContext");
         localStorage.clear();
         setAuthDetails({
             authToken: null,
@@ -80,14 +86,8 @@ export const AuthProvider = ({ children }) => {
         });
     };
 
-    const authContextValue = {
-        ...authDetails,
-        setTokenAndRole,
-        logout
-    };
-
     return (
-        <AuthContext.Provider value={authContextValue}>
+        <AuthContext.Provider value={{ ...authDetails, setTokenAndRole, logout }}>
             {children}
         </AuthContext.Provider>
     );

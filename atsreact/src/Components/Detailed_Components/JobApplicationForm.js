@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext, } from 'react';
 
-import { TextField, Button, Typography, MenuItem, FormControl, Select, InputLabel, OutlinedInput, Input } from '@mui/material';
+import { TextField, Button, Typography, MenuItem, FormControl, Select, InputLabel, OutlinedInput, } from '@mui/material';
 import { AuthContext } from '../../AuthContext'; // Adjust the path if necessary
 import axios from 'axios'; // Ensure axios is imported for API requests
 
 const JobApplicationForm = ({ jobId }) => {
     const { userDetails } = useContext(AuthContext);
+    console.log("Current User Details:", userDetails); // Add this line to log userDetails
     const [application, setApplication] = useState({
         jobID: jobId,
         applicantID: userDetails.userId || '',
@@ -24,11 +25,12 @@ const JobApplicationForm = ({ jobId }) => {
         if (userDetails && userDetails.userId) {
             console.log("User details updated in form:", userDetails);
             setApplication(prev => ({
+
                 ...prev,
-                applicantID: userDetails.userId,
-                fullName: userDetails.fullName,
-                email: userDetails.email,
-                phoneNumber: userDetails.phoneNumber
+            applicantID: userDetails.userId,
+            fullName: userDetails.fullName,
+            email: userDetails.email,
+            phoneNumber: userDetails.phoneNumber
             }));
         } else {
             console.log("No userDetails found, check AuthContext or login state.");

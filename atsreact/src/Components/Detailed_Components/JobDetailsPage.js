@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Typography, Button, Alert } from '@mui/material';
+import { Typography, Button } from '@mui/material';
 import { AuthContext } from '../../AuthContext'; // Ensure the path is correct
 import JobApplicationForm from './JobApplicationForm'; // Import JobApplicationForm component
 
@@ -10,7 +10,10 @@ const JobDetailsPage = () => {
     const { userDetails } = useContext(AuthContext); // Use AuthContext to get userDetails
     const [jobDetails, setJobDetails] = useState({});
     const [showForm, setShowForm] = useState(false);
-    const [userAuthorized, setUserAuthorized] = useState(false);
+
+    useEffect(() => {
+        console.log("User Details on JobDetailsPage load:", userDetails);
+    }, [userDetails]);
 
     useEffect(() => {
         const fetchJobDetails = async () => {
@@ -24,42 +27,18 @@ const JobDetailsPage = () => {
         fetchJobDetails();
     }, [id]);
 
-    useEffect(() => {
-        // Check if userDetails are available and user is logged in
-        if (userDetails && userDetails.userId) {
-            setUserAuthorized(true);
-        } else {
-            setUserAuthorized(false);
-        }
-    }, [userDetails]);
-
-    const toggleFormVisibility = useCallback(() => {
-        if (userAuthorized) {
-            setShowForm(!showForm);
-        } else {
-            alert('You must be logged in to apply for a job.');
-        }
-    }, [userAuthorized, showForm]);
+    const toggleFormVisibility = () => setShowForm(!showForm);
 
     return (
         <div>
-            <Typography variant="h4" style={{ marginBottom: 20 }}>
-                Apply for {jobDetails.title || 'the position'}
-            </Typography>
-            <Typography variant="h6">
-                {jobDetails.description || 'No description available'}
-            </Typography>
-            <Button variant="contained" color="primary" onClick={toggleFormVisibility}>
-                Apply Now
-            </Button>
-            {showForm && (
-                <JobApplicationForm jobId={id} />
+            <Typography variant="h4" style={{ marginBottom: 20 }}>Apply for {jobDetails.title || 'the position'}</Typography>
+            <Typography variant="h6">{jobDetails.description || 'No description available'}</Typography>
+            {userDetails && userDetails.userId ? (
+                <Button variant="contained" color="primary" onClick={toggleFormVisibility}>Apply Now</Button>
+            ) : (
+                <Typography variant="body1" style={{ color: 'red', marginTop: '20px' }}>You need to log in to apply.</Typography>
             )}
-            {!userAuthorized && (
-                <Alert severity="error" style={{ marginTop: 20 }}>
-                    You need to log in to apply.
-                </Alert>
-            )}
+            {showForm && <JobApplicationForm jobId={id} />}
         </div>
     );
 };

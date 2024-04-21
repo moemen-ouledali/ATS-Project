@@ -1,7 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useContext, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider, AuthContext } from './AuthContext';
+import { AuthContext } from './AuthContext';
+import { AuthProvider } from './AuthContext';
+import ReactDOM from 'react-dom';
 import LoginForm from './Components/Authentication_Components/LoginForm';
 import RegisterForm from './Components/Authentication_Components/RegisterForm';
 import CandidateDashboard from './Components/Candidate_Components/CandidateDashboard';
@@ -45,16 +47,15 @@ function App() {
     return (
         <AuthProvider>
             <Router>
-                <DynamicNavigation />
                 <Routes>
+                    <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/register" element={<RegisterForm />} />
-                    <Route path="/job/:id" element={<JobDetailsPage />} />
                     <Route path="/candidate_dashboard" element={<CandidateDashboard />} />
                     <Route path="/hr_manager_dashboard" element={<HRManagerDashboard />} />
                     <Route path="/edit-profile" element={<EditProfileForm />} />
                     <Route path="/job-applicants/:jobId" element={<JobApplicants />} />
-                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/job/:id" element={<JobDetailsPage />} />
                     <Route path="/loggedoutnav" element={<LoggedOutNav />} />
                     <Route path="/card" element={<CardComponent />} />
                     <Route path="/jobs/:category" element={<JobListingsPage />} />
