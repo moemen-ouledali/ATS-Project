@@ -39,16 +39,15 @@ const JobDetailsPage = () => {
 
     useEffect(() => {
         console.log("Updating application form with userDetails:", userDetails);
-        if (userDetails.userId) {
-            setApplication(prev => ({
-                ...prev,
-                applicantID: userDetails.userId,
-                fullName: userDetails.fullName,
-                email: userDetails.email,
-                phoneNumber: userDetails.phoneNumber
-            }));
-        }
+        setApplication(prev => ({
+            ...prev,
+            applicantID: userDetails.userId || '',
+            fullName: userDetails.fullName || '',
+            email: userDetails.email || '',
+            phoneNumber: userDetails.phoneNumber || ''
+        }));
     }, [userDetails]);
+    
 
     const handleChange = (event) => {
         const { name, value, files } = event.target;
@@ -80,6 +79,7 @@ const JobDetailsPage = () => {
             alert('Failed to submit application. Check console for more information.');
         }
     };
+    
 
     const toggleFormVisibility = () => setShowForm(!showForm);
 
