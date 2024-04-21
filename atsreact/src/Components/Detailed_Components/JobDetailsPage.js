@@ -39,13 +39,15 @@ const JobDetailsPage = () => {
 
     useEffect(() => {
         console.log("Updating application form with userDetails:", userDetails);
-        setApplication(prev => ({
-            ...prev,
-            applicantID: userDetails.userId || '',
-            fullName: userDetails.fullName,
-            email: userDetails.email,
-            phoneNumber: userDetails.phoneNumber
-        }));
+        if (userDetails.userId) {
+            setApplication(prev => ({
+                ...prev,
+                applicantID: userDetails.userId,
+                fullName: userDetails.fullName,
+                email: userDetails.email,
+                phoneNumber: userDetails.phoneNumber
+            }));
+        }
     }, [userDetails]);
 
     const handleChange = (event) => {
@@ -62,7 +64,10 @@ const JobDetailsPage = () => {
             formData.append(key, application[key]);
         });
     
-        console.log("Form Data prepared for submission:", Object.fromEntries(formData.entries())); // Note: formData.entries() is not supported in all environments
+        // Log FormData contents for debugging
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
     
         try {
             const response = await axios.post('http://localhost:5000/api/jobapplications/apply', formData, {

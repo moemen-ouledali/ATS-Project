@@ -15,6 +15,9 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
     const resumeFile = req.file;
     console.log('Received application data:', req.body);  // Debug incoming form data
 
+    console.log('applicantID received:', applicantID); // Log to check the applicantID value
+
+
     try {
         let resumeText = '';
         if (resumeFile) {

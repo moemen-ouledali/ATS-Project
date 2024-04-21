@@ -18,16 +18,17 @@ const LoginForm = () => {
         email,
         password,
       });
-
+  
       if (response.data.token) {
-        // Assuming your response data includes fullName, email, phoneNumber along with token, role, and userId
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('role', response.data.role);
-        localStorage.setItem('userId', response.data.userId);
-        localStorage.setItem('fullName', response.data.fullName); // Store fullName
-        localStorage.setItem('email', response.data.email); // Store email
-        localStorage.setItem('phoneNumber', response.data.phoneNumber); // Store phoneNumber
-        setTokenAndRole(response.data.token, response.data.role, response.data.userId, response.data.fullName, response.data.email, response.data.phoneNumber);
+        // The setTokenAndRole function should handle setting local storage items.
+        setTokenAndRole(
+          response.data.token,
+          response.data.role,
+          response.data.userId,
+          response.data.fullName,
+          response.data.email,
+          response.data.phoneNumber
+        );
         navigate('/'); // Redirect to homepage or dashboard after login
       } else {
         setMessage("Login failed. Please try again.");
@@ -41,6 +42,7 @@ const LoginForm = () => {
       console.error("Login error:", error);
     }
   };
+  
 
   return (
     <section className="vh-100">

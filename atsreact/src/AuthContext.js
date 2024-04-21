@@ -1,84 +1,86 @@
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 
-export const AuthContext = createContext({
-    authToken: null,
-    userRole: null,
-    userId: null,
-    userDetails: {
-        fullName: '',
-        email: '',
-        phoneNumber: ''
-    },
-    setTokenAndRole: () => {},
-    logout: () => {},
-    updateAuthContextFromStorage: () => {}
-});
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [authToken, setAuthToken] = useState(localStorage.getItem('token'));
-    const [userRole, setUserRole] = useState(localStorage.getItem('role'));
-    const [userId, setUserId] = useState(localStorage.getItem('userId'));
-    const [userDetails, setUserDetails] = useState({
-        fullName: localStorage.getItem('fullName') || '',
-        email: localStorage.getItem('email') || '',
-        phoneNumber: localStorage.getItem('phoneNumber') || ''
-    });
-
-    const updateAuthContextFromStorage = useCallback(() => {
-        console.log("Updating Auth Context from local storage...");
-        setAuthToken(localStorage.getItem('token'));
-        setUserRole(localStorage.getItem('role'));
-        setUserId(localStorage.getItem('userId'));
-        setUserDetails({
+    const [authDetails, setAuthDetails] = useState({
+        authToken: localStorage.getItem('token'),
+        userRole: localStorage.getItem('role'),
+        userId: localStorage.getItem('userId'),
+        userDetails: {
             fullName: localStorage.getItem('fullName') || '',
             email: localStorage.getItem('email') || '',
             phoneNumber: localStorage.getItem('phoneNumber') || ''
-        });
-    }, [setAuthToken, setUserRole, setUserId, setUserDetails]); // Corrected dependency array
+        }
+    });
 
     useEffect(() => {
-        console.log('Checking storage update:');
-        updateAuthContextFromStorage(); // Initial update from storage
+        const updateAuthContextFromStorage = () => {
+            console.log("Updating AuthContext from localStorage...");
+            setAuthDetails({
+                authToken: localStorage.getItem('token'),
+                userRole: localStorage.getItem('role'),
+                userId: localStorage.getItem('userId'),
+                userDetails: {
+                    fullName: localStorage.getItem('fullName') || '',
+                    email: localStorage.getItem('email') || '',
+                    phoneNumber: localStorage.getItem('phoneNumber') || ''
+                }
+            });
+        };
+
+        // Initial update from storage
+        updateAuthContextFromStorage();
+
         // Listener for local storage changes
         window.addEventListener('storage', updateAuthContextFromStorage);
+
         // Cleanup listener on component unmount
         return () => {
             window.removeEventListener('storage', updateAuthContextFromStorage);
         };
-    }, [updateAuthContextFromStorage]);
+    }, []);
 
-    const setTokenAndRole = (token, role, id, fullName, email, phoneNumber) => {
-        console.log("Setting credentials and updating local storage with new data");
+    const setTokenAndRole = (token, role, userId, fullName, email, phoneNumber) => {
+        console.log(`Setting credentials: userId = ${userId}`); // Debug log for userId
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
-        localStorage.setItem('userId', id);
+        localStorage.setItem('userId', userId);
         localStorage.setItem('fullName', fullName);
         localStorage.setItem('email', email);
         localStorage.setItem('phoneNumber', phoneNumber);
-        updateAuthContextFromStorage(); // This triggers the context update
+
+        setAuthDetails({
+            authToken: token,
+            userRole: role,
+            userId: userId,
+            userDetails: {
+                fullName: fullName,
+                email: email,
+                phoneNumber: phoneNumber
+            }
+        });
     };
-    
+
     const logout = () => {
-        console.log("Logging out and clearing local storage");
+        console.log("User logged out, clearing local storage and AuthContext");
         localStorage.clear();
-        setAuthToken(null);
-        setUserRole(null);
-        setUserId(null);
-        setUserDetails({
-            fullName: '',
-            email: '',
-            phoneNumber: ''
+        setAuthDetails({
+            authToken: null,
+            userRole: null,
+            userId: null,
+            userDetails: {
+                fullName: '',
+                email: '',
+                phoneNumber: ''
+            }
         });
     };
 
     const authContextValue = {
-        authToken,
-        userRole,
-        userId,
-        userDetails,
+        ...authDetails,
         setTokenAndRole,
-        logout,
-        updateAuthContextFromStorage
+        logout
     };
 
     return (
