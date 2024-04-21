@@ -3,10 +3,11 @@ import React, { createContext, useState, useEffect } from 'react';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+    // Ensure initial state setup includes all necessary user details
     const [authDetails, setAuthDetails] = useState({
         authToken: localStorage.getItem('token'),
         userRole: localStorage.getItem('role'),
-        userId: localStorage.getItem('userId'),
+        userId: localStorage.getItem('userId'), // Make sure this is correctly retrieved
         userDetails: {
             fullName: localStorage.getItem('fullName') || '',
             email: localStorage.getItem('email') || '',
@@ -16,8 +17,8 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const updateAuthContextFromStorage = () => {
-            console.log("Updating AuthContext from localStorage...");
-            setAuthDetails({
+            setAuthDetails(current => ({
+                ...current,
                 authToken: localStorage.getItem('token'),
                 userRole: localStorage.getItem('role'),
                 userId: localStorage.getItem('userId'),
@@ -26,7 +27,7 @@ export const AuthProvider = ({ children }) => {
                     email: localStorage.getItem('email') || '',
                     phoneNumber: localStorage.getItem('phoneNumber') || ''
                 }
-            });
+            }));
         };
 
         // Initial update from storage

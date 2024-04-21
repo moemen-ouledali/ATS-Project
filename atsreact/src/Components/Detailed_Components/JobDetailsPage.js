@@ -7,19 +7,20 @@ import { AuthContext } from '../../AuthContext'; // Ensure the path is correct
 const JobDetailsPage = () => {
     const { id } = useParams(); // This is the jobID
     const { userDetails } = useContext(AuthContext);
+
     
     const [jobDetails, setJobDetails] = useState({});
     const [showForm, setShowForm] = useState(false);
     const [application, setApplication] = useState({
         jobID: id,
-        applicantID: userDetails.userId || '',
-        fullName: userDetails.fullName || '',
+        applicantID: userDetails ? userDetails.userId : '',
+        fullName: userDetails ? userDetails.fullName : '',
         age: '',
         educationLevel: '',
         experience: '',
         university: '',
-        email: userDetails.email || '',
-        phoneNumber: userDetails.phoneNumber || '',
+        email: userDetails ? userDetails.email : '',
+        phoneNumber: userDetails ? userDetails.phoneNumber : '',
         motivationLetter: '',
         resume: null
     });
@@ -39,13 +40,15 @@ const JobDetailsPage = () => {
 
     useEffect(() => {
         console.log("Updating application form with userDetails:", userDetails);
-        setApplication(prev => ({
-            ...prev,
-            applicantID: userDetails.userId || '',
-            fullName: userDetails.fullName || '',
-            email: userDetails.email || '',
-            phoneNumber: userDetails.phoneNumber || ''
-        }));
+        if (userDetails && userDetails.userId) {
+            setApplication(prev => ({
+                ...prev,
+                applicantID: userDetails.userId,
+                fullName: userDetails.fullName || '',
+                email: userDetails.email || '',
+                phoneNumber: userDetails.phoneNumber || ''
+            }));
+        }
     }, [userDetails]);
     
 
@@ -54,9 +57,12 @@ const JobDetailsPage = () => {
         setApplication(prev => ({ ...prev, [name]: value, resume: name === "resume" ? files[0] : prev.resume }));
     };
 
+
+    console.log("User Details on load:", userDetails);
+
     const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("Preparing to submit application with the following details:", application);
+        console.log("Submitting with applicantID:", application.applicantID); // Check this value
     
         const formData = new FormData();
         Object.keys(application).forEach(key => {
