@@ -1,9 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthContext } from './AuthContext';
-import { AuthProvider } from './AuthContext';
-import ReactDOM from 'react-dom';
+import { AuthProvider, AuthContext } from './AuthContext'; // Corrected import
 import LoginForm from './Components/Authentication_Components/LoginForm';
 import RegisterForm from './Components/Authentication_Components/RegisterForm';
 import CandidateDashboard from './Components/Candidate_Components/CandidateDashboard';
@@ -18,35 +16,15 @@ import CardComponent from './Components/LandingPage_Components/CardComponent';
 import JobListingsPage from './Components/Detailed_Components/JobListingsPage';
 import InternshipListings from './Components/Detailed_Components/InternshipListings';
 import AllJobs from './Components/Detailed_Components/AllJobs';
-import JobDetailsPage from './Components/Detailed_Components/JobDetailsPage';
+import JobApplicationForm from './Components/Detailed_Components/JobApplicationForm';
 
-function DynamicNavigation() {
-    const { authToken, userRole } = useContext(AuthContext);
-    const [renderKey, setRenderKey] = useState(0); // Used to force a rerender
 
-    useEffect(() => {
-        console.log(`AuthToken: ${authToken}, UserRole: ${userRole}`); // Debug output to monitor changes
-        if (authToken && userRole) {
-            setRenderKey(prev => prev + 1); // Increment key to force rerender
-        }
-    }, [authToken, userRole]);
-
-    if (!authToken) {
-        console.error('No auth token found or AuthContext is not available');
-        return <LoggedOutNav />;
-    }
-
-    return (
-        <div key={renderKey}>
-            {userRole === 'Manager' ? <ManagerNav /> : userRole === 'Candidate' ? <CandidateNav /> : <LoggedOutNav />}
-        </div>
-    );
-}
 
 function App() {
     return (
         <AuthProvider>
             <Router>
+                <DynamicNavigation />
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<LoginForm />} />
@@ -55,16 +33,36 @@ function App() {
                     <Route path="/hr_manager_dashboard" element={<HRManagerDashboard />} />
                     <Route path="/edit-profile" element={<EditProfileForm />} />
                     <Route path="/job-applicants/:jobId" element={<JobApplicants />} />
-                    <Route path="/job/:id" element={<JobDetailsPage />} />
                     <Route path="/loggedoutnav" element={<LoggedOutNav />} />
                     <Route path="/card" element={<CardComponent />} />
                     <Route path="/jobs/:category" element={<JobListingsPage />} />
                     <Route path="/internships" element={<InternshipListings />} />
                     <Route path="/all-jobs" element={<AllJobs />} />
+                    <Route path="/job/:id" element={<JobApplicationForm />} />
+
+
+
                 </Routes>
             </Router>
         </AuthProvider>
     );
+}
+
+function DynamicNavigation() {
+    const { authToken, userRole } = useContext(AuthContext);
+
+    if (!authToken) {
+        return <LoggedOutNav />;
+    }
+
+    switch (userRole) {
+        case 'Manager':
+            return <ManagerNav />;
+        case 'Candidate':
+            return <CandidateNav />;
+        default:
+            return <LoggedOutNav />;
+    }
 }
 
 export default App;
