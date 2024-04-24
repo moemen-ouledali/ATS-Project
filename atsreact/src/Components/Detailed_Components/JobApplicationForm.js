@@ -39,23 +39,28 @@ const JobApplicationForm = () => {
         e.preventDefault();
         const formData = new FormData();
         Object.keys(application).forEach(key => {
-            if (key === 'resume' && application[key] !== null) {
+            if (key === 'resume' && application[key]) {
                 formData.append(key, application[key], application[key].name);
             } else {
                 formData.append(key, application[key]);
             }
         });
         formData.append('jobId', id);
-
-        axios.post('http://localhost:5000/api/jobapplications', formData)
-            .then(response => {
-                alert('Application submitted successfully!');
-            })
-            .catch(error => {
-                console.error('Submission error:', error);
-                alert('Failed to submit application. Please try again.');
-            });
+    
+        axios.post('http://localhost:5000/api/jobapplications', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        .then(response => {
+            alert('Application submitted successfully!');
+        })
+        .catch(error => {
+            console.error('Submission error:', error);
+            alert('Failed to submit application. Please check the console for more details.');
+        });
     };
+    
 
     return (
         <div style={{ maxWidth: '600px', margin: 'auto', padding: '20px', boxShadow: '0 0 10px rgba(0,0,0,0.1)' }}>
