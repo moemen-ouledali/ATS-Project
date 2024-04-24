@@ -7,8 +7,7 @@ const PORT = process.env.PORT || 5000;
 // Import routes
 const authRoutes = require('./routes/auth');
 const jobListingsRoutes = require('./routes/jobListingsRoutes');
-const applicationsRoutes = require('./routes/applicationsRoutes');
-
+const jobApplicationsRoutes = require('./routes/jobApplicationsRoutes');
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/ats_database', {
@@ -25,8 +24,7 @@ app.use(express.json());
 // Use routes
 app.use('/auth', authRoutes);
 app.use('/api/jobs', jobListingsRoutes);
-app.use('/api', applicationsRoutes);
-
+app.use('/api/jobapplications', jobApplicationsRoutes);
 
 app.get('/', (req, res) => {
     res.send('Server is up and running');

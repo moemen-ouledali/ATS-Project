@@ -1,86 +1,101 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect, useContext, } from 'react';
 
-const JobApplicationForm = () => {
-    const { id } = useParams();
+import { TextField, Button, Typography, MenuItem, FormControl, Select, InputLabel, OutlinedInput, } from '@mui/material';
+import { AuthContext } from '../../AuthContext'; // Adjust the path if necessary
+import axios from 'axios'; // Ensure axios is imported for API requests
+
+const JobApplicationForm = ({ jobId }) => {
+    const { userDetails } = useContext(AuthContext);
+    console.log("Current User Details:", userDetails); // Add this line to log userDetails
     const [application, setApplication] = useState({
-        name: '',
-        email: '',
-        phone: '',
+        jobID: jobId,
+        applicantID: userDetails.userId || '',
+        fullName: userDetails.fullName || '',
+        email: userDetails.email || '',
+        phoneNumber: userDetails.phoneNumber || '',
+        age: '',
         educationLevel: '',
-        experienceLevel: '',
+        experience: '',
         university: '',
         motivationLetter: '',
-        resume: null,
+        resume: null
     });
 
-    // Handle input changes for text inputs and file input
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        if (name === 'resume') {
-            setApplication(prev => ({ ...prev, resume: files[0] }));
+    useEffect(() => {
+        if (userDetails && userDetails.userId) {
+            console.log("User details updated in form:", userDetails);
+            setApplication(prev => ({
+
+                ...prev,
+            applicantID: userDetails.userId,
+            fullName: userDetails.fullName,
+            email: userDetails.email,
+            phoneNumber: userDetails.phoneNumber
+            }));
         } else {
-            setApplication(prev => ({ ...prev, [name]: value }));
+            console.log("No userDetails found, check AuthContext or login state.");
         }
+    }, [userDetails]);
+    
+
+    const handleChange = (event) => {
+        const { name, value, files } = event.target;
+        setApplication(prev => ({ ...prev, [name]: value, resume: name === 'resume' ? files[0] : prev.resume }));
     };
 
-    // Handle form submission
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        console.log("Submitting application with the following details:", application);
+        
         const formData = new FormData();
         Object.keys(application).forEach(key => {
-            if (key === 'resume' && application[key] !== null) {
-                formData.append(key, application[key], application[key].name);
-            } else {
-                formData.append(key, application[key]);
-            }
+            formData.append(key, application[key]);
         });
-        formData.append('jobId', id);
-    
-        // Debugging: Log FormData values
-        for (let pair of formData.entries()) {
-            console.log(`${pair[0]}: ${pair[1]}`);
-        }
-    
-        axios.post('http://localhost:5000/api/apply', formData)
-        .then(response => {
+
+        try {
+            const response = await axios.post('http://localhost:5000/api/jobapplications/apply', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            console.log('Server Response:', response);
             alert('Application submitted successfully!');
-        })
-        .catch(error => {
-            console.error('Submission error:', error);
-            alert('Failed to submit application. Please try again.');
-        });
+        } catch (error) {
+            console.error('Failed to submit application:', error);
+            alert('Failed to submit application. Check console for more information.');
+        }
     };
 
     return (
         <div>
-            <h1>Apply for the Job</h1>
+            <Typography variant="h4" gutterBottom>Apply for a Job</Typography>
             <form onSubmit={handleSubmit}>
-                <label>Name: <input type="text" name="name" value={application.name} onChange={handleChange} /></label>
-                <label>Email: <input type="email" name="email" value={application.email} onChange={handleChange} /></label>
-                <label>Phone: <input type="text" name="phone" value={application.phone} onChange={handleChange} /></label>
-                <label>Education Level:
-                    <select name="educationLevel" value={application.educationLevel} onChange={handleChange}>
-                        <option value="">Select Education Level</option>
-                        <option value="licence">Licence</option>
-                        <option value="engineering">Engineering</option>
-                        <option value="doctorate">Doctorate</option>
-                    </select>
-                </label>
-                <label>Experience Level:
-                    <select name="experienceLevel" value={application.experienceLevel} onChange={handleChange}>
-                        <option value="">Select Experience Level</option>
-                        <option value="0 years">0 years</option>
-                        <option value="1-3 years">1-3 years</option>
-                        <option value="4-6 years">4-6 years</option>
-                        <option value="7+ years">7+ years</option>
-                    </select>
-                </label>
-                <label>University: <input type="text" name="university" value={application.university} onChange={handleChange} /></label>
-                <label>Motivation Letter: <textarea name="motivationLetter" value={application.motivationLetter} onChange={handleChange} /></label>
-                <label>Resume (PDF only): <input type="file" name="resume" onChange={handleChange} accept="application/pdf" /></label>
-                <button type="submit">Submit Application</button>
+                <TextField label="Full Name" name="fullName" value={application.fullName} fullWidth margin="normal" InputProps={{ readOnly: true }} />
+                <TextField label="Age" name="age" value={application.age} onChange={handleChange} fullWidth margin="normal" type="number" />
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Highest Level of Education</InputLabel>
+                    <Select name="educationLevel" value={application.educationLevel} onChange={handleChange} input={<OutlinedInput label="Highest Level of Education" />}>
+                        <MenuItem value="Baccalaureate">Baccalaureate</MenuItem>
+                        <MenuItem value="License">License</MenuItem>
+                        <MenuItem value="Engineering">Engineering</MenuItem>
+                    </Select>
+                </FormControl>
+                <FormControl fullWidth margin="normal">
+                    <InputLabel>Years of Professional Experience</InputLabel>
+                    <Select name="experience" value={application.experience} onChange={handleChange} input={<OutlinedInput label="Years of Professional Experience" />}>
+                        <MenuItem value="0">0</MenuItem>
+                        <MenuItem value="1-3">1-3</MenuItem>
+                        <MenuItem value="4-6">4-6</MenuItem>
+                        <MenuItem value="7+">7+</MenuItem>
+                    </Select>
+                </FormControl>
+                <TextField label="University" name="university" value={application.university} onChange={handleChange} fullWidth margin="normal" />
+                <TextField label="Email Address" name="email" value={application.email} fullWidth margin="normal" InputProps={{ readOnly: true }} />
+                <TextField label="Phone Number" name="phoneNumber" value={application.phoneNumber} onChange={handleChange} fullWidth margin="normal" />
+                <TextField label="Motivation Letter" name="motivationLetter" value={application.motivationLetter} onChange={handleChange} fullWidth margin="normal" multiline rows={4} />
+                <Button variant="contained" component="label" style={{ marginTop: 20, marginBottom: 20 }}>
+                    Upload Resume (PDF)
+                    <input type="file" name="resume" hidden accept=".pdf" onChange={handleChange} />
+                </Button>
+                <Button type="submit" variant="contained" color="primary" fullWidth>Submit Application</Button>
             </form>
         </div>
     );

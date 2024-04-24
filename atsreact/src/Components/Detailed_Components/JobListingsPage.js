@@ -52,29 +52,27 @@ const JobListingsPage = () => {
         jobListings.map((listing, index) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={listing._id}>
             <Card raised>
-            <CardActionArea component={RouterLink} to={`/job/${listing._id}`}>
-  <CardMedia
-    component="img"
-    alt={listing.title}
-    height="140"
-    image={shuffledImages[index % shuffledImages.length]}
-  />
-  <CardContent>
-    <Typography gutterBottom variant="h5" component="h2">
-      {listing.title}
-    </Typography>
-    <Typography variant="body2" color="textSecondary" component="p">
-      {listing.description}
-    </Typography>
-  </CardContent>
-</CardActionArea>
-<CardActions>
-<Button size="small" color="primary" component={RouterLink} to={`/job/${listing._id}`}>
-  Apply Now
-</Button>
-</CardActions>
-
-
+              <CardActionArea component={RouterLink} to={`/job/${listing._id}`}>
+                <CardMedia
+                  component="img"
+                  alt={listing.title}
+                  height="140"
+                  image={shuffledImages[index % shuffledImages.length]}
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {listing.title}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" component="p">
+                    {listing.description}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+              <CardActions>
+                <Button size="small" color="primary" component={RouterLink} to={`/job/${listing._id}`}>
+                  Learn More
+                </Button>
+              </CardActions>
             </Card>
           </Grid>
         ))
