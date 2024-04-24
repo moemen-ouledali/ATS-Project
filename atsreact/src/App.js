@@ -1,8 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useContext, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthContext } from './AuthContext';
-import { AuthProvider } from './AuthContext';
+import { AuthProvider, AuthContext } from './AuthContext';
 import ReactDOM from 'react-dom';
 import LoginForm from './Components/Authentication_Components/LoginForm';
 import RegisterForm from './Components/Authentication_Components/RegisterForm';
@@ -18,7 +17,7 @@ import CardComponent from './Components/LandingPage_Components/CardComponent';
 import JobListingsPage from './Components/Detailed_Components/JobListingsPage';
 import InternshipListings from './Components/Detailed_Components/InternshipListings';
 import AllJobs from './Components/Detailed_Components/AllJobs';
-import JobDetailsPage from './Components/Detailed_Components/JobDetailsPage';
+import JobApplicationForm from './Components/Detailed_Components/JobApplicationForm'; // Assuming you have this component
 
 function DynamicNavigation() {
     const { authToken, userRole } = useContext(AuthContext);
@@ -47,6 +46,7 @@ function App() {
     return (
         <AuthProvider>
             <Router>
+                <DynamicNavigation />
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<LoginForm />} />
@@ -55,7 +55,7 @@ function App() {
                     <Route path="/hr_manager_dashboard" element={<HRManagerDashboard />} />
                     <Route path="/edit-profile" element={<EditProfileForm />} />
                     <Route path="/job-applicants/:jobId" element={<JobApplicants />} />
-                    <Route path="/job/:id" element={<JobDetailsPage />} />
+                    <Route path="/job/:id" element={<JobApplicationForm />} />
                     <Route path="/loggedoutnav" element={<LoggedOutNav />} />
                     <Route path="/card" element={<CardComponent />} />
                     <Route path="/jobs/:category" element={<JobListingsPage />} />

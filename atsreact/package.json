@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
+    "express-fileupload": "^1.5.0",
     "framer-motion": "^11.0.24",
     "iconsax-react": "^0.0.8",
     "jsonwebtoken": "^9.0.2",
