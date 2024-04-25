@@ -53,6 +53,7 @@ const JobListingsPage = () => {
           <Grid item xs={12} sm={6} md={4} lg={3} key={listing._id}>
             <Card raised>
             <CardActionArea component={RouterLink} to={`/job/${listing._id}`}>
+
   <CardMedia
     component="img"
     alt={listing.title}

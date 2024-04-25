@@ -1,10 +1,10 @@
 {
   "name": "ats",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -41,14 +41,16 @@
     "apexcharts": "^3.40.0",
     "autosuggest-highlight": "^3.3.4",
     "axios": "^1.4.0",
+    "busboy": "^1.6.0",
     "chance": "^1.1.11",
+    "connect-busboy": "^1.0.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
     "currency.js": "^2.0.4",
     "date-fns": "^2.30.0",
     "draft-js": "^0.11.7",
     "emoji-picker-react": "^4.4.9",
-    "express": "^4.18.3",
+    "express": "^4.19.2",
     "express-fileupload": "^1.5.0",
     "firebase": "^9.22.1",
     "formik": "^2.2.9",
@@ -60,10 +62,11 @@
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.21",
     "match-sorter": "^6.3.1",
-    "mongoose": "^8.2.3",
+    "mongoose": "^8.3.2",
     "multer": "^1.4.5-lts.1",
     "notistack": "^3.0.1",
     "pdf-parse": "^1.1.1",
     "prop-types": "^15.8.1"
-  }
+  },
+  "description": ""
 }
