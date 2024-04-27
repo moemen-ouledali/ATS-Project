@@ -16,6 +16,7 @@ import CardComponent from './Components/LandingPage_Components/CardComponent';
 import JobListingsPage from './Components/Detailed_Components/JobListingsPage';
 import InternshipListings from './Components/Detailed_Components/InternshipListings';
 import AllJobs from './Components/Detailed_Components/AllJobs';
+import JobApplicationForm from './Components/Detailed_Components/JobApplicationForm';
 
 
 
@@ -37,6 +38,7 @@ function App() {
                     <Route path="/jobs/:category" element={<JobListingsPage />} />
                     <Route path="/internships" element={<InternshipListings />} />
                     <Route path="/all-jobs" element={<AllJobs />} />
+                    <Route path="/job/:id" element={<JobApplicationForm />} />
 
 
 
