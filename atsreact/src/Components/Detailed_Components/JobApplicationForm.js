@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { AuthContext } from '../../AuthContext'; // Adjust the import path as necessary
 
 const JobApplicationForm = () => {
-    const { id } = useParams();
+    const { id } = useParams(); // Job ID from URL parameters
+    const { userDetails } = useContext(AuthContext); // User details from context
+
     const [application, setApplication] = useState({
-        name: '',
-        email: '',
-        phone: '',
+        name: userDetails.fullName || '',
+        email: userDetails.email || '',
+        phone: userDetails.phoneNumber || '',
         educationLevel: '',
         experienceLevel: '',
         university: '',
@@ -18,6 +21,7 @@ const JobApplicationForm = () => {
     const [jobDetails, setJobDetails] = useState(null);
 
     useEffect(() => {
+        // Fetch job details
         axios.get(`http://localhost:5000/api/jobs/${id}`)
             .then(response => {
                 setJobDetails(response.data);
@@ -82,7 +86,7 @@ const JobApplicationForm = () => {
             ) : (
                 <p>Loading job details...</p>
             )}
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <input type="text" name="name" value={application.name} onChange={handleChange} placeholder="Your Name" required />
                 <input type="email" name="email" value={application.email} onChange={handleChange} placeholder="Your Email" required />
                 <input type="text" name="phone" value={application.phone} onChange={handleChange} placeholder="Your Phone Number" required />
@@ -102,7 +106,7 @@ const JobApplicationForm = () => {
                 <input type="text" name="university" value={application.university} onChange={handleChange} placeholder="Your University" />
                 <textarea name="motivationLetter" value={application.motivationLetter} onChange={handleChange} placeholder="Your Motivation Letter" required />
                 <input type="file" name="resume" onChange={handleChange} accept="application/pdf" required />
-                <button type="submit" style={{ width: '100%', padding: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+                <button type="submit" style={{ padding: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
                     Submit Application
                 </button>
             </form>

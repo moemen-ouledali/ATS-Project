@@ -1,110 +1,83 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { AuthContext } from '../../AuthContext'; // Make sure the path to AuthContext is correct
 
 const EditProfileForm = () => {
-    const userId = localStorage.getItem('userId');
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [message, setMessage] = useState('');
-    const [isEditing, setIsEditing] = useState({
-        username: false,
-        email: false,
-        password: false,
+    const { userId, authToken } = useContext(AuthContext); // Using userId and authToken from AuthContext
+    const [userDetails, setUserDetails] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        city: '',
+        dateOfBirth: '',
+        highestEducationLevel: '',
     });
 
     useEffect(() => {
-        if (userId) {
-            console.log(`Attempting to fetch details for userId: ${userId}`); // Log the userId being used
-            const fetchUserDetails = async () => {
-                try {
-                    const response = await axios.get(`http://localhost:5000/auth/user/${userId}`);
-                    console.log('User details fetched:', response.data); // Log the fetched data
-                    setUsername(response.data.username);
-                    setEmail(response.data.email);
-                } catch (error) {
-                    console.error('Failed to fetch user details:', error);
-                    setMessage('Failed to load user details. Please try again.');
-                }
-            };
-            fetchUserDetails();
-        } else {
-            setMessage('No user ID found. Please log in again.');
-        }
-    }, [userId]);
+        const fetchUserDetails = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/auth/user/${userId}`, {
+                    headers: { Authorization: `Bearer ${authToken}` }
+                });
+                setUserDetails({
+                    firstName: response.data.firstName,
+                    lastName: response.data.lastName,
+                    email: response.data.email,
+                    phoneNumber: response.data.phoneNumber,
+                    city: response.data.city,
+                    dateOfBirth: response.data.dateOfBirth.split('T')[0], // Assuming date comes in ISO format
+                    highestEducationLevel: response.data.highestEducationLevel
+                });
+            } catch (error) {
+                console.error('Failed to fetch user details:', error);
+                alert('Failed to load your profile data.');
+            }
+        };
 
-    const toggleEdit = (field) => {
-        setIsEditing(prev => ({ ...prev, [field]: !prev[field] }));
+        fetchUserDetails();
+    }, [userId, authToken]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setUserDetails(prevDetails => ({
+            ...prevDetails,
+            [name]: value
+        }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        if (!userId) {
-            setMessage('No user ID found. Please log in again.');
-            return;
-        }
-        try {
-            const payload = {
-                username: isEditing.username ? username : undefined,
-                email: isEditing.email ? email : undefined,
-                password: isEditing.password ? password : undefined
-            };
-            const response = await axios.put(`http://localhost:5000/auth/user/${userId}`, payload);
-            if (response.data) {
-                setMessage('Profile updated successfully.');
-                setIsEditing({
-                    username: false,
-                    email: false,
-                    password: false,
-                });
-            } else {
-                setMessage('Profile updated, but no message received from the server.');
-            }
-        } catch (error) {
+        axios.put(`http://localhost:5000/auth/user/${userId}`, userDetails, {
+            headers: { Authorization: `Bearer ${authToken}` }
+        })
+        .then(response => {
+            alert('Profile updated successfully!');
+        })
+        .catch(error => {
             console.error('Error updating profile:', error);
-            setMessage('Error updating profile. Please try again.');
-        }
+            alert('Failed to update profile.');
+        });
     };
 
     return (
-        <div>
-            <h2>Edit Profile</h2>
-            {message && <p>{message}</p>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="username">Username:</label>
-                    <input
-                        type="text"
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        disabled={!isEditing.username}
-                    />
-                    <button type="button" onClick={() => toggleEdit('username')}>Edit</button>
-                </div>
-                <div>
-                    <label htmlFor="email">Email:</label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        disabled={!isEditing.email}
-                    />
-                    <button type="button" onClick={() => toggleEdit('email')}>Edit</button>
-                </div>
-                <div>
-                    <label htmlFor="password">New Password (leave blank if unchanged):</label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        disabled={!isEditing.password}
-                    />
-                    <button type="button" onClick={() => toggleEdit('password')}>Edit</button>
-                </div>
-                <button type="submit">Save Changes</button>
+        <div style={{ maxWidth: '600px', margin: 'auto', padding: '20px', boxShadow: '0 0 10px rgba(0,0,0,0.1)' }}>
+            <h1>Edit Your Profile</h1>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <input type="text" name="firstName" value={userDetails.firstName} onChange={handleChange} placeholder="First Name" required />
+                <input type="text" name="lastName" value={userDetails.lastName} onChange={handleChange} placeholder="Last Name" required />
+                <input type="email" name="email" value={userDetails.email} onChange={handleChange} placeholder="Email" required />
+                <input type="text" name="phoneNumber" value={userDetails.phoneNumber} onChange={handleChange} placeholder="Phone Number" required />
+                <input type="text" name="city" value={userDetails.city} onChange={handleChange} placeholder="City" required />
+                <input type="date" name="dateOfBirth" value={userDetails.dateOfBirth} onChange={handleChange} required />
+                <select name="highestEducationLevel" value={userDetails.highestEducationLevel} onChange={handleChange} required>
+                    <option value="Baccalaureate">Baccalaureate</option>
+                    <option value="Licence">Licence</option>
+                    <option value="Engineering">Engineering</option>
+                </select>
+                <button type="submit" style={{ padding: '10px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+                    Update Profile
+                </button>
             </form>
         </div>
     );

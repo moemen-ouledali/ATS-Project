@@ -60,4 +60,32 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
     });
 });
 
+
+
+// GET all applications for the current user
+router.get('/applications', async (req, res) => {
+    try {
+        // Assuming you have some way to extract userId from the JWT token
+        const userId = req.user.id; // This line depends on your JWT setup
+        const applications = await Application.find({ userId: userId });
+        res.json(applications);
+    } catch (error) {
+        console.error('Failed to fetch applications:', error);
+        res.status(500).send('Error fetching applications');
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = router;

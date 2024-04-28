@@ -3,10 +3,9 @@ const router = express.Router();
 const User = require('../models/User');
 const jwt = require('jsonwebtoken'); // Import jsonwebtoken
 
-// It's better to keep your secrets outside your codebase
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_here'; // Use environment variable for JWT secret
 
-// POST /register - Register a new user
+// POST /auth/register - Register a new user
 router.post('/register', async (req, res) => {
     const { role, firstName, lastName, email, dateOfBirth, password, phoneNumber, city, highestEducationLevel } = req.body;
 
@@ -36,28 +35,26 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// POST /login - Log in a user and return JWT
+// POST /auth/login - Log in a user and return JWT
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ email });
-        if (!user || password !== user.password) { // This should ideally be a hashed password check
+        if (!user || password !== user.password) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        // Generate a token
         const token = jwt.sign(
             { userId: user._id, role: user.role },
             JWT_SECRET,
             { expiresIn: '1h' }
         );
 
-        // Include additional user details in the response
         res.json({
             token,
             role: user.role,
             userId: user._id.toString(),
-            fullName: `${user.firstName} ${user.lastName}`, // Combining first and last name
+            fullName: `${user.firstName} ${user.lastName}`,
             email: user.email,
             phoneNumber: user.phoneNumber
         });
@@ -67,7 +64,46 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Other routes (GET /user/:id, PUT /user/:id) should also be updated to handle user details appropriately
-// Ensure you replace this comment with your existing GET and PUT handlers if they are used in your application.
+// GET /auth/user/:id - Get a specific user by ID
+router.get('/user/:id', async (req, res) => {
+    console.log("Fetching user with ID:", req.params.id);  // This will log the ID being queried
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            console.log("No user found with ID:", req.params.id);
+            return res.status(404).send('User not found');
+        }
+        res.json(user);
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).send('Internal server error');
+    }
+});
+
+
+// PUT /auth/user/:id - Update a specific user by ID
+router.put('/user/:id', async (req, res) => {
+    const { firstName, lastName, email, dateOfBirth, phoneNumber, city, highestEducationLevel } = req.body;
+    try {
+        const user = await User.findByIdAndUpdate(req.params.id, {
+            firstName,
+            lastName,
+            email,
+            dateOfBirth,
+            phoneNumber,
+            city,
+            highestEducationLevel
+        }, { new: true });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({ message: "User updated successfully", user });
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
 
 module.exports = router;
