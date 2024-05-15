@@ -1,62 +1,57 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
-const path = require('path');
 const Application = require('../models/Application');
+const formidable = require('formidable');
 const fs = require('fs');
-const pdf = require('pdf-parse');
+const path = require('path');
 
-// Set up storage engine
-const storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, 'uploads/') // Ensure this folder exists
-    },
-    filename: function(req, file, cb) {
-        cb(null, file.originalname) // Using original file name
-    }
-});
+// Ensure the uploads directory exists
+const uploadDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
-const upload = multer({ storage: storage });
+router.post('/apply', (req, res) => {
+    const form = new formidable.IncomingForm();
+    form.uploadDir = uploadDir; // Temporary directory to store files
+    form.keepExtensions = true; // Include the extensions of the files
+    form.parse(req, async (err, fields, files) => {
+        if (err) {
+            console.error('Error handling form submission:', err);
+            return res.status(500).send('Server error while processing upload');
+        }
 
-router.post('/apply', upload.single('resume'), async (req, res) => {
-    const { name, email, phone, educationLevel, experienceLevel, university, motivationLetter, jobId } = req.body;
-    const file = req.file;
+        console.log('Fields:', fields);
+        console.log('Received files:', files);
 
-    if (!file) {
-        return res.status(400).send('No resume file uploaded.');
-    }
+        // Ensure the 'resume' field is accessed correctly
+        const resumeFile = files.resume;
 
-    // Read the PDF file and extract text
-    let dataBuffer = fs.readFileSync(file.path);
+        if (!resumeFile) {
+            return res.status(400).send('No resume file uploaded.');
+        }
 
-    pdf(dataBuffer).then(function(data) {
-        // `data.text` is the extracted text from the PDF
-        const resumeText = data.text;
+        const filePath = resumeFile.filepath;
 
-        const applicationData = {
-            name,
-            email,
-            phone,
-            educationLevel,
-            experienceLevel,
-            university,
-            motivationLetter,
-            jobId,
-            resumePath: file.path,
-            resumeText: resumeText // Storing extracted text in the database
-        };
+        try {
+            // Read the file as binary data
+            const fileContent = fs.readFileSync(filePath);
 
-        const application = new Application(applicationData);
+            // Create a new application object
+            const applicationData = {
+                ...fields,
+                resumePath: filePath,
+                resumeText: fileContent.toString('utf8') // Convert Buffer to string if needed
+            };
 
-        application.save()
-            .then(() => res.json({ message: 'Application and file saved successfully', data: application }))
-            .catch(error => {
-                console.error('Error saving the application:', error);
-                res.status(500).send('Error processing application');
-            });
-    }).catch(error => {
-        console.error('Error reading the PDF file:', error);
-        res.status(500).send('Error extracting text from resume');
+            const application = new Application(applicationData);
+            await application.save();
+
+            res.json({ message: 'Application and file saved successfully', data: application });
+        } catch (fileReadError) {
+            console.error('Error reading the file:', fileReadError);
+            return res.status(500).send('Error reading the resume file');
+        }
     });
 });
 
