@@ -45,7 +45,7 @@ router.post('/login', async (req, res) => {
         }
 
         const token = jwt.sign(
-            { userId: user._id, role: user.role },
+            { userId: user._id, email: user.email, role: user.role },
             JWT_SECRET,
             { expiresIn: '1h' }
         );
@@ -64,6 +64,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
+
 // GET /auth/user/:id - Get a specific user by ID
 router.get('/user/:id', async (req, res) => {
     console.log("Fetching user with ID:", req.params.id);  // This will log the ID being queried
@@ -79,6 +80,7 @@ router.get('/user/:id', async (req, res) => {
         res.status(500).send('Internal server error');
     }
 });
+
 
 
 // PUT /auth/user/:id - Update a specific user by ID

@@ -1,68 +1,95 @@
+// atsbackend/routes/applicationRoutes.js
+
 const express = require('express');
 const router = express.Router();
-const Application = require('../models/Application');
-const formidable = require('formidable');
-const fs = require('fs');
+const multer = require('multer');
 const path = require('path');
+const Application = require('../models/Application');
+const JobListing = require('../models/JobListing');
+const fs = require('fs');
+const pdf = require('pdf-parse');
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_here';
 
-// Ensure the uploads directory exists
-const uploadDir = path.join(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+// Middleware to authenticate token
+const requireAuth = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (token) {
+        jwt.verify(token, JWT_SECRET, (err, decoded) => {
+            if (err) {
+                return res.status(401).json({ message: 'Authentication failed' });
+            } else {
+                req.user = decoded;
+                next();
+            }
+        });
+    } else {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+};
 
-router.post('/apply', (req, res) => {
-    const form = new formidable.IncomingForm();
-    form.uploadDir = uploadDir; // Temporary directory to store files
-    form.keepExtensions = true; // Include the extensions of the files
-    form.parse(req, async (err, fields, files) => {
-        if (err) {
-            console.error('Error handling form submission:', err);
-            return res.status(500).send('Server error while processing upload');
-        }
+// Set up storage engine
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/') // Ensure this folder exists
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname) // Using original file name
+    }
+});
 
-        console.log('Fields:', fields);
-        console.log('Received files:', files);
+const upload = multer({ storage: storage });
 
-        // Ensure the 'resume' field is accessed correctly
-        const resumeFile = files.resume;
+router.post('/apply', requireAuth, upload.single('resume'), async (req, res) => {
+    const { name, email, phone, educationLevel, experienceLevel, university, motivationLetter, jobId } = req.body;
+    const file = req.file;
 
-        if (!resumeFile) {
-            return res.status(400).send('No resume file uploaded.');
-        }
+    if (!file) {
+        return res.status(400).send('No resume file uploaded.');
+    }
 
-        const filePath = resumeFile.filepath;
+    // Read the PDF file and extract text
+    let dataBuffer = fs.readFileSync(file.path);
 
-        try {
-            // Read the file as binary data
-            const fileContent = fs.readFileSync(filePath);
+    pdf(dataBuffer).then(function (data) {
+        // `data.text` is the extracted text from the PDF
+        const resumeText = data.text;
 
-            // Create a new application object
-            const applicationData = {
-                ...fields,
-                resumePath: filePath,
-                resumeText: fileContent.toString('utf8') // Convert Buffer to string if needed
-            };
+        const applicationData = {
+            name,
+            email,
+            phone,
+            educationLevel,
+            experienceLevel,
+            university,
+            motivationLetter,
+            jobId,
+            resumePath: file.path,
+            resumeText: resumeText, // Storing extracted text in the database
+            status: 'in review'
+        };
 
-            const application = new Application(applicationData);
-            await application.save();
+        const application = new Application(applicationData);
 
-            res.json({ message: 'Application and file saved successfully', data: application });
-        } catch (fileReadError) {
-            console.error('Error reading the file:', fileReadError);
-            return res.status(500).send('Error reading the resume file');
-        }
+        application.save()
+            .then(() => res.json({ message: 'Application and file saved successfully', data: application }))
+            .catch(error => {
+                console.error('Error saving the application:', error);
+                res.status(500).send('Error processing application');
+            });
+    }).catch(error => {
+        console.error('Error reading the PDF file:', error);
+        res.status(500).send('Error extracting text from resume');
     });
 });
 
-
-
-// GET all applications for the current user
-router.get('/applications', async (req, res) => {
+// GET all applications for the current user by email
+router.get('/', requireAuth, async (req, res) => {
     try {
-        // Assuming you have some way to extract userId from the JWT token
-        const userId = req.user.id; // This line depends on your JWT setup
-        const applications = await Application.find({ userId: userId });
+        const email = req.user.email;
+        console.log(`Fetching applications for user with email: ${email}`);
+        const applications = await Application.find({ email: email }).populate('jobId');
+        console.log(`Applications found: ${applications.length}`);
         res.json(applications);
     } catch (error) {
         console.error('Failed to fetch applications:', error);
@@ -70,17 +97,18 @@ router.get('/applications', async (req, res) => {
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
+// GET a single application by ID
+router.get('/:id', requireAuth, async (req, res) => {
+    try {
+        const application = await Application.findById(req.params.id).populate('jobId');
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+        res.json(application);
+    } catch (error) {
+        console.error('Failed to fetch application:', error);
+        res.status(500).send('Error fetching application');
+    }
+});
 
 module.exports = router;

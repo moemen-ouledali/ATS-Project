@@ -5,7 +5,7 @@ import { AuthContext } from '../../AuthContext'; // Adjust the import path as ne
 
 const JobApplicationForm = () => {
     const { id } = useParams(); // Job ID from URL parameters
-    const { userDetails } = useContext(AuthContext); // User details from context
+    const { userDetails, authToken } = useContext(AuthContext); // User details from context
 
     const [application, setApplication] = useState({
         name: userDetails.fullName || '',
@@ -56,6 +56,7 @@ const JobApplicationForm = () => {
         axios.post('http://localhost:5000/api/applications/apply', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${authToken}`
             }
         })
         .then(response => {
