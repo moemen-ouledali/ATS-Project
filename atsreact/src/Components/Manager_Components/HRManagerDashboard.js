@@ -1,6 +1,8 @@
+// src/Components/Manager_Components/HRManagerDashboard.js
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import AddJobListing from './AddJobListing';
+import AddJobListingModal from './AddJobListingModal';
 import EditJobListing from './EditJobListing';
 import ToastNotification from '../Extra_Components/ToastNotification';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +13,7 @@ const HRManagerDashboard = () => {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [applications, setApplications] = useState([]);
+    const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -65,23 +68,12 @@ const HRManagerDashboard = () => {
         navigate(`/job-applicants/${jobId}`);
     };
 
-    const fetchAllApplications = async () => {
-        try {
-            const response = await axios.get('http://localhost:5000/api/jobapplications/all-details');
-            setApplications(response.data);
-        } catch (error) {
-            console.error('Failed to fetch applications:', error);
-        }
+    const showAllApplications = () => {
+        navigate('/all-applications');
     };
 
-    const fetchAllApplicants = async () => {
-        try {
-            const response = await axios.get('http://localhost:5000/api/jobapplications/all');
-            console.log(response.data); // Log all applicants to the console
-        } catch (error) {
-            console.error('Failed to fetch all applicants:', error);
-        }
-    };
+    const handleShowModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
 
     const style = {
         container: { padding: '20px' },
@@ -96,16 +88,9 @@ const HRManagerDashboard = () => {
     return (
         <div style={style.container}>
             <h2>Welcome HR Manager</h2>
-            <button style={style.button} onClick={fetchAllApplications}>Show All Applications</button>
-            <AddJobListing fetchJobListings={fetchJobListings} />
-            {applications.length > 0 && applications.map((app, index) => (
-                <div key={index}>
-                    <p>Applicant: {app.applicantId.username} (Email: {app.applicantId.email})</p>
-                    <p>Applied for: {app.jobId.title} at {app.jobId.company}</p>
-                    <p>Resume Text: {app.resumeText}</p>
-                    <hr />
-                </div>
-            ))}
+            <button style={style.button} onClick={showAllApplications}>Show All Applications</button>
+            <button style={style.button} onClick={handleShowModal}>Add Job Listing</button>
+            <AddJobListingModal show={showModal} handleClose={handleCloseModal} fetchJobListings={fetchJobListings} />
             {jobListings.map((listing) => (
                 <div key={listing._id} style={style.jobListing}>
                     {editingId === listing._id ? (

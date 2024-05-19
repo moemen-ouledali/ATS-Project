@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+
 import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './AuthContext'; // Corrected import
@@ -18,6 +19,9 @@ import JobListingsPage from './Components/Detailed_Components/JobListingsPage';
 import InternshipListings from './Components/Detailed_Components/InternshipListings';
 import AllJobs from './Components/Detailed_Components/AllJobs';
 import JobApplicationForm from './Components/Detailed_Components/JobApplicationForm';
+import AllApplications from './Components/Manager_Components/AllApplications'; // Import the new component
+
+
 
 function DynamicNavigation() {
     const { authToken, userRole } = useContext(AuthContext);
@@ -55,6 +59,8 @@ function App() {
                     <Route path="/internships" element={<InternshipListings />} />
                     <Route path="/all-jobs" element={<AllJobs />} />
                     <Route path="/job/:id" element={<JobApplicationForm />} />
+                    <Route path="/all-applications" element={<AllApplications />} /> {/* Add this line */}
+
                 </Routes>
             </Router>
         </AuthProvider>

@@ -1,15 +1,13 @@
-// atsreact/src/Components/Candidate_Components/CandidateDashboard.js
-
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../AuthContext'; // Adjust the path as necessary
-import { useNavigate } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
 
 const CandidateDashboard = () => {
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const navigate = useNavigate();
+    const [selectedApplication, setSelectedApplication] = useState(null);
 
     // Accessing the AuthContext to get the authToken and user email
     const { authToken, userDetails } = useContext(AuthContext);
@@ -41,36 +39,67 @@ const CandidateDashboard = () => {
         fetchApplications();
     }, [fetchApplications]);
 
-    // Function to render applications
-    function renderApplications() {
-        if (applications.length === 0) {
-            return <p>No applications found.</p>;
-        }
+    // Function to show application details
+    const showApplicationDetails = (application) => {
+        setSelectedApplication(application);
+    };
 
-        return (
-            <ul>
-                {applications.map(app => (
-                    <li key={app._id}>
-                        <h2>{app.jobId.title} - {app.status}</h2>
-                        <p>Company: {app.jobId.company}</p>
-                        <p>Date Applied: {new Date(app.createdAt).toLocaleDateString()}</p>
-                        <p>Status: {app.status}</p>
-                        <button onClick={() => navigate(`/application/${app._id}`)}>View Details</button>
-                    </li>
-                ))}
-            </ul>
-        );
-    }
+    // Function to close application details
+    const closeApplicationDetails = () => {
+        setSelectedApplication(null);
+    };
+
+    const style = {
+        container: { padding: '20px' },
+        applicant: { border: '1px solid #ccc', borderRadius: '8px', padding: '10px', marginBottom: '10px' },
+        button: { marginRight: '10px', padding: '8px 12px', cursor: 'pointer' },
+        detailsButton: { backgroundColor: 'lightblue' },
+    };
 
     return (
-        <div style={{ padding: '20px' }}>
-            <h1>Your Applications</h1>
+        <div style={style.container}>
+            <h2>Your Applications</h2>
             {loading ? (
                 <p>Loading applications...</p>
             ) : error ? (
                 <p>{error}</p>
             ) : (
-                renderApplications()
+                applications.length === 0 ? (
+                    <p>No applications found.</p>
+                ) : (
+                    applications.map(app => (
+                        <div key={app._id} style={style.applicant}>
+                            <p><strong>Job:</strong> {app.jobId.title}</p>
+                            <p><strong>Date Applied:</strong> {new Date(app.createdAt).toLocaleDateString()} at {new Date(app.createdAt).toLocaleTimeString()}</p>
+                            <p><strong>Education Level:</strong> {app.educationLevel}</p>
+                            <p><strong>Experience Level:</strong> {app.experienceLevel}</p>
+                            <p><strong>Status:</strong> {app.status}</p>
+                            <Button style={style.detailsButton} onClick={() => showApplicationDetails(app)}>View Details</Button>
+                        </div>
+                    ))
+                )
+            )}
+
+            {selectedApplication && (
+                <Modal show onHide={closeApplicationDetails}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Application Details</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <p><strong>Name:</strong> {selectedApplication.name}</p>
+                        <p><strong>Email:</strong> {selectedApplication.email}</p>
+                        <p><strong>Phone:</strong> {selectedApplication.phone}</p>
+                        <p><strong>Education Level:</strong> {selectedApplication.educationLevel}</p>
+                        <p><strong>Experience Level:</strong> {selectedApplication.experienceLevel}</p>
+                        <p><strong>University:</strong> {selectedApplication.university}</p>
+                        <p><strong>Motivation Letter:</strong> {selectedApplication.motivationLetter}</p>
+                        <p><strong>Resume:</strong> <a href={`http://localhost:5000/${selectedApplication.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></p>
+                        <p><strong>Status:</strong> {selectedApplication.status}</p>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={closeApplicationDetails}>Close</Button>
+                    </Modal.Footer>
+                </Modal>
             )}
         </div>
     );
