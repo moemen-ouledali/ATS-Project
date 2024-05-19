@@ -21,6 +21,8 @@ import AllJobs from './Components/Detailed_Components/AllJobs';
 import JobApplicationForm from './Components/Detailed_Components/JobApplicationForm';
 import AllApplications from './Components/Manager_Components/AllApplications'; 
 import RequestPasswordReset from './Components/Authentication_Components/RequestPasswordReset';
+import VerifyResetCode from './Components/Authentication_Components/VerifyResetCode';
+
 
 // Import the new component
 
@@ -51,6 +53,8 @@ function App() {
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/request-password-reset" element={<RequestPasswordReset />} />
+                    <Route path="/verify-reset-code" element={<VerifyResetCode />} />
+
                     <Route path="/register" element={<RegisterForm />} />
                     <Route path="/candidate_dashboard" element={<CandidateDashboard />} />
                     <Route path="/application/:id" element={<ApplicationDetails />} />

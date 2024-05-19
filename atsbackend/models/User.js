@@ -11,14 +11,15 @@ const userSchema = new mongoose.Schema({
   phoneNumber: { type: String, required: true },
   city: { type: String, required: true },
   highestEducationLevel: {
-    type: String,
-    required: true,
-    enum: ['Baccalaureate', 'Licence', 'Engineering']
+      type: String,
+      required: true,
+      enum: ['Baccalaureate', 'Licence', 'Engineering']
   },
-  resetPasswordToken: String,
-  resetPasswordExpiry: Date
+  resetCode: { type: String },
+  resetCodeExpires: { type: Date }
 });
 
+// Create User model
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

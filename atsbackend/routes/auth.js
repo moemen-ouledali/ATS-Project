@@ -22,6 +22,13 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+
+// Generate a random 6-digit code
+const generateResetCode = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+
 // POST /auth/register - Register a new user
 router.post('/register', async (req, res) => {
     const { role, firstName, lastName, email, dateOfBirth, password, phoneNumber, city, highestEducationLevel } = req.body;
@@ -131,15 +138,18 @@ router.post('/request-password-reset', async (req, res) => {
             return res.status(404).json({ message: "Email not found" });
         }
 
-        const resetToken = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+        const resetCode = generateResetCode();
 
-        const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+        // Store the reset code and expiration time in the user document
+        user.resetCode = resetCode;
+        user.resetCodeExpires = Date.now() + 3600000; // 1 hour from now
+        await user.save();
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
             subject: 'Password Reset Request',
-            text: `You requested a password reset. Click the following link to reset your password: ${resetLink}`
+            text: `You requested a password reset. Your reset code is: ${resetCode}`
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -147,7 +157,7 @@ router.post('/request-password-reset', async (req, res) => {
                 console.error('Error sending password reset email:', error);
                 return res.status(500).json({ message: 'Failed to send password reset email. Please try again.' });
             }
-            res.status(200).json({ message: 'Password reset email sent successfully' });
+            res.status(200).json({ message: 'Password reset code sent successfully' });
         });
     } catch (error) {
         console.error('Error during password reset request:', error);
@@ -155,18 +165,53 @@ router.post('/request-password-reset', async (req, res) => {
     }
 });
 
+
+// POST /auth/verify-reset-code - Verify reset code
+router.post('/verify-reset-code', async (req, res) => {
+    const { email, resetCode } = req.body;
+
+    try {
+        const user = await User.findOne({ email, resetCode });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired reset code' });
+        }
+
+        if (Date.now() > user.resetCodeExpires) {
+            return res.status(400).json({ message: 'Reset code has expired' });
+        }
+
+        res.status(200).json({ message: 'Reset code verified successfully' });
+    } catch (error) {
+        console.error('Error verifying reset code:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+
+
+
+
+
+
+
 // POST /auth/reset-password - Reset the password
 router.post('/reset-password', async (req, res) => {
-    const { token, newPassword } = req.body;
+    const { email, resetCode, newPassword } = req.body;
     try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        const user = await User.findById(decoded.userId);
+        const user = await User.findOne({ email, resetCode });
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(400).json({ message: 'Invalid or expired reset code' });
+        }
+
+        if (Date.now() > user.resetCodeExpires) {
+            return res.status(400).json({ message: 'Reset code has expired' });
         }
 
         user.password = newPassword;
+        user.resetCode = undefined;
+        user.resetCodeExpires = undefined;
         await user.save();
+
         res.json({ message: 'Password reset successfully' });
     } catch (error) {
         console.error('Error resetting password:', error);
