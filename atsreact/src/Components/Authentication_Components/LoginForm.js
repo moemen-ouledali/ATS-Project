@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../../AuthContext'; // Adjust the path to your AuthContext if needed
 import '../assets/css/LoginForm.css'; // Ensure the CSS path matches your project structure
 
@@ -20,7 +20,6 @@ const LoginForm = () => {
       });
   
       if (response.data.token) {
-        // The setTokenAndRole function should handle setting local storage items.
         setTokenAndRole(
           response.data.token,
           response.data.role,
@@ -42,7 +41,6 @@ const LoginForm = () => {
       console.error("Login error:", error);
     }
   };
-  
 
   return (
     <section className="vh-100">
@@ -66,6 +64,7 @@ const LoginForm = () => {
               <div className="text-center text-lg-start mt-4 pt-2">
                 <button type="submit" className="btn btn-primary btn-lg" style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}>Login</button>
                 <p className="small fw-bold mt-2 pt-1 mb-0">Don't have an account? <a href="#!" className="link-danger">Register</a></p>
+                <p className="small fw-bold mt-2 pt-1 mb-0">Forgot your password? <Link to="/request-password-reset" className="link-primary">Reset it here</Link></p>
               </div>
 
               {message && <div className="alert alert-danger mt-3" role="alert">

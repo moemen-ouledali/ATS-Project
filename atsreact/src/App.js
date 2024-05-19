@@ -19,7 +19,10 @@ import JobListingsPage from './Components/Detailed_Components/JobListingsPage';
 import InternshipListings from './Components/Detailed_Components/InternshipListings';
 import AllJobs from './Components/Detailed_Components/AllJobs';
 import JobApplicationForm from './Components/Detailed_Components/JobApplicationForm';
-import AllApplications from './Components/Manager_Components/AllApplications'; // Import the new component
+import AllApplications from './Components/Manager_Components/AllApplications'; 
+import RequestPasswordReset from './Components/Authentication_Components/RequestPasswordReset';
+
+// Import the new component
 
 
 
@@ -47,6 +50,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/login" element={<LoginForm />} />
+                    <Route path="/request-password-reset" element={<RequestPasswordReset />} />
                     <Route path="/register" element={<RegisterForm />} />
                     <Route path="/candidate_dashboard" element={<CandidateDashboard />} />
                     <Route path="/application/:id" element={<ApplicationDetails />} />
