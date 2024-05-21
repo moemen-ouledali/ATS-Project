@@ -188,7 +188,27 @@ router.post('/verify-reset-code', async (req, res) => {
 });
 
 
+// POST /auth/change-password - Change the password
+router.post('/change-password', async (req, res) => {
+    const { userId, currentPassword, newPassword } = req.body;
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
+        if (user.password !== currentPassword) {
+            return res.status(401).json({ message: 'Current password is incorrect' });
+        }
+
+        user.password = newPassword;
+        await user.save();
+        res.json({ message: 'Password changed successfully' });
+    } catch (error) {
+        console.error('Error changing password:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 
 

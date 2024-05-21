@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('fullName', fullName);
         localStorage.setItem('email', email);
         localStorage.setItem('phoneNumber', phoneNumber);
-    
+
         setAuthDetails({
             authToken: token,
             userRole: role,
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
                 phoneNumber: phoneNumber
             }
         });
-    
+
         console.log("Updated Auth Details:", {
             authToken: token,
             userRole: role,
@@ -65,12 +65,6 @@ export const AuthProvider = ({ children }) => {
             }
         });
     };
-
-    useEffect(() => {
-        console.log("Current user details from AuthContext:", authDetails.userDetails);
-    }, [authDetails]);
-    
-    
 
     const logout = () => {
         localStorage.clear();
