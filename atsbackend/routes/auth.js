@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Generate a random 6-digit code
-const generateResetCode = () => {
+const generateVerificationCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
@@ -33,6 +33,8 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: "Email is already registered" });
         }
 
+        const verificationCode = generateVerificationCode();
+
         const newUser = new User({
             role,
             firstName,
@@ -43,14 +45,52 @@ router.post('/register', async (req, res) => {
             phoneNumber,
             city,
             highestEducationLevel,
-            gender // Add this line
+            gender,
+            verificationCode,
+            isVerified: false // Add this line
         });
 
         await newUser.save();
-        res.status(201).json({ message: "User registered successfully" });
+
+        // Send verification code to user's email
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: 'Email Verification Code',
+            text: `Your verification code is: ${verificationCode}`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending verification code email:', error);
+                return res.status(500).json({ message: 'Failed to send verification code. Please try again.' });
+            }
+            res.status(201).json({ message: 'User registered successfully. Verification code sent to email.' });
+        });
     } catch (error) {
         console.error("Error registering user:", error);
         res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+// POST /auth/verify-code - Verify the user's code
+router.post('/verify-code', async (req, res) => {
+    const { email, code } = req.body;
+
+    try {
+        const user = await User.findOne({ email, verificationCode: code });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid verification code' });
+        }
+
+        user.isVerified = true;
+        user.verificationCode = null;
+        await user.save();
+
+        res.status(200).json({ message: 'Email verified successfully' });
+    } catch (error) {
+        console.error('Error verifying code:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 
@@ -61,6 +101,31 @@ router.post('/login', async (req, res) => {
         const user = await User.findOne({ email });
         if (!user || password !== user.password) {
             return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        if (!user.isVerified) {
+            // Generate a new verification code
+            const verificationCode = generateVerificationCode();
+            user.verificationCode = verificationCode;
+            await user.save();
+
+            // Send the verification code to the user's email
+            const mailOptions = {
+                from: process.env.EMAIL_USER,
+                to: email,
+                subject: 'Email Verification Code',
+                text: `Your verification code is: ${verificationCode}`
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error('Error sending verification code email:', error);
+                    return res.status(500).json({ message: 'Failed to send verification code. Please try again.' });
+                }
+                return res.status(403).json({ message: 'Please verify your email. A new verification code has been sent to your email.' });
+            });
+
+            return; // Ensure response is sent and function does not continue
         }
 
         const token = jwt.sign(
@@ -135,7 +200,7 @@ router.post('/request-password-reset', async (req, res) => {
             return res.status(404).json({ message: "Email not found" });
         }
 
-        const resetCode = generateResetCode();
+        const resetCode = generateVerificationCode();
 
         // Store the reset code and expiration time in the user document
         user.resetCode = resetCode;

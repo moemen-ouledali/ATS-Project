@@ -17,7 +17,9 @@ const userSchema = new mongoose.Schema({
   },
   gender: { type: String, required: true, enum: ['male', 'female'] }, // Add this line
   resetCode: { type: String },
-  resetCodeExpires: { type: Date }
+  resetCodeExpires: { type: Date },
+  verificationCode: String,
+  isVerified: { type: Boolean, default: false }
 });
 
 // Create User model

@@ -18,7 +18,7 @@ const LoginForm = () => {
         email,
         password,
       });
-  
+
       if (response.data.token) {
         setTokenAndRole(
           response.data.token,
@@ -35,6 +35,9 @@ const LoginForm = () => {
     } catch (error) {
       if (error.response && error.response.status === 401) {
         setMessage("Incorrect Password");
+      } else if (error.response && error.response.status === 403) {
+        // Redirect to verification page if the user has not verified their email
+        navigate('/verify-email', { state: { email } });
       } else {
         setMessage("Login failed. Please try again.");
       }

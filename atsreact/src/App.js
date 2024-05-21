@@ -22,6 +22,7 @@ import JobApplicationForm from './Components/Detailed_Components/JobApplicationF
 import AllApplications from './Components/Manager_Components/AllApplications'; 
 import RequestPasswordReset from './Components/Authentication_Components/RequestPasswordReset';
 import VerifyResetCode from './Components/Authentication_Components/VerifyResetCode';
+import VerifyEmail from './Components/Authentication_Components/VerifyEmail'; // Import the new component
 
 
 // Import the new component
@@ -68,6 +69,8 @@ function App() {
                     <Route path="/all-jobs" element={<AllJobs />} />
                     <Route path="/job/:id" element={<JobApplicationForm />} />
                     <Route path="/all-applications" element={<AllApplications />} /> {/* Add this line */}
+                    <Route path="/verify-email" element={<VerifyEmail />} /> {/* Add this route */}
+
 
                 </Routes>
             </Router>
