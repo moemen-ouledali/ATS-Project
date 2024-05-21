@@ -53,7 +53,7 @@ const LandingPage = () => {
             </div>
             <h1 className="display-3 fw-bolder mb-5">
               <span className="text-gradient d-inline">
-                Join us our BeeCoders' Team !
+                Join our BeeCoders' Team !
               </span>
             </h1>
       

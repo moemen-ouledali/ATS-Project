@@ -5,6 +5,8 @@ import { Container, Box, Typography, TextField, Button, IconButton, Avatar, Grid
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import maleProfilePic from '../../Media/ProfilePicture/male.png';
+import femaleProfilePic from '../../Media/ProfilePicture/female.png';
 
 const theme = createTheme({
     palette: {
@@ -149,7 +151,11 @@ const EditProfileForm = () => {
                 <Box sx={{ boxShadow: 3, p: 4, m: 2, borderRadius: 2, backgroundColor: '#f5f5f5' }}>
                     <Grid container spacing={2} alignItems="center">
                         <Grid item xs={12} sm={3} md={2}>
-                            <Avatar sx={{ width: 150, height: 150 }}>U</Avatar>
+                            <Avatar
+                                sx={{ width: 150, height: 150 }}
+                                src={userDetails.gender === 'male' ? maleProfilePic : femaleProfilePic}
+                                alt="Profile Picture"
+                            />
                         </Grid>
                         <Grid item xs={12} sm={9} md={10}>
                             <Typography variant="h4" component="h1" gutterBottom>

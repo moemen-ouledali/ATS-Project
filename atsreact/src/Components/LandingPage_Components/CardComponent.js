@@ -9,7 +9,7 @@ const CardComponent = () => {
   const cards = [
     { title: "Web & Mobile Development", imgSrc: dev, category: "Web & Mobile Development" },
     { title: "Business Intelligence", imgSrc: uiux, category: "Business Intelligence" },
-    { title: "Digital Marketing & Design", imgSrc: mang, category: "Digital Marketing & Design" },
+    { title: "Digital Marketing", imgSrc: mang, category: "Digital Marketing & Design" },
   ];
 
   return (
