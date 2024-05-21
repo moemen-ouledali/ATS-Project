@@ -13,7 +13,8 @@ const RegisterForm = () => {
     password: '',
     phoneNumber: '',
     city: '',
-    highestEducationLevel: 'Baccalaureate'
+    highestEducationLevel: 'Baccalaureate',
+    gender: '' // Add this line
   });
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
@@ -54,43 +55,52 @@ const RegisterForm = () => {
               <input type="date" name="dateOfBirth" className="form-control form-control-lg" placeholder="Date of Birth" value={userData.dateOfBirth} onChange={handleChange} required />
               <input type="password" name="password" className="form-control form-control-lg" placeholder="Password" value={userData.password} onChange={handleChange} required />
               <input type="text" name="phoneNumber" className="form-control form-control-lg" placeholder="Phone Number" value={userData.phoneNumber} onChange={handleChange} required />
+              
               <select name="city" className="form-select form-select-lg" value={userData.city} onChange={handleChange} required>
-  <option value="">Select a governorate</option>
-  <option value="Ariana">Ariana</option>
-  <option value="Béja">Béja</option>
-  <option value="Ben Arous">Ben Arous</option>
-  <option value="Bizerte">Bizerte</option>
-  <option value="Gabès">Gabès</option>
-  <option value="Gafsa">Gafsa</option>
-  <option value="Jendouba">Jendouba</option>
-  <option value="Kairouan">Kairouan</option>
-  <option value="Kasserine">Kasserine</option>
-  <option value="Kébili">Kébili</option>
-  <option value="Kef">Kef</option>
-  <option value="Mahdia">Mahdia</option>
-  <option value="Manouba">Manouba</option>
-  <option value="Médenine">Médenine</option>
-  <option value="Monastir">Monastir</option>
-  <option value="Nabeul">Nabeul</option>
-  <option value="Sfax">Sfax</option>
-  <option value="Sidi Bouzid">Sidi Bouzid</option>
-  <option value="Siliana">Siliana</option>
-  <option value="Sousse">Sousse</option>
-  <option value="Tataouine">Tataouine</option>
-  <option value="Tozeur">Tozeur</option>
-  <option value="Tunis">Tunis</option>
-  <option value="Zaghouan">Zaghouan</option>
-</select>
+                <option value="">Select a governorate</option>
+                <option value="Ariana">Ariana</option>
+                <option value="Béja">Béja</option>
+                <option value="Ben Arous">Ben Arous</option>
+                <option value="Bizerte">Bizerte</option>
+                <option value="Gabès">Gabès</option>
+                <option value="Gafsa">Gafsa</option>
+                <option value="Jendouba">Jendouba</option>
+                <option value="Kairouan">Kairouan</option>
+                <option value="Kasserine">Kasserine</option>
+                <option value="Kébili">Kébili</option>
+                <option value="Kef">Kef</option>
+                <option value="Mahdia">Mahdia</option>
+                <option value="Manouba">Manouba</option>
+                <option value="Médenine">Médenine</option>
+                <option value="Monastir">Monastir</option>
+                <option value="Nabeul">Nabeul</option>
+                <option value="Sfax">Sfax</option>
+                <option value="Sidi Bouzid">Sidi Bouzid</option>
+                <option value="Siliana">Siliana</option>
+                <option value="Sousse">Sousse</option>
+                <option value="Tataouine">Tataouine</option>
+                <option value="Tozeur">Tozeur</option>
+                <option value="Tunis">Tunis</option>
+                <option value="Zaghouan">Zaghouan</option>
+              </select>
 
               <select name="highestEducationLevel" className="form-select form-select-lg" value={userData.highestEducationLevel} onChange={handleChange} required>
                 <option value="Baccalaureate">Baccalaureate</option>
                 <option value="Licence">Licence</option>
                 <option value="Engineering">Engineering</option>
               </select>
+
+              <select name="gender" className="form-select form-select-lg" value={userData.gender} onChange={handleChange} required>
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+
               <select name="role" className="form-select form-select-lg" value={userData.role} onChange={handleChange} required>
                 <option value="Candidate">Candidate</option>
                 <option value="Manager">Manager</option>
               </select>
+
               <div className="text-center text-lg-start mt-4 pt-2">
                 <button type="submit" className="btn btn-primary btn-lg" style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}>Register</button>
                 <p className="small fw-bold mt-2 pt-1 mb-0">Already have an account? <a href="#!" className="link-danger">Login</a></p>

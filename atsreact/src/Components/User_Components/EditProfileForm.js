@@ -53,6 +53,7 @@ const EditProfileForm = () => {
         city: '',
         dateOfBirth: '',
         highestEducationLevel: '',
+        gender: '' // Ensure gender is included here
     });
     const [editMode, setEditMode] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -77,7 +78,8 @@ const EditProfileForm = () => {
                     phoneNumber: response.data.phoneNumber,
                     city: response.data.city,
                     dateOfBirth: response.data.dateOfBirth.split('T')[0],
-                    highestEducationLevel: response.data.highestEducationLevel
+                    highestEducationLevel: response.data.highestEducationLevel,
+                    gender: response.data.gender // Ensure gender is included here
                 });
             } catch (error) {
                 console.error('Failed to fetch user details:', error);
@@ -137,7 +139,6 @@ const EditProfileForm = () => {
             console.error('Password change error:', err);
         }
     };
-    
 
     const openPasswordModal = () => setShowPasswordModal(true);
     const closePasswordModal = () => setShowPasswordModal(false);
@@ -268,6 +269,24 @@ const EditProfileForm = () => {
                                     </TextField>
                                 ) : (
                                     <Typography variant="body1" color="textSecondary">{userDetails.highestEducationLevel}</Typography>
+                                )}
+                            </Box>
+                            <Box sx={{ mb: 2 }}>
+                                {editMode ? (
+                                    <TextField
+                                        name="gender"
+                                        value={userDetails.gender}
+                                        onChange={handleChange}
+                                        label="Gender"
+                                        select
+                                        fullWidth
+                                        margin="dense"
+                                    >
+                                        <MenuItem value="male">Male</MenuItem>
+                                        <MenuItem value="female">Female</MenuItem>
+                                    </TextField>
+                                ) : (
+                                    <Typography variant="body1" color="textSecondary">{userDetails.gender}</Typography>
                                 )}
                             </Box>
                         </Grid>

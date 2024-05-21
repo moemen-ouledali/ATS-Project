@@ -7,10 +7,6 @@ const crypto = require('crypto');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_here';
 
-
-
-
-
 // Set up nodemailer transporter for Outlook
 const transporter = nodemailer.createTransport({
     host: 'smtp.office365.com',
@@ -22,16 +18,14 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-
 // Generate a random 6-digit code
 const generateResetCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
-
 // POST /auth/register - Register a new user
 router.post('/register', async (req, res) => {
-    const { role, firstName, lastName, email, dateOfBirth, password, phoneNumber, city, highestEducationLevel } = req.body;
+    const { role, firstName, lastName, email, dateOfBirth, password, phoneNumber, city, highestEducationLevel, gender } = req.body;
 
     try {
         let existingUser = await User.findOne({ email });
@@ -48,7 +42,8 @@ router.post('/register', async (req, res) => {
             password,
             phoneNumber,
             city,
-            highestEducationLevel
+            highestEducationLevel,
+            gender // Add this line
         });
 
         await newUser.save();
@@ -106,7 +101,7 @@ router.get('/user/:id', async (req, res) => {
 
 // PUT /auth/user/:id - Update a specific user by ID
 router.put('/user/:id', async (req, res) => {
-    const { firstName, lastName, email, dateOfBirth, phoneNumber, city, highestEducationLevel } = req.body;
+    const { firstName, lastName, email, dateOfBirth, phoneNumber, city, highestEducationLevel, gender } = req.body;
     try {
         const user = await User.findByIdAndUpdate(req.params.id, {
             firstName,
@@ -115,7 +110,8 @@ router.put('/user/:id', async (req, res) => {
             dateOfBirth,
             phoneNumber,
             city,
-            highestEducationLevel
+            highestEducationLevel,
+            gender // Add this line
         }, { new: true });
 
         if (!user) {
@@ -128,6 +124,7 @@ router.put('/user/:id', async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
 // POST /auth/request-password-reset - Request password reset
 router.post('/request-password-reset', async (req, res) => {
     const { email } = req.body;
@@ -165,7 +162,6 @@ router.post('/request-password-reset', async (req, res) => {
     }
 });
 
-
 // POST /auth/verify-reset-code - Verify reset code
 router.post('/verify-reset-code', async (req, res) => {
     const { email, resetCode } = req.body;
@@ -186,7 +182,6 @@ router.post('/verify-reset-code', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
-
 
 // POST /auth/change-password - Change the password
 router.post('/change-password', async (req, res) => {
@@ -209,10 +204,6 @@ router.post('/change-password', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
-
-
-
-
 
 // POST /auth/reset-password - Reset the password
 router.post('/reset-password', async (req, res) => {

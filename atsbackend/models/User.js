@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
       required: true,
       enum: ['Baccalaureate', 'Licence', 'Engineering']
   },
+  gender: { type: String, required: true, enum: ['male', 'female'] }, // Add this line
   resetCode: { type: String },
   resetCodeExpires: { type: Date }
 });
