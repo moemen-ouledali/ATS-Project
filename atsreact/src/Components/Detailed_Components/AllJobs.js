@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
-import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography, CardActions, Button } from '@mui/material';
+import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography, CardActions, Button, Box, CircularProgress } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { styled } from '@mui/system';
 
-// Importing images, assuming same use as your JobListingsPage
+// Importing images
 import image1 from '../../Media/cards media/1.png';
 import image2 from '../../Media/cards media/2.png';
 import image3 from '../../Media/cards media/3.png';
@@ -15,6 +17,65 @@ import image8 from '../../Media/cards media/8.png';
 
 const cardImages = [image1, image2, image3, image4, image5, image6, image7, image8];
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#4A90E2',
+    },
+    secondary: {
+      main: '#50E3C2',
+    },
+    background: {
+      default: '#f7f9fc',
+    },
+  },
+  typography: {
+    fontFamily: 'Montserrat, sans-serif',
+    h4: {
+      fontWeight: 800,
+      color: '#333',
+      fontSize: '2rem',
+    },
+    h5: {
+      fontWeight: 700,
+      color: '#555',
+      fontSize: '1.5rem',
+    },
+    body2: {
+      color: '#777',
+      fontSize: '1rem',
+    },
+    button: {
+      textTransform: 'uppercase',
+      fontWeight: 700,
+      fontSize: '0.875rem',
+    },
+  },
+});
+
+const StyledCard = styled(Card)({
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+  '&:hover': {
+    transform: 'scale(1.05)',
+    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+  },
+  borderRadius: '15px',
+  overflow: 'hidden',
+  position: 'relative',
+  backgroundColor: '#fff',
+});
+
+const StyledButton = styled(Button)({
+  backgroundColor: '#4A90E2',
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: '#357ABD',
+  },
+  padding: '10px 20px',
+  fontSize: '14px',
+  borderRadius: '30px',
+});
+
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -25,56 +86,82 @@ function shuffleArray(array) {
 
 const AllJobsPage = () => {
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const shuffledImages = shuffleArray([...cardImages]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/jobs') // Adjust this endpoint to your backend API that fetches all jobs excluding internships
+    axios.get('http://localhost:5000/api/jobs')
       .then(response => {
         const nonInternshipJobs = response.data.filter(job => job.jobType.toLowerCase() !== 'internship');
         setJobs(nonInternshipJobs);
+        setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching jobs:', error);
+        setLoading(false);
       });
   }, []);
 
   return (
-    <Grid container spacing={2} style={{ padding: '24px' }}>
-      <Grid item xs={12}>
-        <Typography variant="h4" gutterBottom>All Jobs</Typography>
-      </Grid>
-      {jobs.length > 0 ? (
-        jobs.map((job, index) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={job._id}>
-            <Card raised>
-              <CardActionArea component={RouterLink} to={`/job/${job._id}`}>
-                <CardMedia
-                  component="img"
-                  alt={job.title}
-                  height="140"
-                  image={shuffledImages[index % shuffledImages.length]}
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    {job.title}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" component="p">
-                    {job.description}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-              <CardActions>
-                <Button size="small" color="primary" component={RouterLink} to={`/job/${job._id}`}>
-                  Apply Now
-                </Button>
-              </CardActions>
-            </Card>
+    <ThemeProvider theme={theme}>
+      <Box sx={{ padding: '40px 24px', backgroundColor: theme.palette.background.default, minHeight: '100vh' }}>
+        <Typography
+          component="h1"
+          variant="h4"
+          gutterBottom
+          sx={{
+            textAlign: 'center',
+            marginBottom: '40px',
+            fontWeight: 'bold',
+            color: theme.palette.primary.main,
+          }}
+        >
+          <span className="text-gradient d-inline">Explore Our Job Opportunities</span>
+        </Typography>
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Grid container spacing={4}>
+            {jobs.length > 0 ? (
+              jobs.map((job, index) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={job._id}>
+                  <StyledCard raised>
+                    <CardActionArea component={RouterLink} to={`/job/${job._id}`}>
+                      <CardMedia
+                        component="img"
+                        alt={job.title}
+                        height="500"
+                        width="500"
+                        image={shuffledImages[index % shuffledImages.length]}
+                      />
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="h2">
+                          {job.title}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary" component="p">
+                          {job.description}
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                    <CardActions sx={{ justifyContent: 'center' }}>
+                      <StyledButton size="small" component={RouterLink} to={`/job/${job._id}`}>
+                        Apply Now
+                      </StyledButton>
+                    </CardActions>
+                  </StyledCard>
+                </Grid>
+              ))
+            ) : (
+              <Typography variant="subtitle1" sx={{ textAlign: 'center', width: '100%' }}>
+                No jobs found.
+              </Typography>
+            )}
           </Grid>
-        ))
-      ) : (
-        <Typography variant="subtitle1">No jobs found.</Typography>
-      )}
-    </Grid>
+        )}
+      </Box>
+    </ThemeProvider>
   );
 };
 

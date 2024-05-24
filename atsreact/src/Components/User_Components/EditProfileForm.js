@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../AuthContext';
-import { Container, Box, Typography, TextField, Button, IconButton, Avatar, Grid, MenuItem, Divider, Modal, Alert } from '@mui/material';
+import { Container, Box, Typography, TextField, Button, IconButton, Avatar, Grid, MenuItem, Divider, Modal, Alert, CircularProgress, Slide, Fade } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -11,25 +11,35 @@ import femaleProfilePic from '../../Media/ProfilePicture/female.png';
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#1976d2',
+            main: '#4A90E2',
         },
         secondary: {
-            main: '#d32f2f',
+            main: '#50E3C2',
+        },
+        background: {
+            default: '#f7f9fc',
         },
     },
     typography: {
-        fontFamily: 'Roboto, sans-serif',
+        fontFamily: 'Montserrat, sans-serif',
         h4: {
-            fontWeight: 600,
+            fontWeight: 800,
+            color: '#333',
+            fontSize: '2rem',
         },
         h6: {
-            fontWeight: 500,
+            fontWeight: 700,
+            color: '#555',
+            fontSize: '1.5rem',
         },
-        body1: {
-            fontWeight: 400,
+        body2: {
+            color: '#777',
+            fontSize: '1rem',
         },
         button: {
-            textTransform: 'none',
+            textTransform: 'uppercase',
+            fontWeight: 700,
+            fontSize: '0.875rem',
         },
     },
 });
@@ -43,6 +53,7 @@ const style = {
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
+    borderRadius: 2,
 };
 
 const EditProfileForm = () => {
@@ -55,7 +66,7 @@ const EditProfileForm = () => {
         city: '',
         dateOfBirth: '',
         highestEducationLevel: '',
-        gender: '' // Ensure gender is included here
+        gender: '',
     });
     const [editMode, setEditMode] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -64,6 +75,7 @@ const EditProfileForm = () => {
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!userId) {
@@ -81,11 +93,13 @@ const EditProfileForm = () => {
                     city: response.data.city,
                     dateOfBirth: response.data.dateOfBirth.split('T')[0],
                     highestEducationLevel: response.data.highestEducationLevel,
-                    gender: response.data.gender // Ensure gender is included here
+                    gender: response.data.gender,
                 });
+                setLoading(false);
             } catch (error) {
                 console.error('Failed to fetch user details:', error);
                 alert('Failed to load your profile data.');
+                setLoading(false);
             }
         };
 
@@ -96,14 +110,14 @@ const EditProfileForm = () => {
         const { name, value } = e.target;
         setUserDetails(prevDetails => ({
             ...prevDetails,
-            [name]: value
+            [name]: value,
         }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         axios.put(`http://localhost:5000/auth/user/${userId}`, userDetails, {
-            headers: { Authorization: `Bearer ${authToken}` }
+            headers: { Authorization: `Bearer ${authToken}` },
         })
         .then(response => {
             alert('Profile updated successfully!');
@@ -129,9 +143,9 @@ const EditProfileForm = () => {
             const response = await axios.post('http://localhost:5000/auth/change-password', {
                 userId,
                 currentPassword,
-                newPassword
+                newPassword,
             }, {
-                headers: { Authorization: `Bearer ${authToken}` }
+                headers: { Authorization: `Bearer ${authToken}` },
             });
             setMessage(response.data.message);
             setError('');
@@ -147,211 +161,236 @@ const EditProfileForm = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <Container maxWidth={false} disableGutters>
-                <Box sx={{ boxShadow: 3, p: 4, m: 2, borderRadius: 2, backgroundColor: '#f5f5f5' }}>
-                    <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={12} sm={3} md={2}>
-                            <Avatar
-                                sx={{ width: 150, height: 150 }}
-                                src={userDetails.gender === 'male' ? maleProfilePic : femaleProfilePic}
-                                alt="Profile Picture"
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={9} md={10}>
-                            <Typography variant="h4" component="h1" gutterBottom>
-                                {editMode ? (
-                                    <Grid container spacing={2}>
-                                        <Grid item xs={12} sm={6}>
+            <Container maxWidth="md">
+                {loading ? (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                        <CircularProgress />
+                    </Box>
+                ) : (
+                    <Slide direction="up" in={!loading} mountOnEnter unmountOnExit>
+                        <Box sx={{
+                            boxShadow: 6,
+                            p: 4,
+                            m: 2,
+                            borderRadius: 3,
+                            backgroundColor: theme.palette.background.default,
+                            transition: 'transform 0.2s ease-in-out',
+                            '&:hover': {
+                                transform: 'scale(1.02)',
+                                boxShadow: 10,
+                            },
+                            background: 'linear-gradient(to bottom right, #ffffff, #f0f4f8)',
+                            backdropFilter: 'blur(10px)',
+                        }}>
+                            <Grid container spacing={2} direction="column" alignItems="center">
+                                <Grid item>
+                                    <Avatar
+                                        sx={{ width: 150, height: 150, border: '4px solid', borderColor: theme.palette.primary.main }}
+                                        src={userDetails.gender === 'male' ? maleProfilePic : femaleProfilePic}
+                                        alt="Profile Picture"
+                                    />
+                                </Grid>
+                                <Grid item>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                        <Typography variant="h4" component="h1" gutterBottom>
+                                            {editMode ? (
+                                                <Grid container spacing={2}>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            name="firstName"
+                                                            value={userDetails.firstName}
+                                                            onChange={handleChange}
+                                                            label="First Name"
+                                                            fullWidth
+                                                            margin="dense"
+                                                        />
+                                                    </Grid>
+                                                    <Grid item xs={12} sm={6}>
+                                                        <TextField
+                                                            name="lastName"
+                                                            value={userDetails.lastName}
+                                                            onChange={handleChange}
+                                                            label="Last Name"
+                                                            fullWidth
+                                                            margin="dense"
+                                                        />
+                                                    </Grid>
+                                                </Grid>
+                                            ) : (
+                                                `${userDetails.firstName} ${userDetails.lastName}`
+                                            )}
+                                        </Typography>
+                                        {!editMode && (
+                                            <IconButton color="primary" onClick={handleEditClick} sx={{ mt: 2 }}>
+                                                <EditIcon />
+                                            </IconButton>
+                                        )}
+                                    </Box>
+                                </Grid>
+                            </Grid>
+                            <Divider sx={{ my: 3 }} />
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography variant="h6" gutterBottom>Contact Information</Typography>
+                                    <Box sx={{ mb: 2 }}>
+                                        {editMode ? (
                                             <TextField
-                                                name="firstName"
-                                                value={userDetails.firstName}
+                                                name="email"
+                                                value={userDetails.email}
                                                 onChange={handleChange}
-                                                label="First Name"
+                                                label="Email"
                                                 fullWidth
                                                 margin="dense"
                                             />
-                                        </Grid>
-                                        <Grid item xs={12} sm={6}>
+                                        ) : (
+                                            <Typography variant="body2" color="textSecondary">{userDetails.email}</Typography>
+                                        )}
+                                    </Box>
+                                    <Box sx={{ mb: 2 }}>
+                                        {editMode ? (
                                             <TextField
-                                                name="lastName"
-                                                value={userDetails.lastName}
+                                                name="phoneNumber"
+                                                value={userDetails.phoneNumber}
                                                 onChange={handleChange}
-                                                label="Last Name"
+                                                label="Phone Number"
                                                 fullWidth
                                                 margin="dense"
                                             />
-                                        </Grid>
-                                    </Grid>
-                                ) : (
-                                    `${userDetails.firstName} ${userDetails.lastName}`
-                                )}
-                            </Typography>
-                            {!editMode && (
-                                <IconButton color="primary" onClick={handleEditClick} sx={{ mt: 2 }}>
-                                    <EditIcon />
-                                </IconButton>
+                                        ) : (
+                                            <Typography variant="body2" color="textSecondary">{userDetails.phoneNumber}</Typography>
+                                        )}
+                                    </Box>
+                                    <Box sx={{ mb: 2 }}>
+                                        {editMode ? (
+                                            <TextField
+                                                name="city"
+                                                value={userDetails.city}
+                                                onChange={handleChange}
+                                                label="City"
+                                                fullWidth
+                                                margin="dense"
+                                            />
+                                        ) : (
+                                            <Typography variant="body2" color="textSecondary">{userDetails.city}</Typography>
+                                        )}
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <Typography variant="h6" gutterBottom>Personal Information</Typography>
+                                    <Box sx={{ mb: 2 }}>
+                                        {editMode ? (
+                                            <TextField
+                                                name="dateOfBirth"
+                                                type="date"
+                                                value={userDetails.dateOfBirth}
+                                                onChange={handleChange}
+                                                label="Date of Birth"
+                                                InputLabelProps={{ shrink: true }}
+                                                fullWidth
+                                                margin="dense"
+                                            />
+                                        ) : (
+                                            <Typography variant="body2" color="textSecondary">{userDetails.dateOfBirth}</Typography>
+                                        )}
+                                    </Box>
+                                    <Box sx={{ mb: 2 }}>
+                                        {editMode ? (
+                                            <TextField
+                                                name="highestEducationLevel"
+                                                value={userDetails.highestEducationLevel}
+                                                onChange={handleChange}
+                                                label="Highest Education Level"
+                                                select
+                                                fullWidth
+                                                margin="dense"
+                                            >
+                                                <MenuItem value="Baccalaureate">Baccalaureate</MenuItem>
+                                                <MenuItem value="Licence">Licence</MenuItem>
+                                                <MenuItem value="Engineering">Engineering</MenuItem>
+                                            </TextField>
+                                        ) : (
+                                            <Typography variant="body2" color="textSecondary">{userDetails.highestEducationLevel}</Typography>
+                                        )}
+                                    </Box>
+                                    <Box sx={{ mb: 2 }}>
+                                        {editMode ? (
+                                            <TextField
+                                                name="gender"
+                                                value={userDetails.gender}
+                                                onChange={handleChange}
+                                                label="Gender"
+                                                select
+                                                fullWidth
+                                                margin="dense"
+                                            >
+                                                <MenuItem value="male">Male</MenuItem>
+                                                <MenuItem value="female">Female</MenuItem>
+                                            </TextField>
+                                        ) : (
+                                            <Typography variant="body2" color="textSecondary">{userDetails.gender}</Typography>
+                                        )}
+                                    </Box>
+                                </Grid>
+                            </Grid>
+                            {editMode && (
+                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+                                    <Button variant="contained" color="primary" onClick={handleSubmit} startIcon={<SaveIcon />}>
+                                        Save Changes
+                                    </Button>
+                                </Box>
                             )}
-                        </Grid>
-                    </Grid>
-                    <Divider sx={{ my: 3 }} />
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6} md={6}>
-                            <Typography variant="h6" gutterBottom>Contact Information</Typography>
-                            <Box sx={{ mb: 2 }}>
-                                {editMode ? (
-                                    <TextField
-                                        name="email"
-                                        value={userDetails.email}
-                                        onChange={handleChange}
-                                        label="Email"
-                                        fullWidth
-                                        margin="dense"
-                                    />
-                                ) : (
-                                    <Typography variant="body1" color="textSecondary">{userDetails.email}</Typography>
-                                )}
-                            </Box>
-                            <Box sx={{ mb: 2 }}>
-                                {editMode ? (
-                                    <TextField
-                                        name="phoneNumber"
-                                        value={userDetails.phoneNumber}
-                                        onChange={handleChange}
-                                        label="Phone Number"
-                                        fullWidth
-                                        margin="dense"
-                                    />
-                                ) : (
-                                    <Typography variant="body1" color="textSecondary">{userDetails.phoneNumber}</Typography>
-                                )}
-                            </Box>
-                            <Box sx={{ mb: 2 }}>
-                                {editMode ? (
-                                    <TextField
-                                        name="city"
-                                        value={userDetails.city}
-                                        onChange={handleChange}
-                                        label="City"
-                                        fullWidth
-                                        margin="dense"
-                                    />
-                                ) : (
-                                    <Typography variant="body1" color="textSecondary">{userDetails.city}</Typography>
-                                )}
-                            </Box>
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={6}>
-                            <Typography variant="h6" gutterBottom>Personal Information</Typography>
-                            <Box sx={{ mb: 2 }}>
-                                {editMode ? (
-                                    <TextField
-                                        name="dateOfBirth"
-                                        type="date"
-                                        value={userDetails.dateOfBirth}
-                                        onChange={handleChange}
-                                        label="Date of Birth"
-                                        InputLabelProps={{ shrink: true }}
-                                        fullWidth
-                                        margin="dense"
-                                    />
-                                ) : (
-                                    <Typography variant="body1" color="textSecondary">{userDetails.dateOfBirth}</Typography>
-                                )}
-                            </Box>
-                            <Box sx={{ mb: 2 }}>
-                                {editMode ? (
-                                    <TextField
-                                        name="highestEducationLevel"
-                                        value={userDetails.highestEducationLevel}
-                                        onChange={handleChange}
-                                        label="Highest Education Level"
-                                        select
-                                        fullWidth
-                                        margin="dense"
-                                    >
-                                        <MenuItem value="Baccalaureate">Baccalaureate</MenuItem>
-                                        <MenuItem value="Licence">Licence</MenuItem>
-                                        <MenuItem value="Engineering">Engineering</MenuItem>
-                                    </TextField>
-                                ) : (
-                                    <Typography variant="body1" color="textSecondary">{userDetails.highestEducationLevel}</Typography>
-                                )}
-                            </Box>
-                            <Box sx={{ mb: 2 }}>
-                                {editMode ? (
-                                    <TextField
-                                        name="gender"
-                                        value={userDetails.gender}
-                                        onChange={handleChange}
-                                        label="Gender"
-                                        select
-                                        fullWidth
-                                        margin="dense"
-                                    >
-                                        <MenuItem value="male">Male</MenuItem>
-                                        <MenuItem value="female">Female</MenuItem>
-                                    </TextField>
-                                ) : (
-                                    <Typography variant="body1" color="textSecondary">{userDetails.gender}</Typography>
-                                )}
-                            </Box>
-                        </Grid>
-                    </Grid>
-                    {editMode && (
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-                            <Button variant="contained" color="primary" onClick={handleSubmit} startIcon={<SaveIcon />}>
-                                Save Changes
-                            </Button>
+                            {!editMode && (
+                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+                                    <Button variant="contained" color="primary" onClick={openPasswordModal}>
+                                        Change Password
+                                    </Button>
+                                </Box>
+                            )}
                         </Box>
-                    )}
-                    {!editMode && (
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-                            <Button variant="contained" color="primary" onClick={openPasswordModal}>
-                                Change Password
-                            </Button>
-                        </Box>
-                    )}
-                </Box>
+                    </Slide>
+                )}
             </Container>
             <Modal open={showPasswordModal} onClose={closePasswordModal}>
-                <Box sx={{ ...style }}>
-                    <Typography variant="h6" gutterBottom>Change Password</Typography>
-                    <TextField
-                        label="Current Password"
-                        type="password"
-                        fullWidth
-                        margin="dense"
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                    />
-                    <TextField
-                        label="New Password"
-                        type="password"
-                        fullWidth
-                        margin="dense"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                    />
-                    <TextField
-                        label="Confirm New Password"
-                        type="password"
-                        fullWidth
-                        margin="dense"
-                        value={confirmNewPassword}
-                        onChange={(e) => setConfirmNewPassword(e.target.value)}
-                    />
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        sx={{ mt: 2 }}
-                        onClick={handlePasswordChange}
-                    >
-                        Reset Password
-                    </Button>
-                    {message && <Alert variant="filled" severity="success" sx={{ mt: 2 }}>{message}</Alert>}
-                    {error && <Alert variant="filled" severity="error" sx={{ mt: 2 }}>{error}</Alert>}
-                </Box>
+                <Fade in={showPasswordModal}>
+                    <Box sx={{ ...style, p: 4, boxShadow: 24, borderRadius: 3 }}>
+                        <Typography variant="h6" gutterBottom>Change Password</Typography>
+                        <TextField
+                            label="Current Password"
+                            type="password"
+                            fullWidth
+                            margin="dense"
+                            value={currentPassword}
+                            onChange={(e) => setCurrentPassword(e.target.value)}
+                        />
+                        <TextField
+                            label="New Password"
+                            type="password"
+                            fullWidth
+                            margin="dense"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                        <TextField
+                            label="Confirm New Password"
+                            type="password"
+                            fullWidth
+                            margin="dense"
+                            value={confirmNewPassword}
+                            onChange={(e) => setConfirmNewPassword(e.target.value)}
+                        />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            sx={{ mt: 2 }}
+                            onClick={handlePasswordChange}
+                        >
+                            Reset Password
+                        </Button>
+                        {message && <Alert variant="filled" severity="success" sx={{ mt: 2 }}>{message}</Alert>}
+                        {error && <Alert variant="filled" severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+                    </Box>
+                </Fade>
             </Modal>
         </ThemeProvider>
     );

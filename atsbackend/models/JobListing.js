@@ -2,20 +2,14 @@ const mongoose = require('mongoose');
 
 const jobListingSchema = new mongoose.Schema({
     title: { type: String, required: true },
-    company: { type: String, required: true },
-    location: String,
-    jobType: String, // e.g., Full-time, Part-time
+    category: { type: String, required: true },
+    jobLocation: { type: String, required: true }, // e.g., Online, On board
+    jobType: { type: String, required: true }, // e.g., Full-time, Internship
     description: { type: String, required: true },
-    requirements: String,
-    salaryRange: String,
-    experienceLevel: String,
-    category: {
-        type: String,
-        required: true,
-        enum: ['Web & Mobile Development', 'Business Intelligence', 'Digital Marketing & Design']
-    },
+    requirements: { type: String, required: true },
+    experienceLevel: { type: String, required: true },
+    minimumDegree: { type: String, required: true },
     postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Assuming you have a User model
-    // Add any other fields you think are necessary
 }, { timestamps: true });
 
 const JobListing = mongoose.model('JobListing', jobListingSchema);

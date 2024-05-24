@@ -5,150 +5,158 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 
 const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
-    const [jobDetails, setJobDetails] = useState({
-        title: '',
-        company: '',
-        location: '',
-        jobType: '',
-        description: '',
-        requirements: '',
-        salaryRange: '',
-        experienceLevel: '',
-        category: '',
-    });
+  const [jobDetails, setJobDetails] = useState({
+    title: '',
+    category: '',
+    jobLocation: '',
+    jobType: '',
+    description: '',
+    requirements: '',
+    experienceLevel: '',
+    minimumDegree: '',
+  });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setJobDetails((prevDetails) => ({
-            ...prevDetails,
-            [name]: value,
-        }));
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setJobDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await axios.post('http://localhost:5000/api/jobs', jobDetails);
-            fetchJobListings();
-            handleClose();
-        } catch (error) {
-            console.error('Failed to add job listing:', error);
-        }
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:5000/api/jobs/add', jobDetails);
+      fetchJobListings();
+      handleClose();
+    } catch (error) {
+      console.error('Failed to add job listing:', error);
+    }
+  };
 
-    return (
-        <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
-                <Modal.Title>Add Job Listing</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="formTitle">
-                        <Form.Label>Title</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="title"
-                            value={jobDetails.title}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+  return (
+    <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Add Job Listing</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group controlId="formTitle">
+            <Form.Label>Job Title</Form.Label>
+            <Form.Control
+              type="text"
+              name="title"
+              value={jobDetails.title}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
 
-                    <Form.Group controlId="formCompany">
-                        <Form.Label>Company</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="company"
-                            value={jobDetails.company}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+          <Form.Group controlId="formCategory">
+            <Form.Label>Category</Form.Label>
+            <Form.Control
+              as="select"
+              name="category"
+              value={jobDetails.category}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Category</option>
+              <option value="Web & Mobile Development">Web & Mobile Development</option>
+              <option value="Business Intelligence">Business Intelligence</option>
+              <option value="Digital Marketing & Design">Digital Marketing & Design</option>
+            </Form.Control>
+          </Form.Group>
 
-                    <Form.Group controlId="formLocation">
-                        <Form.Label>Location</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="location"
-                            value={jobDetails.location}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+          <Form.Group controlId="formJobLocation">
+            <Form.Label>Job Location</Form.Label>
+            <Form.Control
+              type="text"
+              name="jobLocation"
+              value={jobDetails.jobLocation}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
 
-                    <Form.Group controlId="formJobType">
-                        <Form.Label>Job Type</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="jobType"
-                            value={jobDetails.jobType}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+          <Form.Group controlId="formJobType">
+            <Form.Label>Job Type</Form.Label>
+            <Form.Control
+              as="select"
+              name="jobType"
+              value={jobDetails.jobType}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Job Type</option>
+              <option value="Full-time">Full-time</option>
+              <option value="Internship">Internship</option>
+            </Form.Control>
+          </Form.Group>
 
-                    <Form.Group controlId="formDescription">
-                        <Form.Label>Description</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            name="description"
-                            value={jobDetails.description}
-                            onChange={handleChange}
-                            required
-                        />
-                    </Form.Group>
+          <Form.Group controlId="formDescription">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              as="textarea"
+              name="description"
+              value={jobDetails.description}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
 
-                    <Form.Group controlId="formRequirements">
-                        <Form.Label>Requirements</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            name="requirements"
-                            value={jobDetails.requirements}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+          <Form.Group controlId="formRequirements">
+            <Form.Label>Requirements</Form.Label>
+            <Form.Control
+              as="textarea"
+              name="requirements"
+              value={jobDetails.requirements}
+              onChange={handleChange}
+              required
+            />
+          </Form.Group>
 
-                    <Form.Group controlId="formSalaryRange">
-                        <Form.Label>Salary Range</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="salaryRange"
-                            value={jobDetails.salaryRange}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+          <Form.Group controlId="formExperienceLevel">
+            <Form.Label>Experience Level</Form.Label>
+            <Form.Control
+              as="select"
+              name="experienceLevel"
+              value={jobDetails.experienceLevel}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Experience Level</option>
+              <option value="0 years">0 years</option>
+              <option value="1-3 years">1-3 years</option>
+              <option value="4-6 years">4-6 years</option>
+              <option value="7+ years">7+ years</option>
+            </Form.Control>
+          </Form.Group>
 
-                    <Form.Group controlId="formExperienceLevel">
-                        <Form.Label>Experience Level</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="experienceLevel"
-                            value={jobDetails.experienceLevel}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
+          <Form.Group controlId="formMinimumDegree">
+            <Form.Label>Minimum Degree</Form.Label>
+            <Form.Control
+              as="select"
+              name="minimumDegree"
+              value={jobDetails.minimumDegree}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Minimum Degree</option>
+              <option value="Licence">Licence</option>
+              <option value="Engineering">Engineering</option>
+              <option value="Baccalaureate">Baccalaureate</option>
+            </Form.Control>
+          </Form.Group>
 
-                    <Form.Group controlId="formCategory">
-                        <Form.Label>Category</Form.Label>
-                        <Form.Control
-                            as="select"
-                            name="category"
-                            value={jobDetails.category}
-                            onChange={handleChange}
-                            required
-                        >
-                            <option value="">Select Category</option>
-                            <option value="Web & Mobile Development">Web & Mobile Development</option>
-                            <option value="Business Intelligence">Business Intelligence</option>
-                            <option value="Digital Marketing & Design">Digital Marketing & Design</option>
-                        </Form.Control>
-                    </Form.Group>
-
-                    <Button variant="primary" type="submit">
-                        Add Job
-                    </Button>
-                </Form>
-            </Modal.Body>
-        </Modal>
-    );
+          <Button variant="primary" type="submit">
+            Add Job
+          </Button>
+        </Form>
+      </Modal.Body>
+    </Modal>
+  );
 };
 
 export default AddJobListingModal;

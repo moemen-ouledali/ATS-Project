@@ -184,10 +184,25 @@ const HRManagerDashboard = () => {
                         ) : (
                           <>
                             <Typography variant="h5" component="h2">
-                              {listing.title} at {listing.company}
+                              {listing.title} - {listing.category}
                             </Typography>
                             <Typography variant="body1" component="p">
-                              {listing.description}
+                              <strong>Location:</strong> {listing.jobLocation}
+                            </Typography>
+                            <Typography variant="body1" component="p">
+                              <strong>Type:</strong> {listing.jobType}
+                            </Typography>
+                            <Typography variant="body1" component="p">
+                              <strong>Description:</strong> {listing.description}
+                            </Typography>
+                            <Typography variant="body1" component="p">
+                              <strong>Requirements:</strong> {listing.requirements}
+                            </Typography>
+                            <Typography variant="body1" component="p">
+                              <strong>Experience Level:</strong> {listing.experienceLevel}
+                            </Typography>
+                            <Typography variant="body1" component="p">
+                              <strong>Minimum Degree:</strong> {listing.minimumDegree}
                             </Typography>
                           </>
                         )}
