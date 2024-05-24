@@ -11,17 +11,26 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
     jobLocation: '',
     jobType: '',
     description: '',
-    requirements: '',
+    requirements: [],
     experienceLevel: '',
     minimumDegree: '',
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setJobDetails((prevDetails) => ({
-      ...prevDetails,
-      [name]: value,
-    }));
+    const { name, value, type, checked } = e.target;
+    if (type === 'checkbox') {
+      setJobDetails((prevDetails) => ({
+        ...prevDetails,
+        requirements: checked
+          ? [...prevDetails.requirements, value]
+          : prevDetails.requirements.filter((req) => req !== value),
+      }));
+    } else {
+      setJobDetails((prevDetails) => ({
+        ...prevDetails,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -33,6 +42,38 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
     } catch (error) {
       console.error('Failed to add job listing:', error);
     }
+  };
+
+  const renderRequirements = () => {
+    const requirementsOptions = {
+      'Web & Mobile Development': [
+        'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'C#', 'Ruby', 'PHP',
+        'Swift', 'Kotlin', 'Go', 'Rust', 'SQL', 'HTML', 'CSS', 'Scala', 'Perl', 'R',
+        'Dart', 'MATLAB'
+      ],
+      'Business Intelligence': [
+        'SQL', 'Python', 'R', 'JavaScript', 'SAS', 'Matlab', 'Scala', 'Julia', 'DAX', 
+        'MDX', 'VBA', 'T-SQL', 'PL/SQL', 'HiveQL', 'Pig Latin', 'Power Query M', 'Perl',
+        'Ruby', 'Go', 'Java'
+      ],
+      'Digital Marketing & Design': [
+        'Photoshop', 'Illustrator', 'InDesign', 'Figma', 'Sketch', 'Canva', 'Adobe XD', 
+        'HTML', 'CSS', 'JavaScript', 'Google Analytics', 'Google Ads', 'Facebook Ads', 
+        'SEO', 'SEM', 'WordPress', 'Mailchimp', 'Hootsuite', 'HubSpot', 'A/B Testing'
+      ]
+    };
+
+    return requirementsOptions[jobDetails.category]?.map((req) => (
+      <Form.Check
+        key={req}
+        type="checkbox"
+        label={req}
+        name="requirements"
+        value={req}
+        onChange={handleChange}
+        checked={jobDetails.requirements.includes(req)}
+      />
+    ));
   };
 
   return (
@@ -108,13 +149,7 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
 
           <Form.Group controlId="formRequirements">
             <Form.Label>Requirements</Form.Label>
-            <Form.Control
-              as="textarea"
-              name="requirements"
-              value={jobDetails.requirements}
-              onChange={handleChange}
-              required
-            />
+            {renderRequirements()}
           </Form.Group>
 
           <Form.Group controlId="formExperienceLevel">

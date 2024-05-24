@@ -57,7 +57,7 @@ const style = {
 };
 
 const EditProfileForm = () => {
-    const { authToken, userId, userDetails: authUserDetails } = useContext(AuthContext);
+    const { authToken, userId} = useContext(AuthContext);
     const [userDetails, setUserDetails] = useState({
         firstName: '',
         lastName: '',

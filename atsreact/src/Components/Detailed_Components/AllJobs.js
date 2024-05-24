@@ -143,6 +143,19 @@ const AllJobsPage = () => {
                         <Typography variant="body2" color="textSecondary" component="p">
                           {job.description}
                         </Typography>
+                        <Typography variant="body2" color="textSecondary" component="p">
+                          <strong>Location:</strong> {job.jobLocation}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary" component="p">
+                          <strong>Requirements:</strong>
+                        </Typography>
+                        {job.requirements && Array.isArray(job.requirements) && (
+                          <div className="badge bg-gradient-primary-to-secondary text-white mb-4">
+                            <div className="text-uppercase">
+                              {job.requirements.join(' · ')}
+                            </div>
+                          </div>
+                        )}
                       </CardContent>
                     </CardActionArea>
                     <CardActions sx={{ justifyContent: 'center' }}>

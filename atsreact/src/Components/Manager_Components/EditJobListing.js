@@ -6,16 +6,57 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
   const [jobDetails, setJobDetails] = useState({ ...listing });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setJobDetails((prevDetails) => ({
-      ...prevDetails,
-      [name]: value,
-    }));
+    const { name, value, type, checked } = e.target;
+    if (type === 'checkbox') {
+      setJobDetails((prevDetails) => ({
+        ...prevDetails,
+        requirements: checked
+          ? [...prevDetails.requirements, value]
+          : prevDetails.requirements.filter((req) => req !== value),
+      }));
+    } else {
+      setJobDetails((prevDetails) => ({
+        ...prevDetails,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave(listing._id, jobDetails);
+  };
+
+  const renderRequirements = () => {
+    const requirementsOptions = {
+      'Web & Mobile Development': [
+        'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'C#', 'Ruby', 'PHP',
+        'Swift', 'Kotlin', 'Go', 'Rust', 'SQL', 'HTML', 'CSS', 'Scala', 'Perl', 'R',
+        'Dart', 'MATLAB'
+      ],
+      'Business Intelligence': [
+        'SQL', 'Python', 'R', 'JavaScript', 'SAS', 'Matlab', 'Scala', 'Julia', 'DAX', 
+        'MDX', 'VBA', 'T-SQL', 'PL/SQL', 'HiveQL', 'Pig Latin', 'Power Query M', 'Perl',
+        'Ruby', 'Go', 'Java'
+      ],
+      'Digital Marketing & Design': [
+        'Photoshop', 'Illustrator', 'InDesign', 'Figma', 'Sketch', 'Canva', 'Adobe XD', 
+        'HTML', 'CSS', 'JavaScript', 'Google Analytics', 'Google Ads', 'Facebook Ads', 
+        'SEO', 'SEM', 'WordPress', 'Mailchimp', 'Hootsuite', 'HubSpot', 'A/B Testing'
+      ]
+    };
+
+    return requirementsOptions[jobDetails.category]?.map((req) => (
+      <Form.Check
+        key={req}
+        type="checkbox"
+        label={req}
+        name="requirements"
+        value={req}
+        onChange={handleChange}
+        checked={jobDetails.requirements.includes(req)}
+      />
+    ));
   };
 
   return (
@@ -86,13 +127,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
 
       <Form.Group controlId="formRequirements">
         <Form.Label>Requirements</Form.Label>
-        <Form.Control
-          as="textarea"
-          name="requirements"
-          value={jobDetails.requirements}
-          onChange={handleChange}
-          required
-        />
+        {renderRequirements()}
       </Form.Group>
 
       <Form.Group controlId="formExperienceLevel">
