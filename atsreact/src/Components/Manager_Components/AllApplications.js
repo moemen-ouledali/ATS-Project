@@ -1,9 +1,12 @@
+// src/Components/Manager_Components/AllApplications.js
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Modal, Button as BootstrapButton } from 'react-bootstrap';
 import { Box, Typography, Container, Card, CardContent, CardActions, Grid, Button as MuiButton, CircularProgress, Paper } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/system';
+import { calculateMatchPercentage } from '../../utils'; // Import the utility function
 
 const theme = createTheme({
   palette: {
@@ -156,11 +159,15 @@ const AllApplications = () => {
                     <StyledCard>
                       <CardContent>
                         <Typography variant="h5" component="h2">{app.name}</Typography>
-                        <Typography variant="body2" color="textSecondary" component="p"><strong>Job Title:</strong> {app.jobId.title}</Typography>
                         <Typography variant="body2" color="textSecondary" component="p"><strong>Education Level:</strong> {app.educationLevel}</Typography>
                         <Typography variant="body2" color="textSecondary" component="p"><strong>Experience Level:</strong> {app.experienceLevel}</Typography>
                         <Typography variant="body2" color="textSecondary" component="p"><strong>Status:</strong> {app.status}</Typography>
                         <Typography variant="body2" color="textSecondary" component="p"><strong>Applied on:</strong> {new Date(app.createdAt).toLocaleDateString()} {new Date(app.createdAt).toLocaleTimeString()}</Typography>
+                        
+                        {/* Add match percentage display */}
+                        <Typography variant="body2" color="textSecondary" component="p">
+                          <strong>Match Percentage:</strong> {`${calculateMatchPercentage(app.jobId.requirements, app.resumeText, app.motivationLetter)}%`}
+                        </Typography>
                       </CardContent>
                       <CardActions>
                         <AcceptButton onClick={() => acceptApplication(app._id)}>Accept</AcceptButton>
@@ -180,7 +187,6 @@ const AllApplications = () => {
               </Modal.Header>
               <Modal.Body>
                 <Typography variant="h6" component="p"><strong>Name:</strong> {selectedApplication.name}</Typography>
-                <Typography variant="body2" color="textSecondary" component="p"><strong>Job Title:</strong> {selectedApplication.jobId.title}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Email:</strong> {selectedApplication.email}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Phone:</strong> {selectedApplication.phone}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Education Level:</strong> {selectedApplication.educationLevel}</Typography>
@@ -190,6 +196,11 @@ const AllApplications = () => {
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Resume:</strong> <a href={`http://localhost:5000/${selectedApplication.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Status:</strong> {selectedApplication.status}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Applied on:</strong> {new Date(selectedApplication.createdAt).toLocaleDateString()} {new Date(selectedApplication.createdAt).toLocaleTimeString()}</Typography>
+                
+                {/* Add match percentage display */}
+                <Typography variant="body2" color="textSecondary" component="p">
+                  <strong>Match Percentage:</strong> {`${calculateMatchPercentage(selectedApplication.requirements, selectedApplication.resumeText, selectedApplication.motivationLetter)}%`}
+                </Typography>
               </Modal.Body>
               <Modal.Footer>
                 <BootstrapButton variant="secondary" onClick={closeApplicationDetails}>Close</BootstrapButton>

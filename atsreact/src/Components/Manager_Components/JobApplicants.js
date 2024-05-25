@@ -1,5 +1,3 @@
-// atsreact/src/Components/Manager_Components/JobApplicants.js
-
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
@@ -8,7 +6,7 @@ import { Modal, Button } from 'react-bootstrap';
 const JobApplicants = () => {
     const [applicants, setApplicants] = useState([]);
     const [selectedApplicant, setSelectedApplicant] = useState(null);
-    const [jobTitle, setJobTitle] = useState('');
+    const [jobDetails, setJobDetails] = useState(null);
     const { jobId } = useParams();
 
     const fetchApplicants = useCallback(async () => {
@@ -19,20 +17,20 @@ const JobApplicants = () => {
             ]);
 
             setApplicants(applicantsResponse.data);
-            setJobTitle(jobResponse.data.title);
+            setJobDetails(jobResponse.data);
         } catch (error) {
             console.error('Failed to fetch applicants or job details:', error);
         }
-    }, [jobId]); // Dependency array for useCallback
+    }, [jobId]);
 
     useEffect(() => {
         fetchApplicants();
-    }, [fetchApplicants]); // Now fetchApplicants is stable and won't cause unnecessary rerenders
+    }, [fetchApplicants]);
 
     const acceptApplication = async (appId) => {
         try {
             await axios.put(`http://localhost:5000/api/applications/accept/${appId}`);
-            fetchApplicants(); // Refresh the list of applicants to show updated status
+            fetchApplicants();
         } catch (error) {
             console.error('Failed to accept application:', error);
         }
@@ -41,7 +39,7 @@ const JobApplicants = () => {
     const declineApplication = async (appId) => {
         try {
             await axios.put(`http://localhost:5000/api/applications/decline/${appId}`);
-            fetchApplicants(); // Refresh the list of applicants to show updated status
+            fetchApplicants();
         } catch (error) {
             console.error('Failed to decline application:', error);
         }
@@ -55,6 +53,14 @@ const JobApplicants = () => {
         setSelectedApplicant(null);
     };
 
+    const calculateMatchPercentage = (requirements, resumeText) => {
+        const resumeWords = resumeText.toLowerCase().split(/\s+/);
+        const matchedRequirements = requirements.filter(requirement =>
+            resumeWords.includes(requirement.toLowerCase())
+        );
+        return (matchedRequirements.length / requirements.length) * 100;
+    };
+
     const style = {
         container: { padding: '20px' },
         applicant: { border: '1px solid #ccc', borderRadius: '8px', padding: '10px', marginBottom: '10px' },
@@ -66,22 +72,26 @@ const JobApplicants = () => {
 
     return (
         <div style={style.container}>
-            <h2>Applicants for {jobTitle}</h2>
+            <h2>Applicants for {jobDetails?.title}</h2>
             {applicants.length === 0 ? (
-                <p>No applicants for {jobTitle} at the current time.</p>
+                <p>No applicants for {jobDetails?.title} at the current time.</p>
             ) : (
-                applicants.map(applicant => (
-                    <div key={applicant._id} style={style.applicant}>
-                        <p><strong>Name:</strong> {applicant.name}</p>
-                        <p><strong>Education Level:</strong> {applicant.educationLevel}</p>
-                        <p><strong>Experience Level:</strong> {applicant.experienceLevel}</p>
-                        <p><strong>Status:</strong> {applicant.status || 'In Review'}</p>
-                        <p><strong>Applied on:</strong> {new Date(applicant.createdAt).toLocaleDateString()} {new Date(applicant.createdAt).toLocaleTimeString()}</p>
-                        <button style={style.acceptButton} onClick={() => acceptApplication(applicant._id)}>Accept</button>
-                        <button style={style.declineButton} onClick={() => declineApplication(applicant._id)}>Decline</button>
-                        <button style={style.detailsButton} onClick={() => showApplicationDetails(applicant)}>View Details</button>
-                    </div>
-                ))
+                applicants.map(applicant => {
+                    const matchPercentage = calculateMatchPercentage(jobDetails.requirements, applicant.resumeText);
+                    return (
+                        <div key={applicant._id} style={style.applicant}>
+                            <p><strong>Name:</strong> {applicant.name}</p>
+                            <p><strong>Education Level:</strong> {applicant.educationLevel}</p>
+                            <p><strong>Experience Level:</strong> {applicant.experienceLevel}</p>
+                            <p><strong>Status:</strong> {applicant.status || 'In Review'}</p>
+                            <p><strong>Applied on:</strong> {new Date(applicant.createdAt).toLocaleDateString()} {new Date(applicant.createdAt).toLocaleTimeString()}</p>
+                            <p><strong>Match Percentage:</strong> {matchPercentage.toFixed(0)}%</p>
+                            <button style={style.acceptButton} onClick={() => acceptApplication(applicant._id)}>Accept</button>
+                            <button style={style.declineButton} onClick={() => declineApplication(applicant._id)}>Decline</button>
+                            <button style={style.detailsButton} onClick={() => showApplicationDetails(applicant)}>View Details</button>
+                        </div>
+                    );
+                })
             )}
             {selectedApplicant && (
                 <Modal show onHide={closeApplicationDetails}>
