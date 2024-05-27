@@ -12,7 +12,6 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_here';
 const authRoutes = require('./routes/auth');
 const jobListingsRoutes = require('./routes/jobListingsRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
-const userRoutes = require('./routes/userRoutes'); // Ensure this line is present
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/ats_database', {
@@ -33,7 +32,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/auth', authRoutes);
 app.use('/api/jobs', jobListingsRoutes);
 app.use('/api/applications', applicationRoutes);
-app.use('/api/users', userRoutes); // Ensure this line is present
 
 app.get('/', (req, res) => {
     res.send('Server is up and running');
