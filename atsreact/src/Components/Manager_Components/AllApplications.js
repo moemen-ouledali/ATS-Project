@@ -1,12 +1,9 @@
-// src/Components/Manager_Components/AllApplications.js
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Modal, Button as BootstrapButton } from 'react-bootstrap';
 import { Box, Typography, Container, Card, CardContent, CardActions, Grid, Button as MuiButton, CircularProgress, Paper } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/system';
-import { calculateMatchPercentage } from '../../utils'; // Import the utility function
 
 const theme = createTheme({
   palette: {
@@ -82,6 +79,29 @@ const ViewButton = styled(GradientButton)({
   background: 'linear-gradient(45deg, #4A90E2, #357ABD)',
 });
 
+const calculateMatchPercentage = (requirements, resumeText) => {
+  const resumeWords = resumeText.toLowerCase().split(/\s+/);
+  const matchedRequirements = requirements.filter(requirement =>
+    resumeWords.includes(requirement.toLowerCase())
+  );
+  const percentage = (matchedRequirements.length / requirements.length) * 100;
+  return percentage;
+};
+
+const getMatchedUnmatchedRequirements = (requirements, resumeText) => {
+  const resumeWords = resumeText.toLowerCase().split(/\s+/);
+  const matched = [];
+  const unmatched = [];
+  requirements.forEach(requirement => {
+    if (resumeWords.includes(requirement.toLowerCase())) {
+      matched.push(requirement);
+    } else {
+      unmatched.push(requirement);
+    }
+  });
+  return { matched, unmatched };
+};
+
 const AllApplications = () => {
   const [applications, setApplications] = useState([]);
   const [selectedApplication, setSelectedApplication] = useState(null);
@@ -154,29 +174,28 @@ const AllApplications = () => {
               <Typography>No applications available at the current time.</Typography>
             ) : (
               <Grid container spacing={4}>
-                {applications.map(app => (
-                  <Grid item xs={12} key={app._id}>
-                    <StyledCard>
-                      <CardContent>
-                        <Typography variant="h5" component="h2">{app.name}</Typography>
-                        <Typography variant="body2" color="textSecondary" component="p"><strong>Education Level:</strong> {app.educationLevel}</Typography>
-                        <Typography variant="body2" color="textSecondary" component="p"><strong>Experience Level:</strong> {app.experienceLevel}</Typography>
-                        <Typography variant="body2" color="textSecondary" component="p"><strong>Status:</strong> {app.status}</Typography>
-                        <Typography variant="body2" color="textSecondary" component="p"><strong>Applied on:</strong> {new Date(app.createdAt).toLocaleDateString()} {new Date(app.createdAt).toLocaleTimeString()}</Typography>
-                        
-                        {/* Add match percentage display */}
-                        <Typography variant="body2" color="textSecondary" component="p">
-                          <strong>Match Percentage:</strong> {`${calculateMatchPercentage(app.jobId.requirements, app.resumeText, app.motivationLetter)}%`}
-                        </Typography>
-                      </CardContent>
-                      <CardActions>
-                        <AcceptButton onClick={() => acceptApplication(app._id)}>Accept</AcceptButton>
-                        <DeclineButton onClick={() => declineApplication(app._id)}>Decline</DeclineButton>
-                        <ViewButton onClick={() => showApplicationDetails(app)}>View Details</ViewButton>
-                      </CardActions>
-                    </StyledCard>
-                  </Grid>
-                ))}
+                {applications.map(app => {
+                  const matchPercentage = calculateMatchPercentage(app.jobId.requirements, app.resumeText);
+                  return (
+                    <Grid item xs={12} key={app._id}>
+                      <StyledCard>
+                        <CardContent>
+                          <Typography variant="h5" component="h2">{app.name}</Typography>
+                          <Typography variant="body2" color="textSecondary" component="p"><strong>Education Level:</strong> {app.educationLevel}</Typography>
+                          <Typography variant="body2" color="textSecondary" component="p"><strong>Experience Level:</strong> {app.experienceLevel}</Typography>
+                          <Typography variant="body2" color="textSecondary" component="p"><strong>Status:</strong> {app.status}</Typography>
+                          <Typography variant="body2" color="textSecondary" component="p"><strong>Applied on:</strong> {new Date(app.createdAt).toLocaleDateString()} {new Date(app.createdAt).toLocaleTimeString()}</Typography>
+                          <Typography variant="body2" color="textSecondary" component="p"><strong>Match Percentage:</strong> {matchPercentage.toFixed(0)}%</Typography>
+                        </CardContent>
+                        <CardActions>
+                          <AcceptButton onClick={() => acceptApplication(app._id)}>Accept</AcceptButton>
+                          <DeclineButton onClick={() => declineApplication(app._id)}>Decline</DeclineButton>
+                          <ViewButton onClick={() => showApplicationDetails(app)}>View Details</ViewButton>
+                        </CardActions>
+                      </StyledCard>
+                    </Grid>
+                  );
+                })}
               </Grid>
             )
           )}
@@ -196,11 +215,19 @@ const AllApplications = () => {
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Resume:</strong> <a href={`http://localhost:5000/${selectedApplication.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Status:</strong> {selectedApplication.status}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Applied on:</strong> {new Date(selectedApplication.createdAt).toLocaleDateString()} {new Date(selectedApplication.createdAt).toLocaleTimeString()}</Typography>
-                
-                {/* Add match percentage display */}
-                <Typography variant="body2" color="textSecondary" component="p">
-                  <strong>Match Percentage:</strong> {`${calculateMatchPercentage(selectedApplication.requirements, selectedApplication.resumeText, selectedApplication.motivationLetter)}%`}
-                </Typography>
+                <Typography variant="body2" color="textSecondary" component="p"><strong>Match Percentage:</strong> {calculateMatchPercentage(selectedApplication.jobId.requirements, selectedApplication.resumeText)}%</Typography>
+                <Typography variant="body2" color="textSecondary" component="p"><strong>Matched Requirements:</strong></Typography>
+                <ul>
+                  {getMatchedUnmatchedRequirements(selectedApplication.jobId.requirements, selectedApplication.resumeText).matched.map((req, index) => (
+                    <li key={index} style={{ color: 'green' }}>{req}</li>
+                  ))}
+                </ul>
+                <Typography variant="body2" color="textSecondary" component="p"><strong>Unmatched Requirements:</strong></Typography>
+                <ul>
+                  {getMatchedUnmatchedRequirements(selectedApplication.jobId.requirements, selectedApplication.resumeText).unmatched.map((req, index) => (
+                    <li key={index} style={{ color: 'red' }}>{req}</li>
+                  ))}
+                </ul>
               </Modal.Body>
               <Modal.Footer>
                 <BootstrapButton variant="secondary" onClick={closeApplicationDetails}>Close</BootstrapButton>
