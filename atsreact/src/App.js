@@ -23,7 +23,6 @@ import AllApplications from './Components/Manager_Components/AllApplications';
 import RequestPasswordReset from './Components/Authentication_Components/RequestPasswordReset';
 import VerifyResetCode from './Components/Authentication_Components/VerifyResetCode';
 import VerifyEmail from './Components/Authentication_Components/VerifyEmail'; // Import the new component
-import ViewProfile from './Components/User_Components/ViewProfile';
 
 
 // Import the new component
@@ -56,7 +55,6 @@ function App() {
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/request-password-reset" element={<RequestPasswordReset />} />
                     <Route path="/verify-reset-code" element={<VerifyResetCode />} />
-                    
 
                     <Route path="/register" element={<RegisterForm />} />
                     <Route path="/candidate_dashboard" element={<CandidateDashboard />} />
@@ -72,8 +70,6 @@ function App() {
                     <Route path="/job/:id" element={<JobApplicationForm />} />
                     <Route path="/all-applications" element={<AllApplications />} /> {/* Add this line */}
                     <Route path="/verify-email" element={<VerifyEmail />} /> {/* Add this route */}
-
-                    <Route path="/view-profile/:applicantId" element={<ViewProfile />} />
 
 
                 </Routes>
