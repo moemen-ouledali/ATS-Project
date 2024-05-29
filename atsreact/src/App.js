@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider, AuthContext } from './AuthContext'; // Corrected import
+import { AuthProvider, AuthContext } from './AuthContext';
 import LoginForm from './Components/Authentication_Components/LoginForm';
 import RegisterForm from './Components/Authentication_Components/RegisterForm';
 import CandidateDashboard from './Components/Candidate_Components/CandidateDashboard';
@@ -19,14 +19,12 @@ import JobListingsPage from './Components/Detailed_Components/JobListingsPage';
 import InternshipListings from './Components/Detailed_Components/InternshipListings';
 import AllJobs from './Components/Detailed_Components/AllJobs';
 import JobApplicationForm from './Components/Detailed_Components/JobApplicationForm';
-import AllApplications from './Components/Manager_Components/AllApplications'; 
+import AllApplications from './Components/Manager_Components/AllApplications';
 import RequestPasswordReset from './Components/Authentication_Components/RequestPasswordReset';
 import VerifyResetCode from './Components/Authentication_Components/VerifyResetCode';
-import VerifyEmail from './Components/Authentication_Components/VerifyEmail'; // Import the new component
-
-
-// Import the new component
-
+import VerifyEmail from './Components/Authentication_Components/VerifyEmail';
+import TestPage from './Components/User_Components/TestPage'; // Ensure this path is correct
+import ManagerTestAttempts from './Components/Manager_Components/ManagerTestAttempts'; // New component
 
 
 function DynamicNavigation() {
@@ -45,6 +43,7 @@ function DynamicNavigation() {
             return <LoggedOutNav />;
     }
 }
+
 function App() {
     return (
         <AuthProvider>
@@ -55,7 +54,6 @@ function App() {
                     <Route path="/login" element={<LoginForm />} />
                     <Route path="/request-password-reset" element={<RequestPasswordReset />} />
                     <Route path="/verify-reset-code" element={<VerifyResetCode />} />
-
                     <Route path="/register" element={<RegisterForm />} />
                     <Route path="/candidate_dashboard" element={<CandidateDashboard />} />
                     <Route path="/application/:id" element={<ApplicationDetails />} />
@@ -68,10 +66,10 @@ function App() {
                     <Route path="/internships" element={<InternshipListings />} />
                     <Route path="/all-jobs" element={<AllJobs />} />
                     <Route path="/job/:id" element={<JobApplicationForm />} />
-                    <Route path="/all-applications" element={<AllApplications />} /> {/* Add this line */}
-                    <Route path="/verify-email" element={<VerifyEmail />} /> {/* Add this route */}
-
-
+                    <Route path="/all-applications" element={<AllApplications />} />
+                    <Route path="/verify-email" element={<VerifyEmail />} />
+                    <Route path="/test/:category" element={<TestPage />} />
+                    <Route path="/manager-test-attempts" element={<ManagerTestAttempts />} /> {/* New route */}
                 </Routes>
             </Router>
         </AuthProvider>

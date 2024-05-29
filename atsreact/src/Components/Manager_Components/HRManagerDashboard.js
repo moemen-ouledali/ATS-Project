@@ -1,3 +1,4 @@
+// HRManagerDashboard.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AddJobListingModal from './AddJobListingModal';
@@ -18,7 +19,7 @@ import {
   Paper,
   CardActionArea,
 } from '@mui/material';
-import { Add, Edit, Delete, Visibility } from '@mui/icons-material';
+import { Add, Edit, Delete, Visibility, Assessment } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/system';
 
@@ -172,6 +173,10 @@ const HRManagerDashboard = () => {
     navigate('/all-applications');
   };
 
+  const showTestAttempts = () => {
+    navigate('/manager-test-attempts');
+  };
+
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
@@ -217,6 +222,15 @@ const HRManagerDashboard = () => {
               onClick={() => setShowJobListings(true)}
             >
               Manage Job Listings
+            </StyledButton>
+            <StyledButton
+              variant="contained"
+              color="primary"
+              startIcon={<Assessment />}
+              sx={{ fontSize: '1.2rem', padding: '12px 24px' }}
+              onClick={showTestAttempts}
+            >
+              View Test Attempts
             </StyledButton>
           </Box>
           <AddJobListingModal
