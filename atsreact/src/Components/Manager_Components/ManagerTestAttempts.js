@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Container, Typography, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button } from '@mui/material';
+import { Container, Typography, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Box } from '@mui/material';
 import { Modal as BootstrapModal, Button as BootstrapButton } from 'react-bootstrap';
 
 const calculateMatchPercentage = (requirements = [], resumeText = '') => {
@@ -32,12 +32,15 @@ const ManagerTestAttempts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedApplication, setSelectedApplication] = useState(null);
+  const [openAcceptDialog, setOpenAcceptDialog] = useState(false);
+  const [openDeclineDialog, setOpenDeclineDialog] = useState(false);
+  const [interviewDate, setInterviewDate] = useState('');
+  const [interviewTime, setInterviewTime] = useState('');
 
   useEffect(() => {
     const fetchTestAttempts = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/tests/all-attempts');
-        console.log('API Response:', response.data); // Debugging line
         setAttempts(response.data);
         setError(null);
       } catch (error) {
@@ -52,12 +55,44 @@ const ManagerTestAttempts = () => {
   }, []);
 
   const handleViewApplication = (application) => {
-    console.log('Selected Application:', application);
     setSelectedApplication(application);
   };
 
   const handleCloseModal = () => {
     setSelectedApplication(null);
+  };
+
+  const handleAcceptApplication = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/applications/accept-after-test/${selectedApplication.application._id}`,
+        { date: interviewDate, time: interviewTime }
+      );
+      setAttempts(attempts.map(attempt =>
+        attempt.application._id === selectedApplication.application._id
+          ? { ...attempt, application: response.data }
+          : attempt
+      ));
+      setOpenAcceptDialog(false);
+      setSelectedApplication(null);
+    } catch (error) {
+      console.error('Failed to accept application:', error);
+    }
+  };
+
+  const handleDeclineApplication = async () => {
+    try {
+      const response = await axios.put(`http://localhost:5000/api/applications/decline-after-test/${selectedApplication.application._id}`);
+      setAttempts(attempts.map(attempt =>
+        attempt.application._id === selectedApplication.application._id
+          ? { ...attempt, application: response.data }
+          : attempt
+      ));
+      setOpenDeclineDialog(false);
+      setSelectedApplication(null);
+    } catch (error) {
+      console.error('Failed to decline application:', error);
+    }
   };
 
   return (
@@ -85,25 +120,28 @@ const ManagerTestAttempts = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {attempts.map((attempt) => {
-                console.log('Attempt:', attempt); // Debugging line
-                return (
-                  <TableRow key={attempt._id}>
-                    <TableCell>
-                      {attempt.user ? `${attempt.user.firstName} ${attempt.user.lastName}` : 'N/A'}
-                    </TableCell>
-                    <TableCell>{attempt.test ? attempt.test.category : 'N/A'}</TableCell>
-                    <TableCell>{attempt.score}</TableCell>
-                    <TableCell>{attempt.application ? attempt.application.status : 'N/A'}</TableCell>
-                    <TableCell>{attempt.jobTitle}</TableCell>
-                    <TableCell>
-                      <Button variant="contained" color="primary" onClick={() => handleViewApplication(attempt)}>
-                        View Application
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {attempts.map((attempt) => (
+                <TableRow key={attempt._id}>
+                  <TableCell>
+                    {attempt.user ? `${attempt.user.firstName} ${attempt.user.lastName}` : 'N/A'}
+                  </TableCell>
+                  <TableCell>{attempt.test ? attempt.test.category : 'N/A'}</TableCell>
+                  <TableCell>{attempt.score}</TableCell>
+                  <TableCell>{attempt.application ? attempt.application.status : 'N/A'}</TableCell>
+                  <TableCell>{attempt.jobTitle}</TableCell>
+                  <TableCell>
+                    <Button variant="contained" color="primary" onClick={() => handleViewApplication(attempt)}>
+                      View Application
+                    </Button>
+                    <Button variant="contained" color="secondary" onClick={() => { setOpenAcceptDialog(true); setSelectedApplication(attempt); }}>
+                      Accept
+                    </Button>
+                    <Button variant="contained" color="error" onClick={() => { setOpenDeclineDialog(true); setSelectedApplication(attempt); }}>
+                      Decline
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -144,6 +182,58 @@ const ManagerTestAttempts = () => {
           </BootstrapModal.Footer>
         </BootstrapModal>
       )}
+
+      {/* Accept Dialog */}
+      <Dialog open={openAcceptDialog} onClose={() => setOpenAcceptDialog(false)}>
+        <DialogTitle>Accept Application</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please provide the interview date and time.
+          </DialogContentText>
+          <TextField
+            margin="dense"
+            label="Interview Date"
+            type="date"
+            fullWidth
+            value={interviewDate}
+            onChange={(e) => setInterviewDate(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Interview Time"
+            type="time"
+            fullWidth
+            value={interviewTime}
+            onChange={(e) => setInterviewTime(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenAcceptDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleAcceptApplication} color="primary">
+            Accept
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Decline Dialog */}
+      <Dialog open={openDeclineDialog} onClose={() => setOpenDeclineDialog(false)}>
+        <DialogTitle>Decline Application</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to decline this application?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeclineDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeclineApplication} color="primary">
+            Decline
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

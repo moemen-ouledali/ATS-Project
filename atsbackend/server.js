@@ -8,12 +8,16 @@ const PORT = process.env.PORT || 5000;
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_here';
 
+const dotenv = require('dotenv');
+
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const jobListingsRoutes = require('./routes/jobListingsRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
 const testRoutes = require('./routes/testRoutes');
 
+dotenv.config();
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/ats_database', {
@@ -26,6 +30,8 @@ mongoose.connect('mongodb://localhost:27017/ats_database', {
 app.use(cors());
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+
 
 // Serve static files from the uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

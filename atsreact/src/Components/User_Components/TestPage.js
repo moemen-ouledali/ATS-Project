@@ -11,24 +11,30 @@ const TestPage = () => {
   const [answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [score, setScore] = useState(null);
-  const { authToken } = useContext(AuthContext); // Access the authToken from AuthContext
+  const [error, setError] = useState(null);
+  const { authToken } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTest = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/tests/category/${category}`);
+        const response = await axios.get(`http://localhost:5000/api/tests/category/${category}`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          }
+        });
         setTest(response.data);
         setAnswers(new Array(response.data.questions.length).fill(''));
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch test:', error);
+        setError('Failed to fetch test');
         setLoading(false);
       }
     };
 
     fetchTest();
-  }, [category]);
+  }, [category, authToken]);
 
   const handleOptionChange = (index, option) => {
     const newAnswers = [...answers];
@@ -64,7 +70,7 @@ const TestPage = () => {
           },
         }
       );
-      console.log('Test submission response:', response.data);  // Debug: Log response data
+      console.log('Test submission response:', response.data);
       setScore(response.data.score);
     } catch (error) {
       console.error('Failed to submit test:', error);
@@ -75,6 +81,22 @@ const TestPage = () => {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
+        <Typography color="error">{error}</Typography>
+      </Box>
+    );
+  }
+
+  if (!test || !test.questions) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
+        <Typography color="error">Test not available</Typography>
       </Box>
     );
   }

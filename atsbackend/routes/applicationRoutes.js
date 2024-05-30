@@ -6,6 +6,8 @@ const Application = require('../models/Application');
 const JobListing = require('../models/JobListing'); // Ensure this is imported
 const fs = require('fs');
 const pdf = require('pdf-parse');
+const nodemailer = require('nodemailer');
+require('dotenv').config();
 
 // Set up storage engine
 const storage = multer.diskStorage({
@@ -18,6 +20,23 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+// Configure nodemailer transporter
+const transporter = nodemailer.createTransport({
+    host: 'smtp.office365.com',
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+// Debugging middleware to check route hits
+router.use((req, res, next) => {
+    console.log(`Request URL: ${req.originalUrl}`);
+    next();
+});
 
 router.post('/apply', upload.single('resume'), async (req, res) => {
     const { name, email, phone, educationLevel, experienceLevel, university, motivationLetter, jobId } = req.body;
@@ -132,6 +151,61 @@ router.put('/decline/:id', async (req, res) => {
     } catch (error) {
         console.error('Failed to decline application:', error);
         res.status(500).send('Error declining application');
+    }
+});
+
+// New endpoints for post-evaluation test decisions
+
+// Decline an application after evaluation test
+router.put('/decline-after-test/:id', async (req, res) => {
+    try {
+        const applicationId = req.params.id;
+        const application = await Application.findByIdAndUpdate(applicationId, { status: 'declined after evaluation test' }, { new: true });
+
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: application.email,
+            subject: 'Application Declined',
+            text: `Dear ${application.name},\n\nWe regret to inform you that your application for the ${application.jobId.title} position has been declined after the evaluation test.\n\nThank you for your interest in our company.\n\nBest regards,\n[Your Company Name]`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.json(application);
+    } catch (error) {
+        console.error('Failed to decline application:', error);
+        res.status(500).send('Error declining application');
+    }
+});
+
+// Accept an application after evaluation test
+router.put('/accept-after-test/:id', async (req, res) => {
+    try {
+        const applicationId = req.params.id;
+        const { date, time } = req.body;
+        const application = await Application.findByIdAndUpdate(applicationId, { status: 'accepted for interview' }, { new: true });
+
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: application.email,
+            subject: 'Application Accepted - Interview Scheduled',
+            text: `Dear ${application.name},\n\nWe are pleased to inform you that your application for the ${application.jobId.title} position has been accepted. Your interview has been scheduled for ${date} at ${time}.\n\nThank you for your interest in our company.\n\nBest regards,\n[Your Company Name]`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.json(application);
+    } catch (error) {
+        console.error('Failed to accept application:', error);
+        res.status(500).send('Error accepting application');
     }
 });
 

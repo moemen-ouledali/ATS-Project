@@ -6,6 +6,7 @@ const Application = require('../models/Application');
 const JobListing = require('../models/JobListing');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User'); // Import User model
+const Question = require('../models/Question'); // Ensure this is imported
 
 // Get test by category
 router.get('/category/:category', async (req, res) => {
@@ -21,6 +22,7 @@ router.get('/category/:category', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 // Submit test answers
 router.post('/submit', async (req, res) => {
@@ -93,8 +95,8 @@ router.get('/all-attempts', async (req, res) => {
 
     const attemptsWithJobs = attempts.map(attempt => ({
       ...attempt._doc,
-      jobTitle: attempt.application.jobId ? attempt.application.jobId.title : 'N/A',
-      jobRequirements: attempt.application.jobId ? attempt.application.jobId.requirements : []
+      jobTitle: attempt.application && attempt.application.jobId ? attempt.application.jobId.title : 'N/A',
+      jobRequirements: attempt.application && attempt.application.jobId ? attempt.application.jobId.requirements : []
     }));
 
     res.json(attemptsWithJobs);
@@ -103,5 +105,6 @@ router.get('/all-attempts', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 module.exports = router;
