@@ -1,5 +1,6 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
+// atsreact/src/App.js
 
+import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './AuthContext';
@@ -25,6 +26,10 @@ import VerifyResetCode from './Components/Authentication_Components/VerifyResetC
 import VerifyEmail from './Components/Authentication_Components/VerifyEmail';
 import TestPage from './Components/User_Components/TestPage'; // Ensure this path is correct
 import ManagerTestAttempts from './Components/Manager_Components/ManagerTestAttempts'; // New component
+import UserManagement from './Components/Admin_Components/UserManagement';
+import AdminNav from './Components/NavigationBar_Components/AdminNav'; // Ensure the import path is correct
+import AnalyticsDashboard from './Components/Manager_Components/HRManagerAnalytics'; // Import the AnalyticsDashboard
+
 
 
 function DynamicNavigation() {
@@ -39,6 +44,8 @@ function DynamicNavigation() {
             return <ManagerNav />;
         case 'Candidate':
             return <CandidateNav />;
+        case 'Admin':
+            return <AdminNav />;
         default:
             return <LoggedOutNav />;
     }
@@ -70,6 +77,10 @@ function App() {
                     <Route path="/verify-email" element={<VerifyEmail />} />
                     <Route path="/test/:category" element={<TestPage />} />
                     <Route path="/manager-test-attempts" element={<ManagerTestAttempts />} /> {/* New route */}
+                    <Route path="/admin/users" element={<UserManagement />} />
+                    <Route path="/admin_dashboard" element={<UserManagement />} />
+                    <Route path="/hr-manager-analytics" element={<AnalyticsDashboard />} /> {/* Add AnalyticsDashboard Route */}
+
                 </Routes>
             </Router>
         </AuthProvider>
@@ -77,3 +88,4 @@ function App() {
 }
 
 export default App;
+

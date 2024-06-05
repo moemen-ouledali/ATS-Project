@@ -1,4 +1,3 @@
-// HRManagerDashboard.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AddJobListingModal from './AddJobListingModal';
@@ -18,6 +17,11 @@ import {
   CardActions,
   Paper,
   CardActionArea,
+  TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
 import { Add, Edit, Delete, Visibility, Assessment } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -26,17 +30,17 @@ import { styled } from '@mui/system';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#4A90E2', // Matches the blue button
+      main: '#4A90E2',
     },
     secondary: {
-      main: '#E91E63', // Matches the pink header tag
+      main: '#E91E63',
     },
     background: {
-      default: '#F5F5F5', // Neutral light background
+      default: '#F5F5F5',
     },
   },
   typography: {
-    fontFamily: 'Montserrat, sans-serif', // Matches the landing page font
+    fontFamily: 'Montserrat, sans-serif',
     h4: {
       fontWeight: 800,
       color: '#333',
@@ -69,11 +73,11 @@ const StyledCard = styled(Card)({
   overflow: 'hidden',
   position: 'relative',
   backgroundColor: '#fff',
-  backgroundImage: 'linear-gradient(135deg, #fff 30%, #E3F2FD 90%)', // Light blue gradient
+  backgroundImage: 'linear-gradient(135deg, #fff 30%, #E3F2FD 90%)',
 });
 
 const StyledButton = styled(Button)({
-  backgroundColor: '#4A90E2', // Matches the primary blue color
+  backgroundColor: '#4A90E2',
   color: '#fff',
   '&:hover': {
     backgroundColor: '#357ABD',
@@ -85,7 +89,7 @@ const StyledButton = styled(Button)({
 });
 
 const GradientText = styled('span')({
-  background: 'linear-gradient(45deg, #4A90E2, #E91E63)', // Blue to pink gradient
+  background: 'linear-gradient(45deg, #4A90E2, #E91E63)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
 });
@@ -101,6 +105,8 @@ const HRManagerDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteJobId, setDeleteJobId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -181,6 +187,11 @@ const HRManagerDashboard = () => {
   const handleCloseModal = () => setShowModal(false);
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
 
+  const filteredJobListings = jobListings.filter(listing =>
+    listing.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (selectedCategory ? listing.category === selectedCategory : true)
+  );
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ background: 'linear-gradient(135deg, #F5F5F5 30%, #E0E0E0 90%)', py: 6, minHeight: '100vh' }}>
@@ -232,6 +243,14 @@ const HRManagerDashboard = () => {
             >
               View Test Attempts
             </StyledButton>
+            <StyledButton
+              variant="contained"
+              color="primary"
+              sx={{ fontSize: '1.2rem', padding: '12px 24px' }}
+              onClick={() => navigate('/hr-manager-analytics')}
+            >
+              View Analytics
+            </StyledButton>
           </Box>
           <AddJobListingModal
             show={showModal}
@@ -241,6 +260,29 @@ const HRManagerDashboard = () => {
 
           {showJobListings && (
             <>
+              <Box sx={{ mb: 3, display: 'flex', gap: 3 }}>
+                <TextField
+                  label="Search Job Listings"
+                  variant="outlined"
+                  fullWidth
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Filter by Category</InputLabel>
+                  <Select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    label="Filter by Category"
+                  >
+                    <MenuItem value=""><em>None</em></MenuItem>
+                    <MenuItem value="Web & Mobile Development">Web & Mobile Development</MenuItem>
+                    <MenuItem value="Business Intelligence">Business Intelligence</MenuItem>
+                    <MenuItem value="Digital Marketing & Design">Digital Marketing & Design</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
               {loading ? (
                 <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
                   <CircularProgress />
@@ -249,7 +291,7 @@ const HRManagerDashboard = () => {
                 <Typography color="error">{error}</Typography>
               ) : (
                 <Grid container spacing={4}>
-                  {jobListings.map((listing) => (
+                  {filteredJobListings.map((listing) => (
                     <Grid item xs={12} md={6} lg={4} key={listing._id}>
                       <StyledCard raised>
                         <CardActionArea>
@@ -275,7 +317,7 @@ const HRManagerDashboard = () => {
                                   <strong>Description:</strong> {listing.description}
                                 </Typography>
                                 <Typography variant="body2" color="textSecondary" component="p">
-                                  <strong>Requirements:</strong> {listing.requirements}
+                                  <strong>Requirements:</strong> {listing.requirements.join(', ')}
                                 </Typography>
                                 <Typography variant="body2" color="textSecondary" component="p">
                                   <strong>Experience Level:</strong> {listing.experienceLevel}

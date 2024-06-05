@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Modal, Button as BootstrapButton } from 'react-bootstrap';
-import { Box, Typography, Container, Card, CardContent, CardActions, Grid, Button as MuiButton, CircularProgress, Paper } from '@mui/material';
+import { Box, Typography, Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Select, MenuItem, InputLabel, FormControl, CircularProgress, Pagination, Button as MuiButton } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/system';
+import 'react-datepicker/dist/react-datepicker.css';
+import DatePicker from 'react-datepicker';
 
 const theme = createTheme({
   palette: {
@@ -40,18 +42,6 @@ const theme = createTheme({
     },
   },
 });
-
-const StyledCard = styled(Card)(({ theme }) => ({
-  borderRadius: '15px',
-  marginBottom: '20px',
-  backgroundColor: '#fff',
-  padding: '20px',
-  boxShadow: '0 15px 30px rgba(0,0,0,0.1)',
-  '&:hover': {
-    boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
-  },
-  transition: 'box-shadow 0.3s ease-in-out',
-}));
 
 const GradientButton = styled(MuiButton)(({ gradient }) => ({
   background: gradient,
@@ -107,6 +97,13 @@ const AllApplications = () => {
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortConfig, setSortConfig] = useState({ key: 'appliedOn', direction: 'asc' });
+  const applicationsPerPage = 10;
 
   useEffect(() => {
     const fetchAllApplications = async () => {
@@ -156,6 +153,37 @@ const AllApplications = () => {
     setSelectedApplication(null);
   };
 
+  const handleSort = (field) => {
+    let direction = 'asc';
+    if (sortConfig.key === field && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key: field, direction });
+  };
+
+  const sortedApplications = [...applications].sort((a, b) => {
+    if (sortConfig.key === 'appliedOn') {
+      return sortConfig.direction === 'asc'
+        ? new Date(a.createdAt) - new Date(b.createdAt)
+        : new Date(b.createdAt) - new Date(a.createdAt);
+    }
+    if (sortConfig.key === 'matchPercentage') {
+      return sortConfig.direction === 'asc'
+        ? calculateMatchPercentage(a.jobId.requirements, a.resumeText) - calculateMatchPercentage(b.jobId.requirements, b.resumeText)
+        : calculateMatchPercentage(b.jobId.requirements, b.resumeText) - calculateMatchPercentage(a.jobId.requirements, a.resumeText);
+    }
+    return 0;
+  });
+
+  const filteredApplications = sortedApplications.filter(app =>
+    (searchTerm === '' || app.name.toLowerCase().includes(searchTerm.toLowerCase()) || app.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
+    (selectedStatus === '' || app.status === selectedStatus) &&
+    (startDate === null || new Date(app.createdAt) >= startDate) &&
+    (endDate === null || new Date(app.createdAt) <= endDate)
+  );
+
+  const paginatedApplications = filteredApplications.slice((currentPage - 1) * applicationsPerPage, currentPage * applicationsPerPage);
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ background: 'linear-gradient(135deg, #F5F5F5 30%, #E0E0E0 90%)', py: 6, minHeight: '100vh' }}>
@@ -163,6 +191,22 @@ const AllApplications = () => {
           <Typography component="h1" variant="h4" gutterBottom sx={{ textAlign: 'center', marginBottom: '40px', fontWeight: 'bold', color: theme.palette.primary.main }}>
             All Applications
           </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+            <TextField label="Search Applications" variant="outlined" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} fullWidth sx={{ marginRight: '10px' }} />
+            <FormControl variant="outlined" fullWidth sx={{ marginRight: '10px' }}>
+              <InputLabel>Status</InputLabel>
+              <Select value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)} label="Status">
+                <MenuItem value=""><em>None</em></MenuItem>
+                <MenuItem value="in review">In Review</MenuItem>
+                <MenuItem value="accepted">Accepted</MenuItem>
+                <MenuItem value="declined">Declined</MenuItem>
+                <MenuItem value="accepted for interview">Accepted for Interview</MenuItem>
+                <MenuItem value="declined after evaluation test">Declined after Evaluation Test</MenuItem>
+              </Select>
+            </FormControl>
+            <DatePicker selected={startDate} onChange={date => setStartDate(date)} placeholderText="Start Date" className="form-control" />
+            <DatePicker selected={endDate} onChange={date => setEndDate(date)} placeholderText="End Date" className="form-control" />
+          </Box>
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
               <CircularProgress />
@@ -170,34 +214,44 @@ const AllApplications = () => {
           ) : error ? (
             <Typography color="error">{error}</Typography>
           ) : (
-            applications.length === 0 ? (
-              <Typography>No applications available at the current time.</Typography>
-            ) : (
-              <Grid container spacing={4}>
-                {applications.map(app => {
-                  const matchPercentage = calculateMatchPercentage(app.jobId.requirements, app.resumeText);
-                  return (
-                    <Grid item xs={12} key={app._id}>
-                      <StyledCard>
-                        <CardContent>
-                          <Typography variant="h5" component="h2">{app.name}</Typography>
-                          <Typography variant="body2" color="textSecondary" component="p"><strong>Education Level:</strong> {app.educationLevel}</Typography>
-                          <Typography variant="body2" color="textSecondary" component="p"><strong>Experience Level:</strong> {app.experienceLevel}</Typography>
-                          <Typography variant="body2" color="textSecondary" component="p"><strong>Status:</strong> {app.status}</Typography>
-                          <Typography variant="body2" color="textSecondary" component="p"><strong>Applied on:</strong> {new Date(app.createdAt).toLocaleDateString()} {new Date(app.createdAt).toLocaleTimeString()}</Typography>
-                          <Typography variant="body2" color="textSecondary" component="p"><strong>Match Percentage:</strong> {matchPercentage.toFixed(0)}%</Typography>
-                        </CardContent>
-                        <CardActions>
-                          <AcceptButton onClick={() => acceptApplication(app._id)}>Accept</AcceptButton>
-                          <DeclineButton onClick={() => declineApplication(app._id)}>Decline</DeclineButton>
-                          <ViewButton onClick={() => showApplicationDetails(app)}>View Details</ViewButton>
-                        </CardActions>
-                      </StyledCard>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            )
+            <>
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Email</TableCell>
+                      <TableCell>Status</TableCell>
+                      <TableCell onClick={() => handleSort('appliedOn')} style={{ cursor: 'pointer' }}>Applied On {sortConfig.key === 'appliedOn' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</TableCell>
+                      <TableCell onClick={() => handleSort('matchPercentage')} style={{ cursor: 'pointer' }}>Match Percentage {sortConfig.key === 'matchPercentage' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {paginatedApplications.map(app => {
+                      const matchPercentage = calculateMatchPercentage(app.jobId.requirements, app.resumeText);
+                      return (
+                        <TableRow key={app._id}>
+                          <TableCell>{app.name}</TableCell>
+                          <TableCell>{app.email}</TableCell>
+                          <TableCell>{app.status}</TableCell>
+                          <TableCell>{new Date(app.createdAt).toLocaleDateString()} {new Date(app.createdAt).toLocaleTimeString()}</TableCell>
+                          <TableCell>{matchPercentage.toFixed(0)}%</TableCell>
+                          <TableCell>
+                            <AcceptButton onClick={() => acceptApplication(app._id)}>Accept</AcceptButton>
+                            <DeclineButton onClick={() => declineApplication(app._id)}>Decline</DeclineButton>
+                            <ViewButton onClick={() => showApplicationDetails(app)}>View Details</ViewButton>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                <Pagination count={Math.ceil(filteredApplications.length / applicationsPerPage)} page={currentPage} onChange={(e, page) => setCurrentPage(page)} />
+              </Box>
+            </>
           )}
           {selectedApplication && (
             <Modal show onHide={closeApplicationDetails}>

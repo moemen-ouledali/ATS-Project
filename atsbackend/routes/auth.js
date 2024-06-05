@@ -1,3 +1,5 @@
+// atsbackend/routes/auth.js
+
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
@@ -42,11 +44,11 @@ router.post('/register', async (req, res) => {
             dateOfBirth,
             password,
             phoneNumber,
-            city,
-            highestEducationLevel,
+            city: role === 'Manager' ? undefined : city,
+            highestEducationLevel: role === 'Manager' ? undefined : highestEducationLevel,
             gender,
             verificationCode,
-            isVerified: false // Add this line
+            isVerified: role === 'Manager' ? true : false
         });
 
         await newUser.save();
@@ -294,4 +296,29 @@ router.post('/reset-password', async (req, res) => {
     }
 });
 
+// Get all users
+router.get('/users', async (req, res) => {
+    try {
+        const users = await User.find();
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).send('Error fetching users');
+    }
+});
+
+// Update user role
+router.put('/user/:id/role', async (req, res) => {
+    try {
+        const { role } = req.body;
+        const userId = req.params.id;
+        const user = await User.findByIdAndUpdate(userId, { role }, { new: true });
+        res.json(user);
+    } catch (error) {
+        console.error('Error updating user role:', error);
+        res.status(500).send('Error updating user role');
+    }
+});
+
 module.exports = router;
+

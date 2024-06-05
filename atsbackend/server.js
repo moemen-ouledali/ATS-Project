@@ -16,6 +16,7 @@ const authRoutes = require('./routes/auth');
 const jobListingsRoutes = require('./routes/jobListingsRoutes');
 const applicationRoutes = require('./routes/applicationRoutes');
 const testRoutes = require('./routes/testRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ app.use('/auth', authRoutes);
 app.use('/api/jobs', jobListingsRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/tests', testRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 app.get('/', (req, res) => {
     res.send('Server is up and running');
