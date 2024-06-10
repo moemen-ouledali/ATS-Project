@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
-import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography, CardActions, Button, Box, CircularProgress } from '@mui/material';
+import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography, CardActions, Button, Box, CircularProgress, TextField, FormControlLabel, RadioGroup, Radio } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/system';
 
@@ -87,6 +87,8 @@ function shuffleArray(array) {
 const AllJobsPage = () => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterLocation, setFilterLocation] = useState('All');
   const shuffledImages = shuffleArray([...cardImages]);
 
   useEffect(() => {
@@ -101,6 +103,19 @@ const AllJobsPage = () => {
         setLoading(false);
       });
   }, []);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleFilterLocation = (e) => {
+    setFilterLocation(e.target.value);
+  };
+
+  const filteredJobs = jobs.filter(job =>
+    job.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    (filterLocation === 'All' || job.jobLocation.toLowerCase() === filterLocation.toLowerCase())
+  );
 
   return (
     <ThemeProvider theme={theme}>
@@ -118,22 +133,40 @@ const AllJobsPage = () => {
         >
           <span className="text-gradient d-inline">Explore Our Job Opportunities</span>
         </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+          <TextField
+            label="Search by Job Title"
+            variant="outlined"
+            value={searchTerm}
+            onChange={handleSearch}
+            sx={{ marginRight: '10px' }}
+          />
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="body1" sx={{ marginRight: '10px' }}>
+              Filter by Location:
+            </Typography>
+            <RadioGroup row value={filterLocation} onChange={handleFilterLocation}>
+              <FormControlLabel value="All" control={<Radio />} label="All" />
+              <FormControlLabel value="Technopole El Ghazala" control={<Radio />} label="Technopole El Ghazala" />
+              <FormControlLabel value="Online" control={<Radio />} label="Online" />
+            </RadioGroup>
+          </Box>
+        </Box>
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
             <CircularProgress />
           </Box>
         ) : (
-          <Grid container spacing={4}>
-            {jobs.length > 0 ? (
-              jobs.map((job, index) => (
+          <Grid container spacing={4} justifyContent="center">
+            {filteredJobs.length > 0 ? (
+              filteredJobs.map((job, index) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={job._id}>
                   <StyledCard raised>
                     <CardActionArea component={RouterLink} to={`/job/${job._id}`}>
                       <CardMedia
                         component="img"
                         alt={job.title}
-                        height="500"
-                        width="500"
+                        height="160"
                         image={shuffledImages[index % shuffledImages.length]}
                       />
                       <CardContent>

@@ -1,7 +1,45 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Container, Box, TextField, Button, Typography, Card, CardContent, Select, MenuItem, InputLabel, FormControl, Grid } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import '../assets/css/LoginForm.css';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#4A90E2',
+    },
+    secondary: {
+      main: '#50E3C2',
+    },
+    background: {
+      default: '#f7f9fc',
+    },
+  },
+  typography: {
+    fontFamily: 'Montserrat, sans-serif',
+    h4: {
+      fontWeight: 800,
+      color: '#333',
+      fontSize: '2rem',
+    },
+    h5: {
+      fontWeight: 700,
+      color: '#555',
+      fontSize: '1.5rem',
+    },
+    body2: {
+      color: '#777',
+      fontSize: '1rem',
+    },
+    button: {
+      textTransform: 'uppercase',
+      fontWeight: 700,
+      fontSize: '0.875rem',
+    },
+  },
+});
 
 const RegisterForm = () => {
   const [userData, setUserData] = useState({
@@ -17,6 +55,7 @@ const RegisterForm = () => {
     gender: ''
   });
   const [message, setMessage] = useState('');
+  const [errorMessages, setErrorMessages] = useState([]);
   const [verificationCode, setVerificationCode] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const navigate = useNavigate();
@@ -29,12 +68,48 @@ const RegisterForm = () => {
     }));
   };
 
+  const validateForm = () => {
+    const { firstName, lastName, dateOfBirth, password, phoneNumber } = userData;
+    const nameRegex = /^[A-Za-z]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$/;
+    const phoneRegex = /^\d{1,8}$/;
+    const errors = [];
+
+    if (!nameRegex.test(firstName)) {
+      errors.push("First name can't contain numbers.");
+    }
+    if (!nameRegex.test(lastName)) {
+      errors.push("Last name can't contain numbers.");
+    }
+    const dob = new Date(dateOfBirth);
+    const ageDifMs = Date.now() - dob.getTime();
+    const ageDate = new Date(ageDifMs);
+    if (Math.abs(ageDate.getUTCFullYear() - 1970) < 18) {
+      errors.push("You must be at least 18 years old.");
+    }
+    if (!passwordRegex.test(password)) {
+      errors.push("Password must contain at least 1 uppercase, 1 lowercase, and 1 special character.");
+    }
+    if (!phoneRegex.test(phoneNumber)) {
+      errors.push("Phone number must be only a number and maximum 8 digits.");
+    }
+
+    return errors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const errors = validateForm();
+    if (errors.length > 0) {
+      setErrorMessages(errors);
+      return;
+    }
+
     try {
       const response = await axios.post('http://localhost:5000/auth/register', userData);
       setMessage(response.data.message);
       setIsVerifying(true);
+      setErrorMessages([]); // Clear error messages if registration is successful
     } catch (error) {
       setMessage("Registration failed. Please try again.");
       console.error("Registration error:", error);
@@ -56,109 +131,167 @@ const RegisterForm = () => {
   };
 
   return (
-    <section className="vh-100 flex items-center justify-center bg-gray-100">
-      <div className="container mx-auto px-4">
-        <div className="row justify-content-center">
-          <div className="col-lg-10">
-            <div className="card shadow-lg">
-              <div className="card-body p-5">
-                <div className="text-center mb-4">
-                  <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" alt="Sample" className="img-fluid mb-3" />
-                  <h2 className="text-2xl font-bold">Register</h2>
-                  <p className="text-gray-600">Sign up to create an account</p>
-                </div>
-                {!isVerifying ? (
-                  <form onSubmit={handleSubmit}>
-                    <div className="form-group mb-3">
-                      <input type="text" name="firstName" className="form-control form-control-lg" placeholder="First Name" value={userData.firstName} onChange={handleChange} required />
-                    </div>
-                    <div className="form-group mb-3">
-                      <input type="text" name="lastName" className="form-control form-control-lg" placeholder="Last Name" value={userData.lastName} onChange={handleChange} required />
-                    </div>
-                    <div className="form-group mb-3">
-                      <input type="email" name="email" className="form-control form-control-lg" placeholder="Email Address" value={userData.email} onChange={handleChange} required />
-                    </div>
-                    <div className="form-group mb-3">
-                      <input type="date" name="dateOfBirth" className="form-control form-control-lg" placeholder="Date of Birth" value={userData.dateOfBirth} onChange={handleChange} required />
-                    </div>
-                    <div className="form-group mb-3">
-                      <input type="password" name="password" className="form-control form-control-lg" placeholder="Password" value={userData.password} onChange={handleChange} required />
-                    </div>
-                    <div className="form-group mb-3">
-                      <input type="text" name="phoneNumber" className="form-control form-control-lg" placeholder="Phone Number" value={userData.phoneNumber} onChange={handleChange} required />
-                    </div>
-                    <div className="form-group mb-3">
-                      <select name="city" className="form-select form-select-lg" value={userData.city} onChange={handleChange} required>
-                        <option value="">Select a governorate</option>
-                        <option value="Ariana">Ariana</option>
-                        <option value="Béja">Béja</option>
-                        <option value="Ben Arous">Ben Arous</option>
-                        <option value="Bizerte">Bizerte</option>
-                        <option value="Gabès">Gabès</option>
-                        <option value="Gafsa">Gafsa</option>
-                        <option value="Jendouba">Jendouba</option>
-                        <option value="Kairouan">Kairouan</option>
-                        <option value="Kasserine">Kasserine</option>
-                        <option value="Kébili">Kébili</option>
-                        <option value="Kef">Kef</option>
-                        <option value="Mahdia">Mahdia</option>
-                        <option value="Manouba">Manouba</option>
-                        <option value="Médenine">Médenine</option>
-                        <option value="Monastir">Monastir</option>
-                        <option value="Nabeul">Nabeul</option>
-                        <option value="Sfax">Sfax</option>
-                        <option value="Sidi Bouzid">Sidi Bouzid</option>
-                        <option value="Siliana">Siliana</option>
-                        <option value="Sousse">Sousse</option>
-                        <option value="Tataouine">Tataouine</option>
-                        <option value="Tozeur">Tozeur</option>
-                        <option value="Tunis">Tunis</option>
-                        <option value="Zaghouan">Zaghouan</option>
-                      </select>
-                    </div>
-                    <div className="form-group mb-3">
-                      <select name="highestEducationLevel" className="form-select form-select-lg" value={userData.highestEducationLevel} onChange={handleChange} required>
-                        <option value="Baccalaureate">Baccalaureate</option>
-                        <option value="Licence">Licence</option>
-                        <option value="Engineering">Engineering</option>
-                      </select>
-                    </div>
-                    <div className="form-group mb-3">
-                      <select name="gender" className="form-select form-select-lg" value={userData.gender} onChange={handleChange} required>
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                      </select>
-                    </div>
-                    <div className="form-group mb-3">
-                      <select name="role" className="form-select form-select-lg" value={userData.role} onChange={handleChange} required>
-                        <option value="Candidate">Candidate</option>
-                        <option value="Manager">Manager</option>
-                      </select>
-                    </div>
-                    <div className="text-center text-lg-start mt-4 pt-2">
-                      <button type="submit" className="btn btn-primary btn-lg w-full" style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}>Register</button>
-                      <p className="small fw-bold mt-2 pt-1 mb-0">Already have an account? <a href="/login" className="text-primary">Login</a></p>
-                    </div>
-                    {message && <div className="alert alert-danger mt-3" role="alert">{message}</div>}
-                  </form>
-                ) : (
-                  <form onSubmit={handleVerifyCode}>
-                    <div className="form-group mb-3">
-                      <input type="text" name="verificationCode" className="form-control form-control-lg" placeholder="Verification Code" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} required />
-                    </div>
-                    <div className="text-center text-lg-start mt-4 pt-2">
-                      <button type="submit" className="btn btn-primary btn-lg w-full" style={{ paddingLeft: '2.5rem', paddingRight: '2.5rem' }}>Verify</button>
-                    </div>
-                    {message && <div className="alert alert-danger mt-3" role="alert">{message}</div>}
-                  </form>
-                )}
+    <ThemeProvider theme={theme}>
+      <section className="vh-100 flex items-center justify-center bg-gray-100">
+        <Container maxWidth="lg">
+          <Card sx={{ boxShadow: 3, p: 4 }}>
+            <CardContent>
+              <div className="text-center mb-4">
+                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" alt="Sample" className="img-fluid mb-3" />
+                <Typography variant="h4" gutterBottom>
+                  Register
+                </Typography>
+                <Typography variant="body2" color="textSecondary" gutterBottom>
+                  Sign up to create an account
+                </Typography>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+              {!isVerifying ? (
+                <form onSubmit={handleSubmit}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={6}>
+                      <TextField 
+                        name="firstName" 
+                        label="First Name" 
+                        value={userData.firstName} 
+                        onChange={handleChange} 
+                        fullWidth 
+                        margin="normal" 
+                        required 
+                      />
+                      <TextField 
+                        name="lastName" 
+                        label="Last Name" 
+                        value={userData.lastName} 
+                        onChange={handleChange} 
+                        fullWidth 
+                        margin="normal" 
+                        required 
+                      />
+                      <TextField 
+                        name="email" 
+                        label="Email Address" 
+                        type="email" 
+                        value={userData.email} 
+                        onChange={handleChange} 
+                        fullWidth 
+                        margin="normal" 
+                        required 
+                      />
+                      <TextField 
+                        name="dateOfBirth" 
+                        label="Date of Birth" 
+                        type="date" 
+                        InputLabelProps={{ shrink: true }} 
+                        value={userData.dateOfBirth} 
+                        onChange={handleChange} 
+                        fullWidth 
+                        margin="normal" 
+                        required 
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <TextField 
+                        name="password" 
+                        label="Password" 
+                        type="password" 
+                        value={userData.password} 
+                        onChange={handleChange} 
+                        fullWidth 
+                        margin="normal" 
+                        required 
+                      />
+                      <TextField 
+                        name="phoneNumber" 
+                        label="Phone Number" 
+                        value={userData.phoneNumber} 
+                        onChange={handleChange} 
+                        fullWidth 
+                        margin="normal" 
+                        required 
+                      />
+                      <FormControl fullWidth margin="normal" required>
+                        <InputLabel>City</InputLabel>
+                        <Select
+                          name="city"
+                          value={userData.city}
+                          onChange={handleChange}
+                        >
+                          <MenuItem value="">Select a governorate</MenuItem>
+                          {[
+                            'Ariana', 'Béja', 'Ben Arous', 'Bizerte', 'Gabès', 'Gafsa', 'Jendouba', 'Kairouan', 'Kasserine', 'Kébili', 'Kef', 
+                            'Mahdia', 'Manouba', 'Médenine', 'Monastir', 'Nabeul', 'Sfax', 'Sidi Bouzid', 'Siliana', 'Sousse', 'Tataouine', 
+                            'Tozeur', 'Tunis', 'Zaghouan'
+                          ].map(city => (
+                            <MenuItem key={city} value={city}>{city}</MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <FormControl fullWidth margin="normal" required>
+                        <InputLabel>Highest Education Level</InputLabel>
+                        <Select
+                          name="highestEducationLevel"
+                          value={userData.highestEducationLevel}
+                          onChange={handleChange}
+                        >
+                          <MenuItem value="Baccalaureate">Baccalaureate</MenuItem>
+                          <MenuItem value="Licence">Licence</MenuItem>
+                          <MenuItem value="Engineering">Engineering</MenuItem>
+                        </Select>
+                      </FormControl>
+                      <FormControl fullWidth margin="normal" required>
+                        <InputLabel>Gender</InputLabel>
+                        <Select
+                          name="gender"
+                          value={userData.gender}
+                          onChange={handleChange}
+                        >
+                          <MenuItem value="">Select Gender</MenuItem>
+                          <MenuItem value="male">Male</MenuItem>
+                          <MenuItem value="female">Female</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </Grid>
+                  <Box sx={{ textAlign: 'center', mt: 2 }}>
+                    <Button type="submit" variant="contained" color="primary" fullWidth>
+                      Register
+                    </Button>
+                    <Typography variant="body2" sx={{ mt: 2 }}>
+                      Already have an account? <a href="/login" style={{ color: theme.palette.primary.main }}>Login</a>
+                    </Typography>
+                  </Box>
+                  {errorMessages.length > 0 && (
+                    <Box sx={{ mt: 2 }}>
+                      {errorMessages.map((error, index) => (
+                        <Typography key={index} color="error">{error}</Typography>
+                      ))}
+                    </Box>
+                  )}
+                </form>
+              ) : (
+                <form onSubmit={handleVerifyCode}>
+                  <TextField 
+                    name="verificationCode" 
+                    label="Verification Code" 
+                    value={verificationCode} 
+                    onChange={(e) => setVerificationCode(e.target.value)} 
+                    fullWidth 
+                    margin="normal" 
+                    required 
+                  />
+                  <Box sx={{ textAlign: 'center', mt: 2 }}>
+                    <Button type="submit" variant="contained" color="primary" fullWidth>
+                      Verify
+                    </Button>
+                  </Box>
+                  {message && <Box sx={{ mt: 2 }}><Typography color="error">{message}</Typography></Box>}
+                </form>
+              )}
+            </CardContent>
+          </Card>
+        </Container>
+      </section>
+    </ThemeProvider>
   );
 };
 

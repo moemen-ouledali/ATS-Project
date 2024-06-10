@@ -1,15 +1,65 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../AuthContext';
-import { Modal, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import {
+  Container,
+  Typography,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  CircularProgress,
+  Modal,
+} from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#4A90E2',
+    },
+    secondary: {
+      main: '#50E3C2',
+    },
+    background: {
+      default: '#f7f9fc',
+    },
+  },
+  typography: {
+    fontFamily: 'Montserrat, sans-serif',
+    h4: {
+      fontWeight: 800,
+      color: '#333',
+      fontSize: '2rem',
+    },
+    h5: {
+      fontWeight: 700,
+      color: '#555',
+      fontSize: '1.5rem',
+    },
+    body2: {
+      color: '#777',
+      fontSize: '1rem',
+    },
+    button: {
+      textTransform: 'uppercase',
+      fontWeight: 700,
+      fontSize: '0.875rem',
+    },
+  },
+});
 
 const CandidateDashboard = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedApplication, setSelectedApplication] = useState(null);
-
   const { authToken, userDetails } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -50,68 +100,122 @@ const CandidateDashboard = () => {
     navigate(`/test/${category}?applicationId=${applicationId}`);
   };
 
-  const style = {
-    container: { padding: '20px' },
-    applicant: { border: '1px solid #ccc', borderRadius: '8px', padding: '10px', marginBottom: '10px' },
-    button: { marginRight: '10px', padding: '8px 12px', cursor: 'pointer' },
-    detailsButton: { backgroundColor: 'lightblue' },
-    evaluationButton: { backgroundColor: 'lightgreen' },
-  };
-
   return (
-    <div style={style.container}>
-      <h2>Your Applications</h2>
-      {loading ? (
-        <p>Loading applications...</p>
-      ) : error ? (
-        <p>{error}</p>
-      ) : (
-        applications.length === 0 ? (
-          <p>No applications found.</p>
+    <ThemeProvider theme={theme}>
+      <Container sx={{ py: 6 }}>
+        <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 4, fontWeight: 'bold' }}>
+          Your Applications
+        </Typography>
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Typography variant="h6" color="error" align="center">
+            {error}
+          </Typography>
         ) : (
-          applications.map(app => (
-            <div key={app._id} style={style.applicant}>
-              <p><strong>Job:</strong> {app.jobId.title}</p>
-              <p><strong>Date Applied:</strong> {new Date(app.createdAt).toLocaleDateString()} at {new Date(app.createdAt).toLocaleTimeString()}</p>
-              <p><strong>Education Level:</strong> {app.educationLevel}</p>
-              <p><strong>Experience Level:</strong> {app.experienceLevel}</p>
-              <p><strong>Status:</strong> {app.status}</p>
-              <Button style={style.detailsButton} onClick={() => showApplicationDetails(app)}>View Details</Button>
-              {app.status === 'Accepted' && (
-                <Button
-                  style={style.evaluationButton}
-                  onClick={() => handleEvaluationTest(app.jobId.category, app._id)}
-                >
-                  Evaluation Test
-                </Button>
-              )}
-            </div>
-          ))
-        )
-      )}
-
-      {selectedApplication && (
-        <Modal show onHide={closeApplicationDetails}>
-          <Modal.Header closeButton>
-            <Modal.Title>Application Details</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p><strong>Name:</strong> {selectedApplication.name}</p>
-            <p><strong>Email:</strong> {selectedApplication.email}</p>
-            <p><strong>Phone:</strong> {selectedApplication.phone}</p>
-            <p><strong>Education Level:</strong> {selectedApplication.educationLevel}</p>
-            <p><strong>Experience Level:</strong> {selectedApplication.experienceLevel}</p>
-            <p><strong>University:</strong> {selectedApplication.university}</p>
-            <p><strong>Motivation Letter:</strong> {selectedApplication.motivationLetter}</p>
-            <p><strong>Resume:</strong> <a href={`http://localhost:5000/${selectedApplication.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></p>
-            <p><strong>Status:</strong> {selectedApplication.status}</p>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={closeApplicationDetails}>Close</Button>
-          </Modal.Footer>
+          applications.length === 0 ? (
+            <Typography variant="h6" align="center">
+              No applications found.
+            </Typography>
+          ) : (
+            <TableContainer component={Paper} sx={{ borderRadius: '8px', boxShadow: 3 }}>
+              <Table sx={{ minWidth: 650 }} aria-label="applications table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell><strong>Job</strong></TableCell>
+                    <TableCell><strong>Date Applied</strong></TableCell>
+                    <TableCell><strong>Education Level</strong></TableCell>
+                    <TableCell><strong>Experience Level</strong></TableCell>
+                    <TableCell><strong>Status</strong></TableCell>
+                    <TableCell align="right"><strong>Actions</strong></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {applications.map((app) => (
+                    <TableRow key={app._id}>
+                      <TableCell>{app.jobId ? app.jobId.title : 'No job title available'}</TableCell>
+                      <TableCell>{new Date(app.createdAt).toLocaleDateString()} at {new Date(app.createdAt).toLocaleTimeString()}</TableCell>
+                      <TableCell>{app.educationLevel}</TableCell>
+                      <TableCell>{app.experienceLevel}</TableCell>
+                      <TableCell>{app.status}</TableCell>
+                      <TableCell align="right">
+                        <Button variant="contained" color="primary" onClick={() => showApplicationDetails(app)} sx={{ mr: 1 }}>
+                          View Details
+                        </Button>
+                        {app.status === 'Accepted' && app.jobId && (
+                          <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={() => handleEvaluationTest(app.jobId.category, app._id)}
+                          >
+                            Evaluation Test
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )
+        )}
+        <Modal open={!!selectedApplication} onClose={closeApplicationDetails}>
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            borderRadius: '8px',
+            boxShadow: 24,
+            p: 4,
+          }}>
+            {selectedApplication && (
+              <>
+                <Typography variant="h6" component="h2" gutterBottom>
+                  Application Details
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  <strong>Name:</strong> {selectedApplication.name}
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  <strong>Email:</strong> {selectedApplication.email}
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  <strong>Phone:</strong> {selectedApplication.phone}
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  <strong>Education Level:</strong> {selectedApplication.educationLevel}
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  <strong>Experience Level:</strong> {selectedApplication.experienceLevel}
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  <strong>University:</strong> {selectedApplication.university}
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  <strong>Motivation Letter:</strong> {selectedApplication.motivationLetter}
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  <strong>Resume:</strong> <a href={`http://localhost:5000/${selectedApplication.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a>
+                </Typography>
+                <Typography variant="body2" gutterBottom>
+                  <strong>Status:</strong> {selectedApplication.status}
+                </Typography>
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                  <Button variant="contained" color="primary" onClick={closeApplicationDetails}>
+                    Close
+                  </Button>
+                </Box>
+              </>
+            )}
+          </Box>
         </Modal>
-      )}
-    </div>
+      </Container>
+    </ThemeProvider>
   );
 };
 

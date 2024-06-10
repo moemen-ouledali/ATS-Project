@@ -20,6 +20,7 @@ import JobListingsPage from './Components/Detailed_Components/JobListingsPage';
 import InternshipListings from './Components/Detailed_Components/InternshipListings';
 import AllJobs from './Components/Detailed_Components/AllJobs';
 import JobApplicationForm from './Components/Detailed_Components/JobApplicationForm';
+import JobApplicationFormUnauth from './Components/Detailed_Components/JobApplicationForm_Unauth';
 import AllApplications from './Components/Manager_Components/AllApplications';
 import RequestPasswordReset from './Components/Authentication_Components/RequestPasswordReset';
 import VerifyResetCode from './Components/Authentication_Components/VerifyResetCode';
@@ -29,8 +30,6 @@ import ManagerTestAttempts from './Components/Manager_Components/ManagerTestAtte
 import UserManagement from './Components/Admin_Components/UserManagement';
 import AdminNav from './Components/NavigationBar_Components/AdminNav'; // Ensure the import path is correct
 import AnalyticsDashboard from './Components/Manager_Components/HRManagerAnalytics'; // Import the AnalyticsDashboard
-
-
 
 function DynamicNavigation() {
     const { authToken, userRole } = useContext(AuthContext);
@@ -52,6 +51,8 @@ function DynamicNavigation() {
 }
 
 function App() {
+    const { userRole } = useContext(AuthContext);
+
     return (
         <AuthProvider>
             <Router>
@@ -72,7 +73,12 @@ function App() {
                     <Route path="/jobs/:category" element={<JobListingsPage />} />
                     <Route path="/internships" element={<InternshipListings />} />
                     <Route path="/all-jobs" element={<AllJobs />} />
-                    <Route path="/job/:id" element={<JobApplicationForm />} />
+                    <Route
+                        path="/job/:id"
+                        element={
+                            userRole === 'Candidate' ? <JobApplicationForm /> : <JobApplicationFormUnauth />
+                        }
+                    />
                     <Route path="/all-applications" element={<AllApplications />} />
                     <Route path="/verify-email" element={<VerifyEmail />} />
                     <Route path="/test/:category" element={<TestPage />} />
@@ -80,7 +86,6 @@ function App() {
                     <Route path="/admin/users" element={<UserManagement />} />
                     <Route path="/admin_dashboard" element={<UserManagement />} />
                     <Route path="/hr-manager-analytics" element={<AnalyticsDashboard />} /> {/* Add AnalyticsDashboard Route */}
-
                 </Routes>
             </Router>
         </AuthProvider>
@@ -88,4 +93,3 @@ function App() {
 }
 
 export default App;
-

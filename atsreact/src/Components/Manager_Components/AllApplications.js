@@ -167,7 +167,7 @@ const AllApplications = () => {
         ? new Date(a.createdAt) - new Date(b.createdAt)
         : new Date(b.createdAt) - new Date(a.createdAt);
     }
-    if (sortConfig.key === 'matchPercentage') {
+    if (sortConfig.key === 'matchPercentage' && a.jobId && b.jobId) {
       return sortConfig.direction === 'asc'
         ? calculateMatchPercentage(a.jobId.requirements, a.resumeText) - calculateMatchPercentage(b.jobId.requirements, b.resumeText)
         : calculateMatchPercentage(b.jobId.requirements, b.resumeText) - calculateMatchPercentage(a.jobId.requirements, a.resumeText);
@@ -198,8 +198,8 @@ const AllApplications = () => {
               <Select value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)} label="Status">
                 <MenuItem value=""><em>None</em></MenuItem>
                 <MenuItem value="in review">In Review</MenuItem>
-                <MenuItem value="accepted">Accepted</MenuItem>
-                <MenuItem value="declined">Declined</MenuItem>
+                <MenuItem value="Accepted">Accepted</MenuItem>
+                <MenuItem value="Declined">Declined</MenuItem>
                 <MenuItem value="accepted for interview">Accepted for Interview</MenuItem>
                 <MenuItem value="declined after evaluation test">Declined after Evaluation Test</MenuItem>
               </Select>
@@ -221,6 +221,7 @@ const AllApplications = () => {
                     <TableRow>
                       <TableCell>Name</TableCell>
                       <TableCell>Email</TableCell>
+                      <TableCell>Job Title</TableCell>
                       <TableCell>Status</TableCell>
                       <TableCell onClick={() => handleSort('appliedOn')} style={{ cursor: 'pointer' }}>Applied On {sortConfig.key === 'appliedOn' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</TableCell>
                       <TableCell onClick={() => handleSort('matchPercentage')} style={{ cursor: 'pointer' }}>Match Percentage {sortConfig.key === 'matchPercentage' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</TableCell>
@@ -229,16 +230,17 @@ const AllApplications = () => {
                   </TableHead>
                   <TableBody>
                     {paginatedApplications.map(app => {
-                      const matchPercentage = calculateMatchPercentage(app.jobId.requirements, app.resumeText);
+                      const matchPercentage = app.jobId ? calculateMatchPercentage(app.jobId.requirements, app.resumeText) : 0;
                       return (
                         <TableRow key={app._id}>
                           <TableCell>{app.name}</TableCell>
                           <TableCell>{app.email}</TableCell>
+                          <TableCell>{app.jobId ? app.jobId.title : 'No job title available'}</TableCell>
                           <TableCell>{app.status}</TableCell>
                           <TableCell>{new Date(app.createdAt).toLocaleDateString()} {new Date(app.createdAt).toLocaleTimeString()}</TableCell>
                           <TableCell>{matchPercentage.toFixed(0)}%</TableCell>
                           <TableCell>
-                            <AcceptButton onClick={() => acceptApplication(app._id)}>Accept</AcceptButton>
+                            <AcceptButton onClick={() => acceptApplication(app._id)}>Pre-Accept</AcceptButton>
                             <DeclineButton onClick={() => declineApplication(app._id)}>Decline</DeclineButton>
                             <ViewButton onClick={() => showApplicationDetails(app)}>View Details</ViewButton>
                           </TableCell>
@@ -262,6 +264,7 @@ const AllApplications = () => {
                 <Typography variant="h6" component="p"><strong>Name:</strong> {selectedApplication.name}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Email:</strong> {selectedApplication.email}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Phone:</strong> {selectedApplication.phone}</Typography>
+                <Typography variant="body2" color="textSecondary" component="p"><strong>Job Title:</strong> {selectedApplication.jobId ? selectedApplication.jobId.title : 'No job title available'}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Education Level:</strong> {selectedApplication.educationLevel}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Experience Level:</strong> {selectedApplication.experienceLevel}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>University:</strong> {selectedApplication.university}</Typography>
@@ -269,16 +272,16 @@ const AllApplications = () => {
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Resume:</strong> <a href={`http://localhost:5000/${selectedApplication.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Status:</strong> {selectedApplication.status}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Applied on:</strong> {new Date(selectedApplication.createdAt).toLocaleDateString()} {new Date(selectedApplication.createdAt).toLocaleTimeString()}</Typography>
-                <Typography variant="body2" color="textSecondary" component="p"><strong>Match Percentage:</strong> {calculateMatchPercentage(selectedApplication.jobId.requirements, selectedApplication.resumeText)}%</Typography>
+                <Typography variant="body2" color="textSecondary" component="p"><strong>Match Percentage:</strong> {selectedApplication.jobId ? calculateMatchPercentage(selectedApplication.jobId.requirements, selectedApplication.resumeText) : 0}%</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Matched Requirements:</strong></Typography>
                 <ul>
-                  {getMatchedUnmatchedRequirements(selectedApplication.jobId.requirements, selectedApplication.resumeText).matched.map((req, index) => (
+                  {selectedApplication.jobId && getMatchedUnmatchedRequirements(selectedApplication.jobId.requirements, selectedApplication.resumeText).matched.map((req, index) => (
                     <li key={index} style={{ color: 'green' }}>{req}</li>
                   ))}
                 </ul>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Unmatched Requirements:</strong></Typography>
                 <ul>
-                  {getMatchedUnmatchedRequirements(selectedApplication.jobId.requirements, selectedApplication.resumeText).unmatched.map((req, index) => (
+                  {selectedApplication.jobId && getMatchedUnmatchedRequirements(selectedApplication.jobId.requirements, selectedApplication.resumeText).unmatched.map((req, index) => (
                     <li key={index} style={{ color: 'red' }}>{req}</li>
                   ))}
                 </ul>

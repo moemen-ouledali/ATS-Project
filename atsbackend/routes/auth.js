@@ -58,7 +58,26 @@ router.post('/register', async (req, res) => {
             from: process.env.EMAIL_USER,
             to: email,
             subject: 'Email Verification Code',
-            text: `Your verification code is: ${verificationCode}`
+            html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                    <div style="background-color: #4A90E2; padding: 20px; color: #fff; text-align: center;">
+                        <h1 style="margin: 0;">BeeApply Verification</h1>
+                    </div>
+                    <div style="padding: 20px;">
+                        <p>Dear ${firstName} ${lastName},</p>
+                        <p>Thank you for registering at BeeApply. To complete your registration, please use the following verification code:</p>
+                        <div style="background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; text-align: center; font-size: 20px; font-weight: bold;">
+                            ${verificationCode}
+                        </div>
+                        <p>If you did not request this, please ignore this email.</p>
+                        <p>Best regards,</p>
+                        <p>BeeApply Team</p>
+                    </div>
+                    <div style="background-color: #f4f4f4; padding: 10px; text-align: center; font-size: 12px; color: #aaa;">
+                        &copy; 2024 ATS. All rights reserved.
+                    </div>
+                </div>
+            `
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
@@ -73,6 +92,7 @@ router.post('/register', async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
 
 // POST /auth/verify-code - Verify the user's code
 router.post('/verify-code', async (req, res) => {
