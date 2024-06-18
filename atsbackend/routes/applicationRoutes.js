@@ -7,6 +7,7 @@ const JobListing = require('../models/JobListing'); // Ensure this is imported
 const fs = require('fs');
 const pdf = require('pdf-parse');
 const nodemailer = require('nodemailer');
+const Interview = require('../models/interview'); // Import the Interview model
 require('dotenv').config();
 
 // Set up storage engine
@@ -187,11 +188,26 @@ router.put('/accept-after-test/:id', async (req, res) => {
     try {
         const applicationId = req.params.id;
         const { date, time } = req.body;
-        const application = await Application.findByIdAndUpdate(applicationId, { status: 'accepted for interview' }, { new: true });
+        const application = await Application.findById(applicationId);
 
         if (!application) {
             return res.status(404).json({ message: 'Application not found' });
         }
+
+        if (!date || !time) {
+            return res.status(400).json({ message: 'Date and time are required for the interview.' });
+        }
+
+        const interview = new Interview({
+            applicationId: applicationId,
+            applicantName: application.name,
+            dateTime: new Date(`${date}T${time}`),
+        });
+
+        await interview.save();
+
+        application.status = 'accepted for interview';
+        await application.save();
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
@@ -208,5 +224,24 @@ router.put('/accept-after-test/:id', async (req, res) => {
         res.status(500).send('Error accepting application');
     }
 });
+
+module.exports = router;
+
+// Update application status
+router.put('/:id/status', async (req, res) => {
+    try {
+      const application = await Application.findByIdAndUpdate(
+        req.params.id,
+        { status: req.body.status },
+        { new: true }
+      );
+      res.json(application);
+    } catch (error) {
+      res.status(500).send('Error updating status: ' + error.message);
+    }
+  });
+
+  
+
 
 module.exports = router;

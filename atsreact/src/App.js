@@ -30,9 +30,14 @@ import ManagerTestAttempts from './Components/Manager_Components/ManagerTestAtte
 import UserManagement from './Components/Admin_Components/UserManagement';
 import AdminNav from './Components/NavigationBar_Components/AdminNav'; // Ensure the import path is correct
 import AnalyticsDashboard from './Components/Manager_Components/HRManagerAnalytics'; // Import the AnalyticsDashboard
+import InterviewCalendar from './Components/Manager_Components/InterviewCalendar';
+
 
 function DynamicNavigation() {
     const { authToken, userRole } = useContext(AuthContext);
+
+    console.log('Auth Token:', authToken); // Debug logging
+    console.log('User Role:', userRole); // Debug logging
 
     if (!authToken) {
         return <LoggedOutNav />;
@@ -52,6 +57,8 @@ function DynamicNavigation() {
 
 function App() {
     const { userRole } = useContext(AuthContext);
+
+    console.log('App Component - User Role:', userRole); // Debug logging
 
     return (
         <AuthProvider>
@@ -86,6 +93,7 @@ function App() {
                     <Route path="/admin/users" element={<UserManagement />} />
                     <Route path="/admin_dashboard" element={<UserManagement />} />
                     <Route path="/hr-manager-analytics" element={<AnalyticsDashboard />} /> {/* Add AnalyticsDashboard Route */}
+                    <Route path="/interview-calendar" element={<InterviewCalendar/>} />
                 </Routes>
             </Router>
         </AuthProvider>

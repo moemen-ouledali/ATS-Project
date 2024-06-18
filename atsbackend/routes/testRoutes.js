@@ -106,5 +106,21 @@ router.get('/all-attempts', async (req, res) => {
   }
 });
 
+// In your test controller (e.g., tests.js)
+router.get('/check-attempt/:applicationId', async (req, res) => {
+  const { applicationId } = req.params;
+  try {
+    const existingAttempt = await TestAttempt.findOne({ application: applicationId });
+    if (existingAttempt) {
+      return res.status(200).json({ attempted: true });
+    }
+    return res.status(200).json({ attempted: false });
+  } catch (error) {
+    console.error('Error checking test attempt:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
 
 module.exports = router;

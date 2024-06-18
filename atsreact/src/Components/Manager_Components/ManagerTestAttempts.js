@@ -63,7 +63,12 @@ const ManagerTestAttempts = () => {
   };
 
   const handleAcceptApplication = async () => {
+    if (!selectedApplication || !selectedApplication.application) {
+      console.error('Selected application is not properly set.');
+      return;
+    }
     try {
+      console.log(`Accepting application: ${selectedApplication.application._id}`);
       const response = await axios.put(
         `http://localhost:5000/api/applications/accept-after-test/${selectedApplication.application._id}`,
         { date: interviewDate, time: interviewTime }
@@ -73,6 +78,7 @@ const ManagerTestAttempts = () => {
           ? { ...attempt, application: response.data }
           : attempt
       ));
+      console.log('Application accepted:', response.data);
       setOpenAcceptDialog(false);
       setSelectedApplication(null);
     } catch (error) {
@@ -81,13 +87,19 @@ const ManagerTestAttempts = () => {
   };
 
   const handleDeclineApplication = async () => {
+    if (!selectedApplication || !selectedApplication.application) {
+      console.error('Selected application is not properly set.');
+      return;
+    }
     try {
+      console.log(`Declining application: ${selectedApplication.application._id}`);
       const response = await axios.put(`http://localhost:5000/api/applications/decline-after-test/${selectedApplication.application._id}`);
       setAttempts(attempts.map(attempt =>
         attempt.application._id === selectedApplication.application._id
           ? { ...attempt, application: response.data }
           : attempt
       ));
+      console.log('Application declined:', response.data);
       setOpenDeclineDialog(false);
       setSelectedApplication(null);
     } catch (error) {
