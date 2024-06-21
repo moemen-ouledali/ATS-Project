@@ -23,7 +23,7 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
-import { Add, Edit, Delete, Visibility, Assessment } from '@mui/icons-material';
+import { Add, Edit, Delete, Visibility, Assessment, CalendarToday, List, BarChart } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/system';
 
@@ -183,6 +183,10 @@ const HRManagerDashboard = () => {
     navigate('/manager-test-attempts');
   };
 
+  const showInterviewCalendar = () => {
+    navigate('/interview-calendar');
+  };
+
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
@@ -229,6 +233,7 @@ const HRManagerDashboard = () => {
             </StyledButton>
             <StyledButton
               variant="contained"
+              startIcon={<List />}
               sx={{ fontSize: '1.2rem', padding: '12px 24px' }}
               onClick={() => setShowJobListings(true)}
             >
@@ -237,7 +242,7 @@ const HRManagerDashboard = () => {
             <StyledButton
               variant="contained"
               color="primary"
-              startIcon={<Assessment />}
+              startIcon={<BarChart />}
               sx={{ fontSize: '1.2rem', padding: '12px 24px' }}
               onClick={showTestAttempts}
             >
@@ -246,10 +251,20 @@ const HRManagerDashboard = () => {
             <StyledButton
               variant="contained"
               color="primary"
+              startIcon={<BarChart />}
               sx={{ fontSize: '1.2rem', padding: '12px 24px' }}
               onClick={() => navigate('/hr-manager-analytics')}
             >
               View Analytics
+            </StyledButton>
+            <StyledButton
+              variant="contained"
+              color="primary"
+              startIcon={<CalendarToday />}
+              sx={{ fontSize: '1.2rem', padding: '12px 24px' }}
+              onClick={showInterviewCalendar}
+            >
+              Interview Calendar
             </StyledButton>
           </Box>
           <AddJobListingModal

@@ -86,7 +86,12 @@ const TestPage = () => {
           }
         });
         setTest(response.data);
-        setAnswers(new Array(response.data.questions.length).fill(''));
+        setAnswers(response.data.questions.map(question => ({
+          question: question.question,
+          givenAnswer: '',
+          correctAnswer: question.correctOption,
+          isCorrect: false,
+        })));
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch test:', error);
@@ -129,28 +134,33 @@ const TestPage = () => {
       console.error('No token found');
       return;
     }
-
+  
     const params = new URLSearchParams(location.search);
     const applicationId = params.get('applicationId');
-
+  
     if (!applicationId) {
       console.error('No applicationId found in URL');
       return;
     }
-
+  
     if (!test || !test._id || !answers.length) {
       console.error('Missing test data or answers');
       return;
     }
-
+  
     const payload = {
       testId: test._id,
-      answers,
+      answers: answers.map((answer, index) => ({
+        question: test.questions[index].question,
+        givenAnswer: answer,
+        correctAnswer: test.questions[index].correctAnswer,
+        isCorrect: test.questions[index].correctAnswer === answer
+      })),
       applicationId,
     };
-
+  
     console.log('Submitting test with payload:', payload);
-
+  
     try {
       const response = await axios.post(
         'http://localhost:5000/api/tests/submit',
@@ -168,6 +178,8 @@ const TestPage = () => {
       console.error('Failed to submit test:', error.response?.data || error.message);
     }
   }, [authToken, location.search, test, answers, navigate]);
+  
+
 
   useEffect(() => {
     if (timeLeft === 0) {
@@ -189,7 +201,8 @@ const TestPage = () => {
 
   const handleOptionChange = (index, option) => {
     const newAnswers = [...answers];
-    newAnswers[index] = option;
+    newAnswers[index].givenAnswer = option;
+    newAnswers[index].isCorrect = option === test.questions[index].correctOption;
     setAnswers(newAnswers);
   };
 
@@ -227,7 +240,7 @@ const TestPage = () => {
         <QuestionBox key={index}>
           <Typography variant="h5" sx={{ mb: 3, fontWeight: 'bold', color: '#333' }}>{question.question}</Typography>
           <RadioGroup
-            value={answers[index]}
+            value={answers[index].givenAnswer}
             onChange={(e) => handleOptionChange(index, e.target.value)}
           >
             {question.options.map((option, i) => (

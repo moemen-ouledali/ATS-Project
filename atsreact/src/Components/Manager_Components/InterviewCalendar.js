@@ -3,7 +3,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import axios from 'axios';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { Container, Typography, Modal, Box, Button, CircularProgress, Paper } from '@mui/material';
+import { Container, Typography, Modal, Box, Button, CircularProgress, Grid, Divider } from '@mui/material';
 import { styled } from '@mui/system';
 
 const localizer = momentLocalizer(moment);
@@ -17,6 +17,19 @@ const StyledCalendar = styled(Calendar)({
     padding: '10px',
     borderRadius: '10px',
     marginBottom: '20px',
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  '.rbc-toolbar button': {
+    color: '#fff',
+    backgroundColor: '#007BFF',
+    border: 'none',
+    padding: '5px 10px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  '.rbc-toolbar button:hover': {
+    backgroundColor: '#0056b3',
   },
   '.rbc-event': {
     backgroundColor: '#ff6347',
@@ -28,6 +41,11 @@ const StyledCalendar = styled(Calendar)({
   '.rbc-today': {
     backgroundColor: '#eaf6ff',
   },
+  '.rbc-month-view': {
+    borderRadius: '10px',
+    overflow: 'hidden',
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+  },
 });
 
 const ModalBox = styled(Box)({
@@ -35,12 +53,30 @@ const ModalBox = styled(Box)({
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 800,
+  width: '90%', // Increased width to 90%
+  maxWidth: '1200px', // Increased max-width to 1200px
   backgroundColor: '#fff',
-  border: '2px solid #000',
+  border: 'none',
   boxShadow: 24,
-  p: 4,
+  padding: '20px', // Added padding
   borderRadius: '10px',
+});
+
+const CustomButton = styled(Button)({
+  borderRadius: '20px',
+  padding: '10px 20px',
+  fontWeight: 'bold',
+  textTransform: 'none',
+});
+
+const HeaderTypography = styled(Typography)({
+  fontWeight: 'bold',
+  color: '#007BFF',
+  marginBottom: '20px',
+});
+
+const InfoTypography = styled(Typography)({
+  marginBottom: '10px',
 });
 
 const InterviewCalendar = () => {
@@ -68,7 +104,7 @@ const InterviewCalendar = () => {
 
   const handleSelectEvent = async (interview) => {
     setSelectedInterview(interview);
-    const applicationId = interview.applicationId.toString(); // Ensure applicationId is a string
+    const applicationId = interview.applicationId._id || interview.applicationId; // Ensure applicationId is a string
     console.log(`Fetching details for applicationId: ${applicationId}`);
     try {
       const response = await axios.get(`http://localhost:5000/api/applications/${applicationId}`);
@@ -87,7 +123,7 @@ const InterviewCalendar = () => {
 
   const handleUpdateStatus = async (status) => {
     if (!selectedInterview) return;
-    const applicationId = selectedInterview.applicationId.toString(); // Ensure applicationId is a string
+    const applicationId = selectedInterview.applicationId._id || selectedInterview.applicationId; // Ensure applicationId is a string
     try {
       await axios.put(`http://localhost:5000/api/applications/${applicationId}/status`, { status });
       setInterviews(interviews.map(i => (i._id === selectedInterview._id ? { ...i, applicationStatus: status } : i)));
@@ -109,9 +145,9 @@ const InterviewCalendar = () => {
 
   return (
     <Container>
-      <Typography variant="h3" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#007BFF', my: 4 }}>
+      <HeaderTypography variant="h3" gutterBottom align="center">
         Interview Calendar
-      </Typography>
+      </HeaderTypography>
       <StyledCalendar
         localizer={localizer}
         events={events}
@@ -131,27 +167,36 @@ const InterviewCalendar = () => {
           </Typography>
           {applicationDetails ? (
             <>
-              <Typography variant="h6"><strong>Name:</strong> {applicationDetails.name}</Typography>
-              <Typography variant="body1"><strong>Email:</strong> {applicationDetails.email}</Typography>
-              <Typography variant="body1"><strong>Phone:</strong> {applicationDetails.phone}</Typography>
-              <Typography variant="body1"><strong>Education Level:</strong> {applicationDetails.educationLevel}</Typography>
-              <Typography variant="body1"><strong>Experience Level:</strong> {applicationDetails.experienceLevel}</Typography>
-              <Typography variant="body1"><strong>University:</strong> {applicationDetails.university}</Typography>
-              <Typography variant="body1"><strong>Motivation Letter:</strong> {applicationDetails.motivationLetter}</Typography>
-              <Typography variant="body1"><strong>Resume:</strong> <a href={`http://localhost:5000/${applicationDetails.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></Typography>
-              <Typography variant="body1"><strong>Status:</strong> {applicationDetails.status}</Typography>
-              <Typography variant="body1"><strong>Applied on:</strong> {new Date(applicationDetails.createdAt).toLocaleDateString()} {new Date(applicationDetails.createdAt).toLocaleTimeString()}</Typography>
-              <Box sx={{ mt: 4 }}>
-                <Button variant="contained" color="primary" sx={{ mr: 2 }} onClick={() => handleUpdateStatus('accepted after interview')}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <InfoTypography variant="h6"><strong>Name:</strong> {applicationDetails.name}</InfoTypography>
+                  <InfoTypography variant="body1"><strong>Email:</strong> {applicationDetails.email}</InfoTypography>
+                  <InfoTypography variant="body1"><strong>Phone:</strong> {applicationDetails.phone}</InfoTypography>
+                  <InfoTypography variant="body1"><strong>Education Level:</strong> {applicationDetails.educationLevel}</InfoTypography>
+                  <InfoTypography variant="body1"><strong>Experience Level:</strong> {applicationDetails.experienceLevel}</InfoTypography>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InfoTypography variant="body1"><strong>University:</strong> {applicationDetails.university}</InfoTypography>
+                  <InfoTypography variant="body1"><strong>Motivation Letter:</strong> {applicationDetails.motivationLetter}</InfoTypography>
+                  <InfoTypography variant="body1"><strong>Resume:</strong> <a href={`http://localhost:5000/${applicationDetails.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></InfoTypography>
+                  <InfoTypography variant="body1"><strong>Status:</strong> {applicationDetails.status}</InfoTypography>
+                  <InfoTypography variant="body1"><strong>Applied on:</strong> {new Date(applicationDetails.createdAt).toLocaleDateString()} {new Date(applicationDetails.createdAt).toLocaleTimeString()}</InfoTypography>
+                </Grid>
+              </Grid>
+              <Divider sx={{ my: 2 }} />
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <CustomButton variant="contained" color="primary" sx={{ mr: 2 }} onClick={() => handleUpdateStatus('accepted after interview')}>
                   Accept After Interview
-                </Button>
-                <Button variant="contained" color="error" onClick={() => handleUpdateStatus('declined after interview')}>
+                </CustomButton>
+                <CustomButton variant="contained" color="error" onClick={() => handleUpdateStatus('declined after interview')}>
                   Decline After Interview
-                </Button>
+                </CustomButton>
               </Box>
             </>
           ) : (
-            <CircularProgress />
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+              <CircularProgress />
+            </Box>
           )}
         </ModalBox>
       </Modal>

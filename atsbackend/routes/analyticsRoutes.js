@@ -3,6 +3,7 @@ const router = express.Router();
 const Application = require('../models/Application');
 const JobListing = require('../models/JobListing');
 const TestAttempt = require('../models/TestAttempt');
+const User = require('../models/User'); // Ensure the path to the User model is correct
 
 // Endpoint to get application status distribution
 router.get('/application-status', async (req, res) => {
@@ -21,6 +22,7 @@ router.get('/application-status', async (req, res) => {
       }]
     };
 
+    console.log('Application Status Data:', data);
     res.json(data);
   } catch (error) {
     console.error('Failed to fetch application status data:', error);
@@ -61,6 +63,7 @@ router.get('/applications-over-time', async (req, res) => {
       }]
     };
 
+    console.log('Applications Over Time Data:', data);
     res.json(data);
   } catch (error) {
     console.error('Failed to fetch applications over time data:', error);
@@ -85,6 +88,7 @@ router.get('/education-level', async (req, res) => {
       }]
     };
 
+    console.log('Education Level Data:', data);
     res.json(data);
   } catch (error) {
     console.error('Failed to fetch education level data:', error);
@@ -109,6 +113,7 @@ router.get('/experience-level', async (req, res) => {
       }]
     };
 
+    console.log('Experience Level Data:', data);
     res.json(data);
   } catch (error) {
     console.error('Failed to fetch experience level data:', error);
@@ -133,6 +138,7 @@ router.get('/applications-per-category', async (req, res) => {
       }]
     };
 
+    console.log('Applications Per Category Data:', data);
     res.json(data);
   } catch (error) {
     console.error('Failed to fetch applications per category data:', error);
@@ -154,6 +160,7 @@ router.get('/test-scores', async (req, res) => {
       }]
     };
 
+    console.log('Test Scores Data:', data);
     res.json(data);
   } catch (error) {
     console.error('Failed to fetch test scores data:', error);
@@ -180,6 +187,7 @@ router.get('/top-universities', async (req, res) => {
       }]
     };
 
+    console.log('Top Universities Data:', data);
     res.json(data);
   } catch (error) {
     console.error('Failed to fetch university data:', error);
@@ -190,24 +198,73 @@ router.get('/top-universities', async (req, res) => {
 // Endpoint to get applicants by city
 router.get('/applicants-by-city', async (req, res) => {
   try {
-    const applications = await Application.find({});
-    const cityCounts = applications.reduce((acc, app) => {
-      acc[app.city] = (acc[app.city] || 0) + 1;
-      return acc;
-    }, {});
+    // Aggregate applications by joining with users to get city information
+    const applicantsByCity = await Application.aggregate([
+      {
+        $lookup: {
+          from: 'users', // Collection name in MongoDB
+          localField: 'email', // Field from the Application schema
+          foreignField: 'email', // Field from the User schema
+          as: 'userDetails'
+        }
+      },
+      { $unwind: '$userDetails' },
+      {
+        $group: {
+          _id: '$userDetails.city',
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          city: '$_id',
+          count: 1,
+          _id: 0
+        }
+      }
+    ]);
+
+    // Format the data for the frontend
+    const labels = applicantsByCity.map(item => item.city || 'Unknown');
+    const data = applicantsByCity.map(item => item.count);
+
+    res.json({
+      labels,
+      datasets: [
+        {
+          label: 'Applicants by City',
+          data,
+          backgroundColor: '#36A2EB'
+        }
+      ]
+    });
+  } catch (error) {
+    console.error('Error fetching applicants by city:', error);
+    res.status(500).json({ error: 'Error fetching applicants by city' });
+  }
+});
+
+// Endpoint to get gender distribution
+router.get('/gender', async (req, res) => {
+  try {
+    const maleCount = await User.countDocuments({ gender: 'male' });
+    const femaleCount = await User.countDocuments({ gender: 'female' });
 
     const data = {
-      labels: Object.keys(cityCounts),
-      datasets: [{
-        data: Object.values(cityCounts),
-        backgroundColor: ['#4A90E2', '#36A2EB', '#FFCE56']
-      }]
+      labels: ['Male', 'Female'],
+      datasets: [
+        {
+          data: [maleCount, femaleCount],
+          backgroundColor: ['#36A2EB', '#FF6384']
+        }
+      ]
     };
 
+    console.log('Gender Distribution Data:', data);
     res.json(data);
   } catch (error) {
-    console.error('Failed to fetch city data:', error);
-    res.status(500).send('Server Error');
+    console.error('Failed to fetch gender distribution data:', error);
+    res.status(500).json({ error: 'Failed to fetch gender distribution data' });
   }
 });
 
