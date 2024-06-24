@@ -150,12 +150,7 @@ const TestPage = () => {
   
     const payload = {
       testId: test._id,
-      answers: answers.map((answer, index) => ({
-        question: test.questions[index].question,
-        givenAnswer: answer,
-        correctAnswer: test.questions[index].correctAnswer,
-        isCorrect: test.questions[index].correctAnswer === answer
-      })),
+      answers: answers.map(answer => answer.givenAnswer), // Update here to include only givenAnswer
       applicationId,
     };
   
@@ -178,6 +173,7 @@ const TestPage = () => {
       console.error('Failed to submit test:', error.response?.data || error.message);
     }
   }, [authToken, location.search, test, answers, navigate]);
+  
   
 
 

@@ -23,7 +23,6 @@ router.get('/category/:category', async (req, res) => {
   }
 });
 
-
 // Submit test answers
 router.post('/submit', async (req, res) => {
   const { testId, answers, applicationId } = req.body;
@@ -44,10 +43,15 @@ router.post('/submit', async (req, res) => {
     }
 
     let score = 0;
-    test.questions.forEach((question, index) => {
-      if (question.correctOption === answers[index]) {
-        score++;
-      }
+    const answerDetails = answers.map((answer, index) => {
+      const isCorrect = test.questions[index].correctOption === answer;
+      if (isCorrect) score++;
+      return {
+        question: test.questions[index].question,
+        givenAnswer: answer,
+        correctAnswer: test.questions[index].correctOption,
+        isCorrect
+      };
     });
 
     // Check if the user already has an attempt for this application
@@ -61,7 +65,7 @@ router.post('/submit', async (req, res) => {
       test: testId,
       user: userId,
       application: applicationId,
-      answers,
+      answers: answerDetails,
       score,
     });
 
@@ -120,7 +124,5 @@ router.get('/check-attempt/:applicationId', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
-
 
 module.exports = router;

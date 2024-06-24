@@ -136,12 +136,43 @@ router.put('/accept/:id', async (req, res) => {
     try {
         const applicationId = req.params.id;
         const application = await Application.findByIdAndUpdate(applicationId, { status: 'Accepted' }, { new: true });
+
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: application.email,
+            subject: 'Pre-Acceptance Notification',
+            html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                    <div style="background-color: #4A90E2; padding: 20px; color: #fff; text-align: center;">
+                        <h1 style="margin: 0;">BeeApply Pre-Acceptance</h1>
+                    </div>
+                    <div style="padding: 20px;">
+                        <p>Dear <strong>${application.name}</strong>,</p>
+                        <p>We are pleased to inform you that you are <strong>pre-accepted</strong> for the next step in our recruitment process. Please log in to your candidate dashboard on <strong>BeeApply</strong> to take the evaluation test.</p>
+                        <p>If you have any questions, feel free to reach out to us.</p>
+                        <p>Best regards,</p>
+                        <p>BeeApply Team</p>
+                    </div>
+                    <div style="background-color: #f4f4f4; padding: 10px; text-align: center; font-size: 12px; color: #aaa;">
+                        &copy; 2024 ATS. All rights reserved.
+                    </div>
+                </div>
+            `
+        };
+
+        await transporter.sendMail(mailOptions);
+
         res.json(application);
     } catch (error) {
         console.error('Failed to accept application:', error);
         res.status(500).send('Error accepting application');
     }
 });
+
 
 // Decline an application
 router.put('/decline/:id', async (req, res) => {
@@ -213,8 +244,18 @@ router.put('/accept-after-test/:id', async (req, res) => {
             from: process.env.EMAIL_USER,
             to: application.email,
             subject: 'Application Accepted - Interview Scheduled',
-            text: `Dear ${application.name},\n\nWe are pleased to inform you that your application for the ${application.jobId.title} position has been accepted. Your interview has been scheduled for ${date} at ${time}.\n\nThank you for your interest in our company.\n\nBest regards,\n[Your Company Name]`
+            html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                    <p>Dear ${application.name},</p>
+                    <p>We are pleased to inform you that your application for the <strong>${application.jobId.title}</strong> position has been accepted. We have scheduled your interview for <strong>${date}</strong> at <strong>${time}</strong>.</p>
+                    <p>We are excited about the possibility of you joining our team and are looking forward to discussing how you can contribute to our company. Please let us know if you need any additional information or have any questions prior to the interview.</p>
+                    <p>Thank you for your interest in our company.</p>
+                    <p>Best regards,</p>
+                    <p>[Your Company Name]</p>
+                </div>
+            `
         };
+        
 
         await transporter.sendMail(mailOptions);
 
@@ -225,7 +266,6 @@ router.put('/accept-after-test/:id', async (req, res) => {
     }
 });
 
-module.exports = router;
 
 // Update application status
 router.put('/:id/status', async (req, res) => {
@@ -242,6 +282,5 @@ router.put('/:id/status', async (req, res) => {
   });
 
   
-
-
 module.exports = router;
+

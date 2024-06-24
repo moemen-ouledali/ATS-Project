@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Pie, Line, Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
@@ -88,6 +88,39 @@ const sortData = (data) => {
   };
 };
 
+const processExperienceLevelData = (data) => {
+  const ranges = {
+    '0 years': 0,
+    '1-3 years': 0,
+    '4-6 years': 0,
+    '7+ years': 0,
+  };
+
+  data.labels.forEach((label, index) => {
+    const value = data.datasets[0].data[index];
+    if (label === '0 years') {
+      ranges['0 years'] += value;
+    } else if (['1 year', '2 years', '3 years'].includes(label)) {
+      ranges['1-3 years'] += value;
+    } else if (['4 years', '5 years', '6 years'].includes(label)) {
+      ranges['4-6 years'] += value;
+    } else {
+      ranges['7+ years'] += value;
+    }
+  });
+
+  return {
+    labels: Object.keys(ranges),
+    datasets: [
+      {
+        label: 'Experience Level',
+        data: Object.values(ranges),
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+      },
+    ],
+  };
+};
+
 const HRManagerAnalytics = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -103,12 +136,12 @@ const HRManagerAnalytics = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  const handleDateChange = async () => {
+  const handleDateChange = () => {
     setLoading(true);
     fetchData();
   };
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const params = {};
       if (startDate) params.startDate = format(startDate, 'yyyy-MM-dd');
@@ -171,7 +204,7 @@ const HRManagerAnalytics = () => {
         ],
       });
 
-      setExperienceLevelData({
+      setExperienceLevelData(processExperienceLevelData({
         labels: experienceLevelRes.data.labels,
         datasets: [
           {
@@ -180,7 +213,7 @@ const HRManagerAnalytics = () => {
             backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
           },
         ],
-      });
+      }));
 
       setApplicationsPerCategoryData({
         labels: applicationsPerCategoryRes.data.labels,
@@ -232,7 +265,7 @@ const HRManagerAnalytics = () => {
           {
             label: 'Gender Distribution',
             data: genderRes.data.datasets[0].data,
-            backgroundColor: ['#FF6384', '#36A2EB'],
+            backgroundColor: ['#36A2EB', '#FF6384'], // Blue for male, pink for female
           },
         ],
       });
@@ -244,11 +277,11 @@ const HRManagerAnalytics = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [startDate, endDate]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   if (loading) {
     return (
