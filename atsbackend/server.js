@@ -53,18 +53,20 @@ dotenv.config();
 
 
 
-
+mongoose.set('debug', true);
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Connect to MongoDB
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 mongoose.connect('mongodb+srv://ouledalimoemen:CXOwsCgnRuiftyu6@atsdatabase.6bxbtji.mongodb.net/ats_database', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
+  socketTimeoutMS: 45000, // Increase socket timeout to 45 seconds
 })
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('Could not connect to MongoDB', err));
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('Could not connect to MongoDB', err));
 
 
 
