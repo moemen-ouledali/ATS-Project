@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
-import { AuthContext } from '../../AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../AuthContext'; // Context for authentication
+import { useNavigate } from 'react-router-dom'; // Navigation hook
 import {
   Container,
   Typography,
@@ -19,6 +19,14 @@ import {
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+
+
+
+
+
+
+
+// Define the theme for the application
 const theme = createTheme({
   palette: {
     primary: {
@@ -55,67 +63,116 @@ const theme = createTheme({
   },
 });
 
-const CandidateDashboard = () => {
-  const [applications, setApplications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [selectedApplication, setSelectedApplication] = useState(null);
-  const { authToken, userDetails } = useContext(AuthContext);
-  const navigate = useNavigate();
 
+
+
+
+
+
+
+
+
+const CandidateDashboard = () => {
+  const [applications, setApplications] = useState([]); // State to store applications
+  const [loading, setLoading] = useState(true); // State to handle loading
+  const [error, setError] = useState(''); // State to handle errors
+  const [selectedApplication, setSelectedApplication] = useState(null); // State to handle selected application
+  const { authToken, userDetails } = useContext(AuthContext); // Get authToken and userDetails from AuthContext
+  const navigate = useNavigate(); // Hook for navigation
+
+
+
+
+
+  // Function to fetch applications
   const fetchApplications = useCallback(async () => {
-    setLoading(true);
+    setLoading(true); // Set loading to true
     try {
       const response = await axios.get('http://localhost:5000/api/applications', {
         headers: {
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `Bearer ${authToken}`, // Set authorization header
         },
         params: {
-          email: userDetails.email,
+          email: userDetails.email, // Set email parameter
         },
       });
 
-      setApplications(response.data);
-      setLoading(false);
+      setApplications(response.data); // Set applications data
+      setLoading(false); // Set loading to false
     } catch (err) {
-      setError('Failed to fetch applications');
-      setLoading(false);
-      console.error(err);
+      setError('Failed to fetch applications'); // Set error message
+      setLoading(false); // Set loading to false
+      console.error(err); // Log error to console
     }
-  }, [authToken, userDetails.email]);
+  }, [authToken, userDetails.email]); // Dependencies for useCallback
 
+
+
+
+
+
+
+
+  // useEffect to fetch applications on component mount
   useEffect(() => {
-    fetchApplications();
-  }, [fetchApplications]);
+    fetchApplications(); // Call fetchApplications function
+  }, [fetchApplications]); // Dependencies for useEffect
 
+
+
+
+
+
+  // Function to show application details
   const showApplicationDetails = (application) => {
-    setSelectedApplication(application);
+    setSelectedApplication(application); // Set selected application
   };
 
+
+
+
+
+  // Function to close application details
   const closeApplicationDetails = () => {
-    setSelectedApplication(null);
+    setSelectedApplication(null); // Clear selected application
   };
 
+
+
+
+
+
+  // Function to handle evaluation test
   const handleEvaluationTest = (category, applicationId) => {
-    navigate(`/test/${category}?applicationId=${applicationId}`);
+    navigate(`/test/${category}?applicationId=${applicationId}`); // Navigate to evaluation test page
   };
+
+
+
+
+
+
+
+
+
+  
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container sx={{ py: 6 }}>
+    <ThemeProvider theme={theme}> {/* Provide theme to the component */}
+      <Container sx={{ py: 6 }}> {/* Container with padding */}
         <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 4, fontWeight: 'bold' }}>
           Your Applications
         </Typography>
-        {loading ? (
+        {loading ? ( // Show loading spinner if loading is true
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
             <CircularProgress />
           </Box>
-        ) : error ? (
+        ) : error ? ( // Show error message if there is an error
           <Typography variant="h6" color="error" align="center">
             {error}
           </Typography>
         ) : (
-          applications.length === 0 ? (
+          applications.length === 0 ? ( // Show message if there are no applications
             <Typography variant="h6" align="center">
               No applications found.
             </Typography>

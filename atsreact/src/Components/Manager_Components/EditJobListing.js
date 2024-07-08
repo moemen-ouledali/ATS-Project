@@ -1,20 +1,61 @@
+// Import necessary libraries and components
 import React, { useState } from 'react';
 import { Button, Form, Card } from 'react-bootstrap';
 import { Save, Cancel } from '@mui/icons-material';
 
+
+
+
+
+
+
+
+
+// Define the EditJobListing component, which accepts props: listing, onSave, and onCancel
 const EditJobListing = ({ listing, onSave, onCancel }) => {
+  // Initialize state to hold job details with the values from the listing prop
   const [jobDetails, setJobDetails] = useState({ ...listing });
 
+
+
+
+
+
+
+
+
+
+
+  // Handle changes to form inputs
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
+
+
+
+
+
+
+
+
+
     if (type === 'checkbox') {
+      // Update requirements array for checkbox inputs
       setJobDetails((prevDetails) => ({
         ...prevDetails,
         requirements: checked
           ? [...prevDetails.requirements, value]
           : prevDetails.requirements.filter((req) => req !== value),
       }));
-    } else {
+    } 
+    
+    
+    
+    
+    
+    
+    else {
+      // Update state for other input types
       setJobDetails((prevDetails) => ({
         ...prevDetails,
         [name]: value,
@@ -22,12 +63,41 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
     }
   };
 
+
+
+
+
+
+
+
+
+  // Handle form submission
   const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(listing._id, jobDetails);
+    e.preventDefault(); // Prevent default form submission behavior
+    onSave(listing._id, jobDetails); // Call onSave prop with the listing ID and updated job details
   };
 
+
+
+
+
+
+
+
+  // Render checkbox options for requirements based on selected category
   const renderRequirements = () => {
+
+
+
+
+
+
+
+
+
+
+
+    // Define options for each category
     const requirementsOptions = {
       'Web & Mobile Development': [
         'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'C#', 'Ruby', 'PHP',
@@ -46,6 +116,18 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
       ]
     };
 
+
+
+
+
+
+
+
+
+
+
+
+    // Return checkbox inputs for the selected category
     return requirementsOptions[jobDetails.category]?.map((req) => (
       <Form.Check
         key={req}
@@ -59,8 +141,28 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
     ));
   };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // Return the JSX to render the form for editing a job listing
   return (
     <Card.Body as="form" onSubmit={handleSubmit}>
+      {/* Job Title Input */}
       <Form.Group controlId="formTitle">
         <Form.Label>Job Title</Form.Label>
         <Form.Control
@@ -72,6 +174,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         />
       </Form.Group>
 
+      {/* Category Select */}
       <Form.Group controlId="formCategory">
         <Form.Label>Category</Form.Label>
         <Form.Control
@@ -88,6 +191,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         </Form.Control>
       </Form.Group>
 
+      {/* Job Location Input */}
       <Form.Group controlId="formJobLocation">
         <Form.Label>Job Location</Form.Label>
         <Form.Control
@@ -99,6 +203,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         />
       </Form.Group>
 
+      {/* Job Type Select */}
       <Form.Group controlId="formJobType">
         <Form.Label>Job Type</Form.Label>
         <Form.Control
@@ -114,6 +219,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         </Form.Control>
       </Form.Group>
 
+      {/* Description Textarea */}
       <Form.Group controlId="formDescription">
         <Form.Label>Description</Form.Label>
         <Form.Control
@@ -125,11 +231,13 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         />
       </Form.Group>
 
+      {/* Requirements Checkboxes */}
       <Form.Group controlId="formRequirements">
         <Form.Label>Requirements</Form.Label>
         {renderRequirements()}
       </Form.Group>
 
+      {/* Experience Level Select */}
       <Form.Group controlId="formExperienceLevel">
         <Form.Label>Experience Level</Form.Label>
         <Form.Control
@@ -147,6 +255,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         </Form.Control>
       </Form.Group>
 
+      {/* Minimum Degree Select */}
       <Form.Group controlId="formMinimumDegree">
         <Form.Label>Minimum Degree</Form.Label>
         <Form.Control
@@ -163,6 +272,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         </Form.Control>
       </Form.Group>
 
+      {/* Form Buttons */}
       <Card.Footer>
         <Button
           type="submit"
@@ -183,4 +293,5 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
   );
 };
 
+// Export the EditJobListing component for use in other parts of the application
 export default EditJobListing;

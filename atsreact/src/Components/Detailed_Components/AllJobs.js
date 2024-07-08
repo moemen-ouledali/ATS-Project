@@ -1,9 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
-import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography, CardActions, Button, Box, CircularProgress, TextField, FormControlLabel, RadioGroup, Radio } from '@mui/material';
+import {
+  Grid,
+  Card,
+  CardActionArea,
+  CardMedia,
+  CardContent,
+  Typography,
+  CardActions,
+  Button,
+  Box,
+  CircularProgress,
+  TextField,
+  FormControlLabel,
+  RadioGroup,
+  Radio
+} from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/system';
+
+
+
+
 
 // Importing images
 import image1 from '../../Media/cards media/1.png';
@@ -15,8 +34,19 @@ import image6 from '../../Media/cards media/6.png';
 import image7 from '../../Media/cards media/7.png';
 import image8 from '../../Media/cards media/8.png';
 
+
+
+
+
+// Array of card images
 const cardImages = [image1, image2, image3, image4, image5, image6, image7, image8];
 
+
+
+
+
+
+// Creating a theme for the application
 const theme = createTheme({
   palette: {
     primary: {
@@ -53,6 +83,13 @@ const theme = createTheme({
   },
 });
 
+
+
+
+
+
+
+// Styling the Card component
 const StyledCard = styled(Card)({
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
   '&:hover': {
@@ -65,6 +102,15 @@ const StyledCard = styled(Card)({
   backgroundColor: '#fff',
 });
 
+
+
+
+
+
+
+
+
+// Styling the Button component
 const StyledButton = styled(Button)({
   backgroundColor: '#4A90E2',
   color: '#fff',
@@ -76,6 +122,15 @@ const StyledButton = styled(Button)({
   borderRadius: '30px',
 });
 
+
+
+
+
+
+
+
+
+// Function to shuffle the array of images
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -84,13 +139,36 @@ function shuffleArray(array) {
   return array;
 }
 
-const AllJobsPage = () => {
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterLocation, setFilterLocation] = useState('All');
-  const shuffledImages = shuffleArray([...cardImages]);
 
+
+
+
+
+
+
+
+
+
+
+// AllJobsPage Component
+const AllJobsPage = () => {
+  const [jobs, setJobs] = useState([]); // State to store job listings
+  const [loading, setLoading] = useState(true); // State to manage loading state
+  const [searchTerm, setSearchTerm] = useState(''); // State to manage search term
+  const [filterLocation, setFilterLocation] = useState('All'); // State to manage location filter
+  const shuffledImages = shuffleArray([...cardImages]); // Shuffled images for cards
+
+
+
+
+
+
+
+
+
+
+
+  // Fetch jobs on component mount
   useEffect(() => {
     axios.get('http://localhost:5000/api/jobs')
       .then(response => {
@@ -104,21 +182,56 @@ const AllJobsPage = () => {
       });
   }, []);
 
+
+
+
+
+  // Handle search term change
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
 
+
+
+
+
+
+
+
+
+  // Handle location filter change
   const handleFilterLocation = (e) => {
     setFilterLocation(e.target.value);
   };
 
+
+
+
+
+
+
+
+
+  // Filter jobs based on search term and location
   const filteredJobs = jobs.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
     (filterLocation === 'All' || job.jobLocation.toLowerCase() === filterLocation.toLowerCase())
   );
 
+
+
+
+
+
+
+
+
+
+
+  
+
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}> {/* Theme provider for the application */}
       <Box sx={{ padding: '40px 24px', backgroundColor: theme.palette.background.default, minHeight: '100vh' }}>
         <Typography
           component="h1"
