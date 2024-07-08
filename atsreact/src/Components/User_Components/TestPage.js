@@ -5,12 +5,6 @@ import { Box, Typography, Container, Paper, CircularProgress, Button, Radio, Rad
 import { AuthContext } from '../../AuthContext';
 import { styled } from '@mui/system';
 
-
-
-
-
-
-// Styled component for the countdown timer
 const Timer = styled(Box)({
   fontSize: '2.5rem',
   fontWeight: 'bold',
@@ -29,20 +23,6 @@ const Timer = styled(Box)({
   animation: 'pulse 2s infinite',
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Styled component for the question container
 const QuestionBox = styled(Box)({
   marginBottom: '40px',
   padding: '30px',
@@ -56,14 +36,6 @@ const QuestionBox = styled(Box)({
   },
 });
 
-
-
-
-
-
-
-
-// Styled component for the option labels
 const OptionLabel = styled(FormControlLabel)({
   background: '#fafafa',
   borderRadius: '12px',
@@ -77,12 +49,6 @@ const OptionLabel = styled(FormControlLabel)({
   },
 });
 
-
-
-
-
-
-// Styled component for the submit button
 const SubmitButton = styled(Button)({
   marginTop: '50px',
   padding: '18px 35px',
@@ -99,62 +65,18 @@ const SubmitButton = styled(Button)({
   },
 });
 
-
-
-
-
-
-
-
-
-
-
 const TestPage = () => {
-
-
-
-
-  // Extracts the category from the URL parameters
   const { category } = useParams();
-
-
-
-
-  // Accesses the current location object
   const location = useLocation();
-
-
-
-
-  // State variables
   const [test, setTest] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [score, setScore] = useState(null);
   const [error, setError] = useState(null);
   const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
-
-
-
-
-
-  // Accesses the authentication token from context
   const { authToken } = useContext(AuthContext);
-
-
-
-
-
-
-  // Provides navigation functionality
   const navigate = useNavigate();
 
-
-
-
-
-
-  // useEffect to fetch test data and check if the test has already been attempted
   useEffect(() => {
     const fetchTest = async () => {
       try {
@@ -163,9 +85,7 @@ const TestPage = () => {
             Authorization: `Bearer ${authToken}`,
           }
         });
-        // Sets the fetched test data
         setTest(response.data);
-        // Initializes the answers state with empty answers and correct answers
         setAnswers(response.data.questions.map(question => ({
           question: question.question,
           givenAnswer: '',
@@ -180,16 +100,6 @@ const TestPage = () => {
       }
     };
 
-
-
-
-
-
-
-
-
-
-    // Checks if the test has already been attempted
     const checkTestAttempt = async () => {
       const params = new URLSearchParams(location.search);
       const applicationId = params.get('applicationId');
@@ -197,26 +107,15 @@ const TestPage = () => {
         console.error('No applicationId found in URL');
         return;
       }
-
-
-
-
-
       try {
         const response = await axios.get(`http://localhost:5000/api/tests/check-attempt/${applicationId}`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           }
         });
-        // Checks if the test has already been attempted
         if (response.data.attempted) {
           setError('You have already attempted this test.');
           setLoading(false);
-
-
-
-
-
         } else {
           fetchTest();
         }
@@ -230,46 +129,33 @@ const TestPage = () => {
     checkTestAttempt();
   }, [category, authToken, location.search]);
 
-
-
-
-
-
-
-
-
-
-
-
-
-  // Memoized function to handle test submission
   const handleSubmit = useCallback(async () => {
     if (!authToken) {
       console.error('No token found');
       return;
     }
-
+  
     const params = new URLSearchParams(location.search);
     const applicationId = params.get('applicationId');
-
+  
     if (!applicationId) {
       console.error('No applicationId found in URL');
       return;
     }
-
+  
     if (!test || !test._id || !answers.length) {
       console.error('Missing test data or answers');
       return;
     }
-
+  
     const payload = {
       testId: test._id,
       answers: answers.map(answer => answer.givenAnswer), // Update here to include only givenAnswer
       applicationId,
     };
-
+  
     console.log('Submitting test with payload:', payload);
-
+  
     try {
       const response = await axios.post(
         'http://localhost:5000/api/tests/submit',
@@ -281,22 +167,16 @@ const TestPage = () => {
         }
       );
       console.log('Test submission response:', response.data);
-      // Sets the score after successful submission
       setScore(response.data.score);
-      // Optionally navigate to a results page
-      navigate(`/test-results/${response.data._id}`);
+      navigate(`/test-results/${response.data._id}`); // Navigate to a results page (optional)
     } catch (error) {
       console.error('Failed to submit test:', error.response?.data || error.message);
     }
   }, [authToken, location.search, test, answers, navigate]);
+  
+  
 
 
-
-
-
-
-
-  // useEffect to handle the countdown timer
   useEffect(() => {
     if (timeLeft === 0) {
       handleSubmit();
@@ -309,31 +189,12 @@ const TestPage = () => {
     return () => clearInterval(timer);
   }, [timeLeft, handleSubmit]);
 
-
-
-
-
-
-
-
-  // Function to format time in MM:SS format
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
-
-
-
-
-
-
-
-
-
-
-  // Handles option change and updates the answers state
   const handleOptionChange = (index, option) => {
     const newAnswers = [...answers];
     newAnswers[index].givenAnswer = option;
@@ -341,16 +202,6 @@ const TestPage = () => {
     setAnswers(newAnswers);
   };
 
-
-
-
-
-
-
-
-
-
-  // Renders a loading spinner while loading
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
@@ -359,15 +210,6 @@ const TestPage = () => {
     );
   }
 
-
-
-
-
-
-
-
-
-  // Renders an error message if there is an error
   if (error) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
@@ -376,28 +218,6 @@ const TestPage = () => {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // Renders a message if the test is not available
   if (!test || !test.questions) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
@@ -406,18 +226,6 @@ const TestPage = () => {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
-
-  
   return (
     <Container component={Paper} sx={{ p: 5, mt: 5, backgroundColor: '#f0f4f8', borderRadius: '20px' }}>
       <Typography variant="h2" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#007BFF', mb: 5 }}>

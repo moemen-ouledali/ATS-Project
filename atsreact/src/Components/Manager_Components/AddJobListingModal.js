@@ -1,20 +1,10 @@
-// Import React library and necessary hooks
+// src/Components/Manager_Components/AddJobListingModal.js
+
 import React, { useState } from 'react';
-
-// Import components from react-bootstrap for building the modal and form
 import { Modal, Button, Form } from 'react-bootstrap';
-
-
-
-// Import axios for making HTTP requests
 import axios from 'axios';
 
-
-
-
-// Define the AddJobListingModal component which accepts props: show, handleClose, fetchJobListings
 const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
-  // Initialize state to hold job details with default values
   const [jobDetails, setJobDetails] = useState({
     title: '',
     category: '',
@@ -26,31 +16,16 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
     minimumDegree: '',
   });
 
-
-
-
-
-
-  // Handle changes to form inputs
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-
-
-
-
-
     if (type === 'checkbox') {
-      // Update requirements array for checkbox inputs
       setJobDetails((prevDetails) => ({
         ...prevDetails,
         requirements: checked
           ? [...prevDetails.requirements, value]
           : prevDetails.requirements.filter((req) => req !== value),
       }));
-
-
     } else {
-      // Update state for other input types
       setJobDetails((prevDetails) => ({
         ...prevDetails,
         [name]: value,
@@ -58,41 +33,18 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
     }
   };
 
-
-
-
-
-
-
-
-
-
-  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
     try {
-      // Send POST request to add a new job listing
       await axios.post('http://localhost:5000/api/jobs/add', jobDetails);
-      fetchJobListings(); // Fetch updated job listings
-      handleClose(); // Close the modal
+      fetchJobListings();
+      handleClose();
     } catch (error) {
-      console.error('Failed to add job listing:', error); // Log any errors
+      console.error('Failed to add job listing:', error);
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-  // Render checkbox options for requirements based on selected category
   const renderRequirements = () => {
-    // Define options for each category
     const requirementsOptions = {
       'Web & Mobile Development': [
         'JavaScript', 'TypeScript', 'Python', 'Java', 'C++', 'C#', 'Ruby', 'PHP',
@@ -111,15 +63,6 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
       ]
     };
 
-
-
-
-
-
-
-
-
-    // Return checkbox inputs for the selected category
     return requirementsOptions[jobDetails.category]?.map((req) => (
       <Form.Check
         key={req}
@@ -133,15 +76,6 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
     ));
   };
 
-
-
-
-
-
-
-  
-
-  // Return the JSX to render the modal with the form
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -260,5 +194,4 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
   );
 };
 
-// Export the AddJobListingModal component for use in other parts of the application
 export default AddJobListingModal;

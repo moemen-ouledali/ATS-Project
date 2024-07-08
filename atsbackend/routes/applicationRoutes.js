@@ -1,6 +1,3 @@
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Import necessary modules and models
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -11,23 +8,9 @@ const fs = require('fs');
 const pdf = require('pdf-parse');
 const nodemailer = require('nodemailer');
 const Interview = require('../models/interview'); // Import the Interview model
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config();
 
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Set up storage engine for uploading files
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Set up storage engine
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/'); // Ensure this folder exists
@@ -37,22 +20,9 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage }); // Configure multer with storage settings
+const upload = multer({ storage: storage });
 
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Configure nodemailer transporter for sending emails
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Configure nodemailer transporter
 const transporter = nodemailer.createTransport({
     host: 'smtp.office365.com',
     port: 587,
@@ -63,46 +33,12 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Middleware to log incoming requests for debugging
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Debugging middleware to check route hits
 router.use((req, res, next) => {
     console.log(`Request URL: ${req.originalUrl}`);
     next();
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Route to handle job applications
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 router.post('/apply', upload.single('resume'), async (req, res) => {
     const { name, email, phone, educationLevel, experienceLevel, university, motivationLetter, jobId } = req.body;
     const file = req.file;
@@ -115,10 +51,9 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
     let dataBuffer = fs.readFileSync(file.path);
 
     pdf(dataBuffer).then(function (data) {
-        // Extracted text from the PDF
+        // `data.text` is the extracted text from the PDF
         const resumeText = data.text;
 
-        // Create application data object
         const applicationData = {
             name,
             email,
@@ -133,7 +68,6 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
             status: 'in review'
         };
 
-        // Save application to the database
         const application = new Application(applicationData);
 
         application.save()
@@ -148,30 +82,7 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
     });
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Route to get all applications for the current user by email
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GET all applications for the current user by email
 router.get('/', async (req, res) => {
     try {
         const email = req.query.email;
@@ -183,25 +94,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Route to get applications for a specific job
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GET applications for a specific job
 router.get('/for-job/:jobId', async (req, res) => {
     try {
         const { jobId } = req.params;
@@ -213,26 +106,7 @@ router.get('/for-job/:jobId', async (req, res) => {
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Route to get all applications (for admin or HR manager)
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GET all applications (for admin or HR manager)
 router.get('/all', async (req, res) => {
     try {
         const applications = await Application.find().populate('jobId');
@@ -243,24 +117,7 @@ router.get('/all', async (req, res) => {
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Route to get application details by ID
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// GET application details by ID
 router.get('/:id', async (req, res) => {
     try {
         const application = await Application.findById(req.params.id).populate('jobId');
@@ -274,28 +131,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Route to accept an application
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Accept an application
 router.put('/accept/:id', async (req, res) => {
     try {
         const applicationId = req.params.id;
@@ -305,7 +141,6 @@ router.put('/accept/:id', async (req, res) => {
             return res.status(404).json({ message: 'Application not found' });
         }
 
-        // Email options for acceptance notification
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: application.email,
@@ -329,7 +164,7 @@ router.put('/accept/:id', async (req, res) => {
             `
         };
 
-        await transporter.sendMail(mailOptions); // Send acceptance email
+        await transporter.sendMail(mailOptions);
 
         res.json(application);
     } catch (error) {
@@ -339,26 +174,7 @@ router.put('/accept/:id', async (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Route to decline an application
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Decline an application
 router.put('/decline/:id', async (req, res) => {
     try {
         const applicationId = req.params.id;
@@ -370,28 +186,9 @@ router.put('/decline/:id', async (req, res) => {
     }
 });
 
+// New endpoints for post-evaluation test decisions
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Route to decline an application after evaluation test
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Decline an application after evaluation test
 router.put('/decline-after-test/:id', async (req, res) => {
     try {
         const applicationId = req.params.id;
@@ -401,7 +198,6 @@ router.put('/decline-after-test/:id', async (req, res) => {
             return res.status(404).json({ message: 'Application not found' });
         }
 
-        // Email options for post-test decline notification
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: application.email,
@@ -409,7 +205,7 @@ router.put('/decline-after-test/:id', async (req, res) => {
             text: `Dear ${application.name},\n\nWe regret to inform you that your application for the ${application.jobId.title} position has been declined after the evaluation test.\n\nThank you for your interest in our company.\n\nBest regards,\n[Your Company Name]`
         };
 
-        await transporter.sendMail(mailOptions); // Send decline email
+        await transporter.sendMail(mailOptions);
 
         res.json(application);
     } catch (error) {
@@ -418,28 +214,11 @@ router.put('/decline-after-test/:id', async (req, res) => {
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Route to accept an application after evaluation test and schedule an interview
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Accept an application after evaluation test
 router.put('/accept-after-test/:id', async (req, res) => {
     try {
         const applicationId = req.params.id;
-        const { date, time } = req.body; // Extract date and time from request body
+        const { date, time } = req.body;
         const application = await Application.findById(applicationId);
 
         if (!application) {
@@ -450,19 +229,17 @@ router.put('/accept-after-test/:id', async (req, res) => {
             return res.status(400).json({ message: 'Date and time are required for the interview.' });
         }
 
-        // Create a new interview record
         const interview = new Interview({
             applicationId: applicationId,
             applicantName: application.name,
-            dateTime: new Date(`${date}T${time}`), // Combine date and time into a single Date object
+            dateTime: new Date(`${date}T${time}`),
         });
 
-        await interview.save(); // Save interview to the database
+        await interview.save();
 
-        application.status = 'accepted for interview'; // Update application status
+        application.status = 'accepted for interview';
         await application.save();
 
-        // Email options for interview scheduling
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: application.email,
@@ -478,8 +255,9 @@ router.put('/accept-after-test/:id', async (req, res) => {
                 </div>
             `
         };
+        
 
-        await transporter.sendMail(mailOptions); // Send interview scheduling email
+        await transporter.sendMail(mailOptions);
 
         res.json(application);
     } catch (error) {
@@ -489,48 +267,20 @@ router.put('/accept-after-test/:id', async (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Route to update application status
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Update application status
 router.put('/:id/status', async (req, res) => {
     try {
-        const application = await Application.findByIdAndUpdate(
-            req.params.id,
-            { status: req.body.status }, // Update status from request body
-            { new: true }
-        );
-        res.json(application);
+      const application = await Application.findByIdAndUpdate(
+        req.params.id,
+        { status: req.body.status },
+        { new: true }
+      );
+      res.json(application);
     } catch (error) {
-        res.status(500).send('Error updating status: ' + error.message);
+      res.status(500).send('Error updating status: ' + error.message);
     }
-});
+  });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Export the router
+  
 module.exports = router;
+

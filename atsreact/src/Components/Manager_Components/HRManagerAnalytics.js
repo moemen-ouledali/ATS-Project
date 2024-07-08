@@ -1,4 +1,3 @@
-// Import necessary libraries and components
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Pie, Line, Bar } from 'react-chartjs-2';
@@ -14,72 +13,45 @@ import maleIcon from '../../Media/ProfilePicture/male.png';
 import femaleIcon from '../../Media/ProfilePicture/female.png';
 import 'chartjs-plugin-datalabels';
 
-
-
-
-
-
-
-// Register chart components
 Chart.register(...registerables);
 
-
-
-
-
-
-// Create a custom theme for Material-UI components
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#4A90E2', // Primary color
+      main: '#4A90E2',
     },
     secondary: {
-      main: '#E91E63', // Secondary color
+      main: '#E91E63',
     },
     background: {
-      default: '#F5F5F5', // Default background color
+      default: '#F5F5F5',
     },
   },
   typography: {
-    fontFamily: 'Montserrat, sans-serif', // Default font family
+    fontFamily: 'Montserrat, sans-serif',
     h4: {
       fontWeight: 800,
       color: '#333',
-      fontSize: '2rem', // Heading 4 style
+      fontSize: '2rem',
     },
     h5: {
       fontWeight: 700,
       color: '#555',
-      fontSize: '1.5rem', // Heading 5 style
+      fontSize: '1.5rem',
     },
     body2: {
       color: '#777',
-      fontSize: '1rem', // Body text style
+      fontSize: '1rem',
     },
   },
 });
 
-
-
-
-
-
-
-// Create a styled text component with gradient color
 const GradientText = styled('span')({
   background: 'linear-gradient(45deg, #4A90E2, #E91E63)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
 });
 
-
-
-
-
-
-
-// Create a styled card component
 const StyledCard = styled(Card)({
   borderRadius: '15px',
   boxShadow: '0 15px 30px rgba(0,0,0,0.1)',
@@ -90,13 +62,6 @@ const StyledCard = styled(Card)({
   },
 });
 
-
-
-
-
-
-
-// Function to sort data in descending order
 const sortData = (data) => {
   if (!data || !data.labels || !data.datasets || !data.datasets[0].data) {
     console.error('Invalid data structure:', data);
@@ -123,15 +88,6 @@ const sortData = (data) => {
   };
 };
 
-
-
-
-
-
-
-
-
-// Function to process experience level data into defined ranges
 const processExperienceLevelData = (data) => {
   const ranges = {
     '0 years': 0,
@@ -165,19 +121,7 @@ const processExperienceLevelData = (data) => {
   };
 };
 
-
-
-
-
-
-
-
-
-
-
-// Define the HRManagerAnalytics component
 const HRManagerAnalytics = () => {
-  // State variables to manage data and loading/error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [applicationStatusData, setApplicationStatusData] = useState({});
@@ -192,41 +136,11 @@ const HRManagerAnalytics = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // Handle date change and fetch new data
   const handleDateChange = () => {
     setLoading(true);
     fetchData();
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // Fetch analytics data from the server
   const fetchData = useCallback(async () => {
     try {
       const params = {};
@@ -365,30 +279,10 @@ const HRManagerAnalytics = () => {
     }
   }, [startDate, endDate]);
 
-
-
-
-
-
-
-
-
-
-  // Fetch data when the component mounts or dates change
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-
-
-
-
-
-
-
-
-
-  // Render loading state
   if (loading) {
     return (
       <Container style={{ marginTop: '50px' }}>
@@ -397,17 +291,6 @@ const HRManagerAnalytics = () => {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
-  // Render error state
   if (error) {
     return (
       <Container style={{ marginTop: '50px' }}>
@@ -416,17 +299,6 @@ const HRManagerAnalytics = () => {
     );
   }
 
-
-
-
-
-
-
-
-
-
-  
-  // Render the analytics dashboard
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ background: theme.palette.background.default, py: 6, minHeight: '100vh' }}>
@@ -457,7 +329,7 @@ const HRManagerAnalytics = () => {
                   label="End Date"
                   value={endDate}
                   onChange={(newValue) => setEndDate(newValue)}
-                renderInput={(params) => <TextField {...params} />}
+                  renderInput={(params) => <TextField {...params} />}
                 />
               </Box>
             </LocalizationProvider>

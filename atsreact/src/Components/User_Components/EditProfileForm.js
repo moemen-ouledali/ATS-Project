@@ -1,43 +1,27 @@
-import React, { useState, useEffect, useContext } from 'react'; // Import React and hooks
-import axios from 'axios'; // Import axios for HTTP requests
-import { AuthContext } from '../../AuthContext'; // Import authentication context
-
-// Import Material-UI components
-import { 
-    Container, Box, Typography, TextField, Button, IconButton, Avatar, Grid, 
-    MenuItem, Divider, Modal, Alert, CircularProgress, Slide, Fade 
-} from '@mui/material';
-
-// Import Material-UI icons
+import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { AuthContext } from '../../AuthContext';
+import { Container, Box, Typography, TextField, Button, IconButton, Avatar, Grid, MenuItem, Divider, Modal, Alert, CircularProgress, Slide, Fade } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-
-// Import theme creation utilities from Material-UI
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
-// Import profile pictures
 import maleProfilePic from '../../Media/ProfilePicture/male.png';
 import femaleProfilePic from '../../Media/ProfilePicture/female.png';
 
-
-
-
-
-
-
-
-
-
-
-// Define a custom theme
 const theme = createTheme({
     palette: {
-        primary: { main: '#4A90E2' }, // Primary color
-        secondary: { main: '#50E3C2' }, // Secondary color
-        background: { default: '#f7f9fc' }, // Background color
+        primary: {
+            main: '#4A90E2',
+        },
+        secondary: {
+            main: '#50E3C2',
+        },
+        background: {
+            default: '#f7f9fc',
+        },
     },
     typography: {
-        fontFamily: 'Montserrat, sans-serif', // Default font
+        fontFamily: 'Montserrat, sans-serif',
         h4: {
             fontWeight: 800,
             color: '#333',
@@ -60,16 +44,6 @@ const theme = createTheme({
     },
 });
 
-
-
-
-
-
-
-
-
-
-// Style object for the modal
 const style = {
     position: 'absolute',
     top: '50%',
@@ -82,35 +56,8 @@ const style = {
     borderRadius: 2,
 };
 
-
-
-
-
-
-
-
-
-
 const EditProfileForm = () => {
-
-
-
-
-
-    // Extract authentication token and user ID from the AuthContext
-    const { authToken, userId } = useContext(AuthContext);
-
-
-
-
-
-
-
-
-
-
-
-    // State to store user details
+    const { authToken, userId} = useContext(AuthContext);
     const [userDetails, setUserDetails] = useState({
         firstName: '',
         lastName: '',
@@ -121,35 +68,20 @@ const EditProfileForm = () => {
         highestEducationLevel: '',
         gender: '',
     });
+    const [editMode, setEditMode] = useState(false);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
 
-    const [editMode, setEditMode] = useState(false); // State to toggle edit mode
-    const [showPasswordModal, setShowPasswordModal] = useState(false); // State to toggle password modal
-    const [currentPassword, setCurrentPassword] = useState(''); // State for current password
-    const [newPassword, setNewPassword] = useState(''); // State for new password
-    const [confirmNewPassword, setConfirmNewPassword] = useState(''); // State to confirm new password
-    const [message, setMessage] = useState(''); // State for success message
-    const [error, setError] = useState(''); // State for error message
-    const [loading, setLoading] = useState(true); // State to indicate loading
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Fetch user details when the component mounts or userId changes
     useEffect(() => {
         if (!userId) {
             console.error("User ID is null");
             return;
         }
-
         const fetchUserDetails = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/auth/user/${userId}`);
@@ -174,16 +106,6 @@ const EditProfileForm = () => {
         fetchUserDetails();
     }, [userId]);
 
-
-
-
-
-
-
-
-
-
-    // Handle changes in form inputs
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUserDetails(prevDetails => ({
@@ -192,17 +114,6 @@ const EditProfileForm = () => {
         }));
     };
 
-
-
-
-
-
-
-
-
-
-
-    // Handle form submission to update user details
     const handleSubmit = (e) => {
         e.preventDefault();
         axios.put(`http://localhost:5000/auth/user/${userId}`, userDetails, {
@@ -218,31 +129,10 @@ const EditProfileForm = () => {
         });
     };
 
-
-
-
-
-
-
-
-
-
-
-    // Toggle edit mode
     const handleEditClick = () => {
         setEditMode(true);
     };
 
-
-
-
-
-
-
-
-
-
-    // Handle password change submission
     const handlePasswordChange = async (e) => {
         e.preventDefault();
         if (newPassword !== confirmNewPassword) {
@@ -266,28 +156,9 @@ const EditProfileForm = () => {
         }
     };
 
-
-
-
-
-
-
-
-
-
-
-
-    // Open and close password modal
     const openPasswordModal = () => setShowPasswordModal(true);
     const closePasswordModal = () => setShowPasswordModal(false);
 
-
-
-
-
-
-
-    
     return (
         <ThemeProvider theme={theme}>
             <Container maxWidth="md">

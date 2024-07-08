@@ -1,62 +1,48 @@
-// Import necessary libraries and components
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Modal, Button as BootstrapButton } from 'react-bootstrap';
 import { Box, Typography, Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Select, MenuItem, InputLabel, FormControl, CircularProgress, Pagination, Button as MuiButton } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/system';
-import 'react-datepicker/dist/react-datepicker.css'; // Import CSS for DatePicker component
-import DatePicker from 'react-datepicker'; // Import DatePicker component
+import 'react-datepicker/dist/react-datepicker.css';
+import DatePicker from 'react-datepicker';
 
-
-
-
-
-
-// Create a custom theme for Material-UI components
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#4A90E2', // Primary color
+      main: '#4A90E2',
     },
     secondary: {
-      main: '#E91E63', // Secondary color
+      main: '#E91E63',
     },
     background: {
-      default: '#F5F5F5', // Default background color
+      default: '#F5F5F5',
     },
   },
   typography: {
-    fontFamily: 'Montserrat, sans-serif', // Default font family
+    fontFamily: 'Montserrat, sans-serif',
     h4: {
       fontWeight: 800,
       color: '#333',
-      fontSize: '2rem', // Heading 4 style
+      fontSize: '2rem',
     },
     h5: {
       fontWeight: 700,
       color: '#555',
-      fontSize: '1.5rem', // Heading 5 style
+      fontSize: '1.5rem',
     },
     body2: {
       color: '#777',
-      fontSize: '1rem', // Body text style
+      fontSize: '1rem',
     },
     button: {
       textTransform: 'none',
       fontWeight: 700,
-      fontSize: '0.875rem', // Button text style
+      fontSize: '0.875rem',
     },
   },
 });
 
-
-
-
-
-
-
-// Create a styled button with a gradient background
 const GradientButton = styled(MuiButton)(({ gradient }) => ({
   background: gradient,
   padding: '10px 20px',
@@ -71,199 +57,110 @@ const GradientButton = styled(MuiButton)(({ gradient }) => ({
   },
 }));
 
-
-
-
-
-
-
-
-
-// Specific styled buttons with different gradients
 const AcceptButton = styled(GradientButton)({
-  background: 'linear-gradient(45deg, #4CAF50, #66BB6A)', // Green gradient for accept button
+  background: 'linear-gradient(45deg, #4CAF50, #66BB6A)',
 });
 
 const DeclineButton = styled(GradientButton)({
-  background: 'linear-gradient(45deg, #F44336, #E57373)', // Red gradient for decline button
+  background: 'linear-gradient(45deg, #F44336, #E57373)',
 });
 
 const ViewButton = styled(GradientButton)({
-  background: 'linear-gradient(45deg, #4A90E2, #357ABD)', // Blue gradient for view button
+  background: 'linear-gradient(45deg, #4A90E2, #357ABD)',
 });
 
-
-
-
-
-
-
-
-// Function to calculate match percentage between requirements and resume text
 const calculateMatchPercentage = (requirements, resumeText) => {
-  const resumeWords = resumeText.toLowerCase().split(/\s+/); // Split resume text into words
+  const resumeWords = resumeText.toLowerCase().split(/\s+/);
   const matchedRequirements = requirements.filter(requirement =>
     resumeWords.includes(requirement.toLowerCase())
   );
-  const percentage = (matchedRequirements.length / requirements.length) * 100; // Calculate percentage
+  const percentage = (matchedRequirements.length / requirements.length) * 100;
   return percentage;
 };
 
-
-
-
-
-
-
-
-
-// Function to get matched and unmatched requirements
 const getMatchedUnmatchedRequirements = (requirements, resumeText) => {
   const resumeWords = resumeText.toLowerCase().split(/\s+/);
   const matched = [];
   const unmatched = [];
   requirements.forEach(requirement => {
     if (resumeWords.includes(requirement.toLowerCase())) {
-      matched.push(requirement); // Add to matched if found in resume
+      matched.push(requirement);
     } else {
-      unmatched.push(requirement); // Add to unmatched if not found
+      unmatched.push(requirement);
     }
   });
   return { matched, unmatched };
 };
 
-
-
-
-
-
-
-
-
-
-
-// Define the main AllApplications component
 const AllApplications = () => {
-  const [applications, setApplications] = useState([]); // State to hold all applications
-  const [selectedApplication, setSelectedApplication] = useState(null); // State to hold selected application for modal
-  const [loading, setLoading] = useState(true); // State to handle loading state
-  const [error, setError] = useState(null); // State to handle error state
-  const [searchTerm, setSearchTerm] = useState(''); // State to handle search term
-  const [selectedStatus, setSelectedStatus] = useState(''); // State to handle selected status filter
-  const [startDate, setStartDate] = useState(null); // State to handle start date filter
-  const [endDate, setEndDate] = useState(null); // State to handle end date filter
-  const [currentPage, setCurrentPage] = useState(1); // State to handle current page for pagination
-  const [sortConfig, setSortConfig] = useState({ key: 'appliedOn', direction: 'asc' }); // State to handle sorting configuration
-  const applicationsPerPage = 10; // Number of applications to show per page
+  const [applications, setApplications] = useState([]);
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortConfig, setSortConfig] = useState({ key: 'appliedOn', direction: 'asc' });
+  const applicationsPerPage = 10;
 
-
-
-
-
-
-  // Fetch all applications when the component mounts
   useEffect(() => {
     const fetchAllApplications = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/applications/all'); // Fetch applications from API
-        setApplications(response.data); // Set applications state
-        setLoading(false); // Set loading to false
+        const response = await axios.get('http://localhost:5000/api/applications/all');
+        setApplications(response.data);
+        setLoading(false);
       } catch (error) {
-        console.error('Failed to fetch applications:', error); // Log error if fetch fails
-        setError('Failed to fetch applications'); // Set error state
-        setLoading(false); // Set loading to false
+        console.error('Failed to fetch applications:', error);
+        setError('Failed to fetch applications');
+        setLoading(false);
       }
     };
 
     fetchAllApplications();
   }, []);
 
-
-
-
-
-
-
-
-
-
-  // Accept application and update its status
   const acceptApplication = async (appId) => {
     try {
       await axios.put(`http://localhost:5000/api/applications/accept/${appId}`);
       const updatedApplications = applications.map(app =>
         app._id === appId ? { ...app, status: 'Accepted' } : app
       );
-      setApplications(updatedApplications); // Update applications state
+      setApplications(updatedApplications);
     } catch (error) {
-      console.error('Failed to accept application:', error); // Log error if request fails
+      console.error('Failed to accept application:', error);
     }
   };
 
-
-
-
-
-
-
-
-  // Decline application and update its status
   const declineApplication = async (appId) => {
     try {
       await axios.put(`http://localhost:5000/api/applications/decline/${appId}`);
       const updatedApplications = applications.map(app =>
         app._id === appId ? { ...app, status: 'Declined' } : app
       );
-      setApplications(updatedApplications); // Update applications state
+      setApplications(updatedApplications);
     } catch (error) {
-      console.error('Failed to decline application:', error); // Log error if request fails
+      console.error('Failed to decline application:', error);
     }
   };
 
-
-
-
-
-
-
-
-  // Show application details in a modal
   const showApplicationDetails = (application) => {
-    setSelectedApplication(application); // Set selected application state
+    setSelectedApplication(application);
   };
 
-
-
-
-
-
-  // Close application details modal
   const closeApplicationDetails = () => {
-    setSelectedApplication(null); // Reset selected application state
+    setSelectedApplication(null);
   };
 
-
-
-
-
-
-  // Handle sorting applications by field
   const handleSort = (field) => {
     let direction = 'asc';
     if (sortConfig.key === field && sortConfig.direction === 'asc') {
       direction = 'desc';
     }
-    setSortConfig({ key: field, direction }); // Update sort configuration
+    setSortConfig({ key: field, direction });
   };
 
-
-
-
-
-
-
-
-  // Sort applications based on sort configuration
   const sortedApplications = [...applications].sort((a, b) => {
     if (sortConfig.key === 'appliedOn') {
       return sortConfig.direction === 'asc'
@@ -278,14 +175,6 @@ const AllApplications = () => {
     return 0;
   });
 
-
-
-
-
-
-
-
-  // Filter applications based on search term, status, and date range
   const filteredApplications = sortedApplications.filter(app =>
     (searchTerm === '' || app.name.toLowerCase().includes(searchTerm.toLowerCase()) || app.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
     (selectedStatus === '' || app.status === selectedStatus) &&
@@ -293,30 +182,8 @@ const AllApplications = () => {
     (endDate === null || new Date(app.createdAt) <= endDate)
   );
 
-
-
-
-
-
-
-
-
-
-  // Paginate filtered applications
   const paginatedApplications = filteredApplications.slice((currentPage - 1) * applicationsPerPage, currentPage * applicationsPerPage);
 
-
-
-
-
-
-
-
-
-
-
-
-  // Render applications
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ background: 'linear-gradient(135deg, #F5F5F5 30%, #E0E0E0 90%)', py: 6, minHeight: '100vh' }}>

@@ -6,25 +6,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Container, Typography, Modal, Box, Button, CircularProgress, Grid, Divider } from '@mui/material';
 import { styled } from '@mui/system';
 
-
-
-
-
-
-
-// Set up the localizer for the calendar using moment.js
 const localizer = momentLocalizer(moment);
 
-
-
-
-
-
-
-
-
-
-// Custom styling for the Calendar component
 const StyledCalendar = styled(Calendar)({
   height: '700px',
   margin: '50px 0',
@@ -65,16 +48,6 @@ const StyledCalendar = styled(Calendar)({
   },
 });
 
-
-
-
-
-
-
-
-
-
-// Custom styling for the Modal box component
 const ModalBox = styled(Box)({
   position: 'absolute',
   top: '50%',
@@ -89,16 +62,6 @@ const ModalBox = styled(Box)({
   borderRadius: '10px',
 });
 
-
-
-
-
-
-
-
-
-
-// Custom styling for the Button component
 const CustomButton = styled(Button)({
   borderRadius: '20px',
   padding: '10px 20px',
@@ -106,48 +69,17 @@ const CustomButton = styled(Button)({
   textTransform: 'none',
 });
 
-
-
-
-
-
-
-
-
-// Custom styling for the header Typography component
 const HeaderTypography = styled(Typography)({
   fontWeight: 'bold',
   color: '#007BFF',
   marginBottom: '20px',
 });
 
-
-
-
-
-
-
-
-
-// Custom styling for the info Typography component
 const InfoTypography = styled(Typography)({
   marginBottom: '10px',
 });
 
-
-
-
-
-
-
-
-
-
-
-
-// Main component for the interview calendar
 const InterviewCalendar = () => {
-  // State variables for handling interviews, loading state, errors, selected interview, application details, and modal state
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -155,16 +87,6 @@ const InterviewCalendar = () => {
   const [applicationDetails, setApplicationDetails] = useState(null);
   const [open, setOpen] = useState(false);
 
-
-
-
-
-
-
-
-
-
-  // useEffect hook to fetch interviews when the component mounts
   useEffect(() => {
     const fetchInterviews = async () => {
       try {
@@ -180,17 +102,6 @@ const InterviewCalendar = () => {
     fetchInterviews();
   }, []);
 
-
-
-
-
-
-
-
-
-
-
-  // Function to handle selecting an interview event
   const handleSelectEvent = async (interview) => {
     setSelectedInterview(interview);
     const applicationId = interview.applicationId._id || interview.applicationId; // Ensure applicationId is a string
@@ -204,34 +115,12 @@ const InterviewCalendar = () => {
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-  // Function to handle closing the modal
   const handleClose = () => {
     setOpen(false);
     setSelectedInterview(null);
     setApplicationDetails(null);
   };
 
-
-
-
-
-
-
-
-
-
-
-  // Function to handle updating the status of an application
   const handleUpdateStatus = async (status) => {
     if (!selectedInterview) return;
     const applicationId = selectedInterview.applicationId._id || selectedInterview.applicationId; // Ensure applicationId is a string
@@ -244,16 +133,6 @@ const InterviewCalendar = () => {
     }
   };
 
-
-
-
-
-
-
-
-
-
-  // Convert interviews data to events format for the calendar
   const events = interviews.map(interview => ({
     title: `${interview.applicantName} - Interview`,
     start: new Date(interview.dateTime),
@@ -261,30 +140,9 @@ const InterviewCalendar = () => {
     interview: interview
   }));
 
-
-
-
-
-
-
-
-
-
-  // Show loading indicator or error message if applicable
   if (loading) return <CircularProgress />;
   if (error) return <Typography color="error">{error}</Typography>;
 
-
-
-
-
-
-
-
-
-
-  
-  // Render the component
   return (
     <Container>
       <HeaderTypography variant="h3" gutterBottom align="center">

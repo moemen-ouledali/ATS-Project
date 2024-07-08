@@ -1,18 +1,9 @@
-import React, { useEffect, useState } from 'react'; // Importing necessary React hooks
-import axios from 'axios'; // Importing axios for making HTTP requests
-import { 
-  Grid, Card, CardActionArea, CardMedia, CardContent, 
-  Typography, CardActions, Button, Box, CircularProgress 
-} from '@mui/material'; // Importing Material-UI components
-import { createTheme, ThemeProvider } from '@mui/material/styles'; // Importing theme creation functions from Material-UI
-import { styled } from '@mui/system'; // Importing styled function for custom styling
-import { Link as RouterLink } from 'react-router-dom'; // Importing React Router link for navigation
-
-
-
-
-
-
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography, CardActions, Button, Box, CircularProgress } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { styled } from '@mui/system';
+import { Link as RouterLink } from 'react-router-dom';
 
 // Importing images
 import image1 from '../../Media/cards media/1.png';
@@ -24,189 +15,121 @@ import image6 from '../../Media/cards media/6.png';
 import image7 from '../../Media/cards media/7.png';
 import image8 from '../../Media/cards media/8.png';
 
-
-
-
-
-// Storing imported images in an array
 const cardImages = [image1, image2, image3, image4, image5, image6, image7, image8];
 
-
-
-
-
-// Creating a custom theme using Material-UI's createTheme function
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#4A90E2', // Main color for primary elements
+      main: '#4A90E2',
     },
     secondary: {
-      main: '#50E3C2', // Main color for secondary elements
+      main: '#50E3C2',
     },
     background: {
-      default: '#f7f9fc', // Default background color
+      default: '#f7f9fc',
     },
   },
   typography: {
-    fontFamily: 'Montserrat, sans-serif', // Setting default font family
+    fontFamily: 'Montserrat, sans-serif',
     h4: {
-      fontWeight: 800, // Bold font weight for h4 headers
-      color: '#333', // Color for h4 headers
-      fontSize: '2rem', // Font size for h4 headers
+      fontWeight: 800,
+      color: '#333',
+      fontSize: '2rem',
     },
     h5: {
-      fontWeight: 700, // Bold font weight for h5 headers
-      color: '#555', // Color for h5 headers
-      fontSize: '1.5rem', // Font size for h5 headers
+      fontWeight: 700,
+      color: '#555',
+      fontSize: '1.5rem',
     },
     body2: {
-      color: '#777', // Color for body2 text
-      fontSize: '1rem', // Font size for body2 text
+      color: '#777',
+      fontSize: '1rem',
     },
     button: {
-      textTransform: 'uppercase', // Transform button text to uppercase
-      fontWeight: 700, // Bold font weight for buttons
-      fontSize: '0.875rem', // Font size for buttons
+      textTransform: 'uppercase',
+      fontWeight: 700,
+      fontSize: '0.875rem',
     },
   },
 });
 
-
-
-
-
-
-
-// Creating a styled component for Card using styled function from @mui/system
 const StyledCard = styled(Card)({
-  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out', // Adding transition effects
+  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
   '&:hover': {
-    transform: 'scale(1.05)', // Scale up the card on hover
-    boxShadow: '0 20px 40px rgba(0,0,0,0.1)', // Adding box shadow on hover
+    transform: 'scale(1.05)',
+    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
   },
-  borderRadius: '15px', // Rounding the corners of the card
-  overflow: 'hidden', // Ensuring content doesn't overflow
-  position: 'relative', // Setting position to relative
-  backgroundColor: '#fff', // Setting background color to white
+  borderRadius: '15px',
+  overflow: 'hidden',
+  position: 'relative',
+  backgroundColor: '#fff',
 });
 
-
-
-
-
-
-// Creating a styled component for Button using styled function from @mui/system
 const StyledButton = styled(Button)({
-  backgroundColor: '#4A90E2', // Setting background color for the button
-  color: '#fff', // Setting text color to white
+  backgroundColor: '#4A90E2',
+  color: '#fff',
   '&:hover': {
-    backgroundColor: '#357ABD', // Changing background color on hover
+    backgroundColor: '#357ABD',
   },
-  padding: '10px 20px', // Adding padding to the button
-  fontSize: '14px', // Setting font size for the button
-  borderRadius: '30px', // Rounding the corners of the button
+  padding: '10px 20px',
+  fontSize: '14px',
+  borderRadius: '30px',
 });
 
-
-
-
-
-// Function to shuffle an array using Fisher-Yates algorithm
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1)); // Getting random index
-    [array[i], array[j]] = [array[j], array[i]]; // Swapping elements
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]]; // eslint-disable-line no-param-reassign
   }
-  return array; // Returning the shuffled array
+  return array;
 }
 
-
-
-
-
-// Main functional component for displaying internship listings
 const InternshipListings = () => {
-
-
-
-
-
-  // State variables to store internships data and loading status
   const [internships, setInternships] = useState([]);
   const [loading, setLoading] = useState(true);
-
-
-
-
-
-  // Shuffle images array to display random images for each card
   const shuffledImages = shuffleArray([...cardImages]);
 
-
-
-
-  // useEffect hook to fetch data from the API when the component mounts
   useEffect(() => {
     axios.get('http://localhost:5000/api/jobs', {
-      params: { jobType: 'Internship' } // Sending query parameter for job type
+      params: { jobType: 'Internship' }
     })
     .then(response => {
-      setInternships(response.data); // Setting internships data
-      setLoading(false); // Setting loading to false after data is fetched
+      setInternships(response.data);
+      setLoading(false);
     })
     .catch(error => {
-      console.error('Error fetching internships:', error); // Logging any errors
-      setLoading(false); // Setting loading to false even if there's an error
+      console.error('Error fetching internships:', error);
+      setLoading(false);
     });
-  }, []); // Empty dependency array means this effect runs once when component mounts
+  }, []);
 
-
-
-
-
-
-
-
-
-  
   return (
-    // Wrapping the component with ThemeProvider to apply the custom theme
     <ThemeProvider theme={theme}>
-      {/* Main container with padding and background color */}
       <Box sx={{ padding: '40px 24px', backgroundColor: theme.palette.background.default, minHeight: '100vh' }}>
-        {/* Heading for the internship listings */}
         <Typography
           component="h1"
           variant="h4"
           gutterBottom
           sx={{
-            textAlign: 'center', // Center aligning the text
-            marginBottom: '40px', // Adding bottom margin
-            fontWeight: 'bold', // Making the text bold
-            color: theme.palette.primary.main, // Setting text color
+            textAlign: 'center',
+            marginBottom: '40px',
+            fontWeight: 'bold',
+            color: theme.palette.primary.main,
           }}
         >
           <span className="text-gradient d-inline">Internship Opportunities</span>
         </Typography>
-        {/* Conditional rendering based on loading state */}
         {loading ? (
-          // Displaying a loading spinner while data is being fetched
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
             <CircularProgress />
           </Box>
         ) : (
-          // Displaying the list of internships in a grid
           <Grid container spacing={4}>
-            {/* Checking if there are any internships to display */}
             {internships.length > 0 ? (
-              // Mapping over internships array to create a card for each internship
               internships.map((internship, index) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={internship._id}>
                   <StyledCard raised>
-                    {/* Making the card clickable and linking to the internship details page */}
                     <CardActionArea component={RouterLink} to={`/job/${internship._id}`}>
-                      {/* Displaying the image for the internship */}
                       <CardMedia
                         component="img"
                         alt={internship.title}
@@ -214,7 +137,6 @@ const InternshipListings = () => {
                         width="500"
                         image={shuffledImages[index % shuffledImages.length]}
                       />
-                      {/* Displaying the internship title and description */}
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="h2">
                           {internship.title}
@@ -224,7 +146,6 @@ const InternshipListings = () => {
                         </Typography>
                       </CardContent>
                     </CardActionArea>
-                    {/* Adding a button to apply for the internship */}
                     <CardActions sx={{ justifyContent: 'center' }}>
                       <StyledButton size="small" component={RouterLink} to={`/job/${internship._id}`}>
                         Apply Now
@@ -234,7 +155,6 @@ const InternshipListings = () => {
                 </Grid>
               ))
             ) : (
-              // Displaying a message if no internships are available
               <Typography variant="subtitle1" sx={{ textAlign: 'center', width: '100%' }}>
                 No internships available at the moment.
               </Typography>
@@ -246,4 +166,4 @@ const InternshipListings = () => {
   );
 };
 
-export default InternshipListings; // Exporting the component to be used in other parts of the app
+export default InternshipListings;

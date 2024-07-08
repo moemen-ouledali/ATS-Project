@@ -3,46 +3,27 @@ import axios from 'axios';
 import { Form, Button, Container, Alert } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 
-// Component to verify the reset code and set a new password
 const VerifyResetCode = () => {
+    const [resetCode, setResetCode] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
 
+    const location = useLocation();
+    const { email } = location.state || { email: '' }; // Get email from location state
 
-
-    const [resetCode, setResetCode] = useState(''); // State to store reset code input
-    const [newPassword, setNewPassword] = useState(''); // State to store new password input
-    const [message, setMessage] = useState(''); // State to store response message
-    const [error, setError] = useState(''); // State to store error message
-
-    const location = useLocation(); // Get the current location object
-    const { email } = location.state || { email: '' }; // Get email from location state or set as empty string
-
-
-
-
-
-
-      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Function to handle form submission
-      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             // Verify reset code and reset password
             const response = await axios.post('http://localhost:5000/auth/reset-password', { email, resetCode, newPassword });
-            setMessage(response.data.message); // Set response message
+            setMessage(response.data.message);
         } catch (err) {
-            setError('Failed to reset password. Please try again.'); // Set error message
-            console.error('Password reset error:', err); // Log error to console
+            setError('Failed to reset password. Please try again.');
+            console.error('Password reset error:', err);
         }
     };
 
-
-
-
-
-
-
-    
     return (
         <Container>
             <h2>Reset Password</h2>
