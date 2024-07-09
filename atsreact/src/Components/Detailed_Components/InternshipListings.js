@@ -90,7 +90,7 @@ const InternshipListings = () => {
   const shuffledImages = shuffleArray([...cardImages]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/jobs', {
+    axios.get('https://ats-project-1.onrender.com/api/jobs', {
       params: { jobType: 'Internship' }
     })
     .then(response => {

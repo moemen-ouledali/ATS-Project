@@ -118,7 +118,7 @@ const HRManagerDashboard = () => {
   const fetchJobListings = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/api/jobs');
+      const response = await axios.get('https://ats-project-1.onrender.com/api/jobs');
       setJobListings(response.data);
       setError(null);
     } catch (error) {
@@ -136,7 +136,7 @@ const HRManagerDashboard = () => {
 
   const deleteJobListing = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/jobs/${deleteJobId}`);
+      await axios.delete(`https://ats-project-1.onrender.com/api/jobs/${deleteJobId}`);
       fetchJobListings();
       setToastMessage('Job listing deleted successfully');
       setShowToast(true);
@@ -155,7 +155,7 @@ const HRManagerDashboard = () => {
 
   const handleSave = async (id, updatedListing) => {
     try {
-      await axios.put(`http://localhost:5000/api/jobs/${id}`, updatedListing);
+      await axios.put(`https://ats-project-1.onrender.com/api/jobs/${id}`, updatedListing);
       fetchJobListings();
       setEditingId(null);
       setToastMessage('Job listing updated successfully');

@@ -80,7 +80,7 @@ const TestPage = () => {
   useEffect(() => {
     const fetchTest = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/tests/category/${category}`, {
+        const response = await axios.get(`https://ats-project-1.onrender.com/api/tests/category/${category}`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           }
@@ -108,7 +108,7 @@ const TestPage = () => {
         return;
       }
       try {
-        const response = await axios.get(`http://localhost:5000/api/tests/check-attempt/${applicationId}`, {
+        const response = await axios.get(`https://ats-project-1.onrender.com/api/tests/check-attempt/${applicationId}`, {
           headers: {
             Authorization: `Bearer ${authToken}`,
           }
@@ -158,7 +158,7 @@ const TestPage = () => {
   
     try {
       const response = await axios.post(
-        'http://localhost:5000/api/tests/submit',
+        'https://ats-project-1.onrender.com/api/tests/submit',
         payload,
         {
           headers: {

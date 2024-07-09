@@ -106,7 +106,7 @@ const RegisterForm = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/auth/register', userData);
+      const response = await axios.post('https://ats-project-1.onrender.com/auth/register', userData);
       setMessage(response.data.message);
       setIsVerifying(true);
       setErrorMessages([]); // Clear error messages if registration is successful
@@ -119,7 +119,7 @@ const RegisterForm = () => {
   const handleVerifyCode = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/auth/verify-code', { email: userData.email, code: verificationCode });
+      const response = await axios.post('https://ats-project-1.onrender.com/auth/verify-code', { email: userData.email, code: verificationCode });
       setMessage(response.data.message);
       if (response.status === 200) {
         navigate('/login');

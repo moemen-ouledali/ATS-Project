@@ -114,8 +114,8 @@ const JobApplicants = () => {
   const fetchApplicants = useCallback(async () => {
     try {
       const [applicantsResponse, jobResponse] = await Promise.all([
-        axios.get(`http://localhost:5000/api/applications/for-job/${jobId}`),
-        axios.get(`http://localhost:5000/api/jobs/${jobId}`)
+        axios.get(`https://ats-project-1.onrender.com/api/applications/for-job/${jobId}`),
+        axios.get(`https://ats-project-1.onrender.com/api/jobs/${jobId}`)
       ]);
 
       setApplicants(applicantsResponse.data);
@@ -134,7 +134,7 @@ const JobApplicants = () => {
 
   const acceptApplication = async (appId) => {
     try {
-      await axios.put(`http://localhost:5000/api/applications/accept/${appId}`);
+      await axios.put(`https://ats-project-1.onrender.com/api/applications/accept/${appId}`);
       fetchApplicants();
     } catch (error) {
       console.error('Failed to accept application:', error);
@@ -143,7 +143,7 @@ const JobApplicants = () => {
 
   const declineApplication = async (appId) => {
     try {
-      await axios.put(`http://localhost:5000/api/applications/decline/${appId}`);
+      await axios.put(`https://ats-project-1.onrender.com/api/applications/decline/${appId}`);
       fetchApplicants();
     } catch (error) {
       console.error('Failed to decline application:', error);
@@ -214,7 +214,7 @@ const JobApplicants = () => {
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Experience Level:</strong> {selectedApplicant.experienceLevel}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>University:</strong> {selectedApplicant.university}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Motivation Letter:</strong> {selectedApplicant.motivationLetter}</Typography>
-                <Typography variant="body2" color="textSecondary" component="p"><strong>Resume:</strong> <a href={`http://localhost:5000/${selectedApplicant.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></Typography>
+                <Typography variant="body2" color="textSecondary" component="p"><strong>Resume:</strong> <a href={`https://ats-project-1.onrender.com/${selectedApplicant.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Status:</strong> {selectedApplicant.status}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Applied on:</strong> {new Date(selectedApplicant.createdAt).toLocaleDateString()} {new Date(selectedApplicant.createdAt).toLocaleTimeString()}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Match Percentage:</strong> {calculateMatchPercentage(jobDetails.requirements, selectedApplicant.resumeText)}%</Typography>

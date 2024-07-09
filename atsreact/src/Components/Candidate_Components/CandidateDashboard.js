@@ -66,7 +66,7 @@ const CandidateDashboard = () => {
   const fetchApplications = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:5000/api/applications', {
+      const response = await axios.get('https://ats-project-1.onrender.com/api/applications', {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -200,7 +200,7 @@ const CandidateDashboard = () => {
                   <strong>Motivation Letter:</strong> {selectedApplication.motivationLetter}
                 </Typography>
                 <Typography variant="body2" gutterBottom>
-                  <strong>Resume:</strong> <a href={`http://localhost:5000/${selectedApplication.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a>
+                  <strong>Resume:</strong> <a href={`https://ats-project-1.onrender.com/${selectedApplication.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a>
                 </Typography>
                 <Typography variant="body2" gutterBottom>
                   <strong>Status:</strong> {selectedApplication.status}
