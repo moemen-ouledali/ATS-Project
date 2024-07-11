@@ -15,7 +15,7 @@ const ApplicationDetails = () => {
     useEffect(() => {
         const fetchApplicationDetails = async () => {
             try {
-                const response = await axios.get(`https://ats-project-1.onrender.com/api/applications/${id}`, {
+                const response = await axios.get(`http://localhost:5000/api/applications/${id}`, {
                     headers: {
                         Authorization: `Bearer ${authToken}`
                     }
