@@ -1,14 +1,12 @@
+// atsbackend/routes/auth.js
+
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
-const JWT_SECRET = 'your_jwt_secret_here';
-
-// Email credentials
-const EMAIL_USER = 'BeeApply.reset@outlook.com';
-const EMAIL_PASS = 'beeapply2024';
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_here';
 
 // Set up nodemailer transporter for Outlook
 const transporter = nodemailer.createTransport({
@@ -16,8 +14,8 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-        user: EMAIL_USER,
-        pass: EMAIL_PASS
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
@@ -57,7 +55,7 @@ router.post('/register', async (req, res) => {
 
         // Send verification code to user's email
         const mailOptions = {
-            from: EMAIL_USER,
+            from: process.env.EMAIL_USER,
             to: email,
             subject: 'Email Verification Code',
             html: `
@@ -94,6 +92,7 @@ router.post('/register', async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
 
 // POST /auth/verify-code - Verify the user's code
 router.post('/verify-code', async (req, res) => {
@@ -133,7 +132,7 @@ router.post('/login', async (req, res) => {
 
             // Send the verification code to the user's email
             const mailOptions = {
-                from: EMAIL_USER,
+                from: process.env.EMAIL_USER,
                 to: email,
                 subject: 'Email Verification Code',
                 text: `Your verification code is: ${verificationCode}`
@@ -230,7 +229,7 @@ router.post('/request-password-reset', async (req, res) => {
         await user.save();
 
         const mailOptions = {
-            from: EMAIL_USER,
+            from: process.env.EMAIL_USER,
             to: email,
             subject: 'Password Reset Request',
             text: `You requested a password reset. Your reset code is: ${resetCode}`
@@ -342,3 +341,4 @@ router.put('/user/:id/role', async (req, res) => {
 });
 
 module.exports = router;
+

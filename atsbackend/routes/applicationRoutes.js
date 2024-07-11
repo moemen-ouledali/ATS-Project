@@ -8,10 +8,7 @@ const fs = require('fs');
 const pdf = require('pdf-parse');
 const nodemailer = require('nodemailer');
 const Interview = require('../models/interview'); // Import the Interview model
-
-// Email credentials
-const EMAIL_USER = 'BeeApply.reset@outlook.com';
-const EMAIL_PASS = 'beeapply2024';
+require('dotenv').config();
 
 // Set up storage engine
 const storage = multer.diskStorage({
@@ -31,8 +28,8 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-        user: EMAIL_USER,
-        pass: EMAIL_PASS
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 
@@ -54,7 +51,7 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
     let dataBuffer = fs.readFileSync(file.path);
 
     pdf(dataBuffer).then(function (data) {
-        // data.text is the extracted text from the PDF
+        // `data.text` is the extracted text from the PDF
         const resumeText = data.text;
 
         const applicationData = {
@@ -145,7 +142,7 @@ router.put('/accept/:id', async (req, res) => {
         }
 
         const mailOptions = {
-            from: EMAIL_USER,
+            from: process.env.EMAIL_USER,
             to: application.email,
             subject: 'Pre-Acceptance Notification',
             html: `
@@ -176,6 +173,7 @@ router.put('/accept/:id', async (req, res) => {
     }
 });
 
+
 // Decline an application
 router.put('/decline/:id', async (req, res) => {
     try {
@@ -201,7 +199,7 @@ router.put('/decline-after-test/:id', async (req, res) => {
         }
 
         const mailOptions = {
-            from: EMAIL_USER,
+            from: process.env.EMAIL_USER,
             to: application.email,
             subject: 'Application Declined',
             text: `Dear ${application.name},\n\nWe regret to inform you that your application for the ${application.jobId.title} position has been declined after the evaluation test.\n\nThank you for your interest in our company.\n\nBest regards,\n[Your Company Name]`
@@ -243,7 +241,7 @@ router.put('/accept-after-test/:id', async (req, res) => {
         await application.save();
 
         const mailOptions = {
-            from: EMAIL_USER,
+            from: process.env.EMAIL_USER,
             to: application.email,
             subject: 'Application Accepted - Interview Scheduled',
             html: `
@@ -257,6 +255,7 @@ router.put('/accept-after-test/:id', async (req, res) => {
                 </div>
             `
         };
+        
 
         await transporter.sendMail(mailOptions);
 
@@ -267,18 +266,21 @@ router.put('/accept-after-test/:id', async (req, res) => {
     }
 });
 
+
 // Update application status
 router.put('/:id/status', async (req, res) => {
     try {
-        const application = await Application.findByIdAndUpdate(
-            req.params.id,
-            { status: req.body.status },
-            { new: true }
-        );
-        res.json(application);
+      const application = await Application.findByIdAndUpdate(
+        req.params.id,
+        { status: req.body.status },
+        { new: true }
+      );
+      res.json(application);
     } catch (error) {
-        res.status(500).send('Error updating status: ' + error.message);
+      res.status(500).send('Error updating status: ' + error.message);
     }
-});
+  });
 
+  
 module.exports = router;
+
