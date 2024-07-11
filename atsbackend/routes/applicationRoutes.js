@@ -28,14 +28,12 @@ const upload = multer({ storage: storage });
 // Configure nodemailer transporter
 const transporter = nodemailer.createTransport({
     host: 'smtp.office365.com',
-    port: 25,
+    port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASS
-    },
-    logger: true, // Enable logger
-    debug: true // Enable debug output
+    }
 });
 
 // Debugging middleware to check route hits

@@ -93,7 +93,7 @@ const JobListingsPage = () => {
   useEffect(() => {
     const fetchJobListings = async () => {
       try {
-        const response = await axios.get(`https://ats-project.onrender.com/api/jobs?category=${encodeURIComponent(category)}`);
+        const response = await axios.get(`http://localhost:5000/api/jobs?category=${encodeURIComponent(category)}`);
         const nonInternshipJobs = response.data.filter(listing => listing.jobType.toLowerCase() !== 'internship');
         setJobListings(nonInternshipJobs);
         setLoading(false);

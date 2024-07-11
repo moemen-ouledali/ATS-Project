@@ -84,7 +84,7 @@ const EditProfileForm = () => {
         }
         const fetchUserDetails = async () => {
             try {
-                const response = await axios.get(`https://ats-project.onrender.com/auth/user/${userId}`);
+                const response = await axios.get(`http://localhost:5000/auth/user/${userId}`);
                 setUserDetails({
                     firstName: response.data.firstName,
                     lastName: response.data.lastName,
@@ -116,7 +116,7 @@ const EditProfileForm = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.put(`https://ats-project.onrender.com/auth/user/${userId}`, userDetails, {
+        axios.put(`http://localhost:5000/auth/user/${userId}`, userDetails, {
             headers: { Authorization: `Bearer ${authToken}` },
         })
         .then(response => {
@@ -140,7 +140,7 @@ const EditProfileForm = () => {
             return;
         }
         try {
-            const response = await axios.post('https://ats-project.onrender.com/auth/change-password', {
+            const response = await axios.post('http://localhost:5000/auth/change-password', {
                 userId,
                 currentPassword,
                 newPassword,

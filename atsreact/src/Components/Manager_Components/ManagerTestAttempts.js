@@ -137,7 +137,7 @@ const ManagerTestAttempts = () => {
   useEffect(() => {
     const fetchTestAttempts = async () => {
       try {
-        const response = await axios.get('https://ats-project.onrender.com/api/tests/all-attempts');
+        const response = await axios.get('http://localhost:5000/api/tests/all-attempts');
         const data = response.data.map(attempt => ({
           ...attempt,
           matchPercentage: calculateMatchPercentage(attempt.jobRequirements || [], attempt.application.resumeText || '')
@@ -171,7 +171,7 @@ const ManagerTestAttempts = () => {
     try {
       console.log(`Accepting application: ${selectedApplication.application._id}`);
       const response = await axios.put(
-        `https://ats-project.onrender.com/api/applications/accept-after-test/${selectedApplication.application._id}`,
+        `http://localhost:5000/api/applications/accept-after-test/${selectedApplication.application._id}`,
         { date: interviewDate, time: interviewTime }
       );
       setAttempts(attempts.map(attempt =>
@@ -194,7 +194,7 @@ const ManagerTestAttempts = () => {
     }
     try {
       console.log(`Declining application: ${selectedApplication.application._id}`);
-      const response = await axios.put(`https://ats-project.onrender.com/api/applications/decline-after-test/${selectedApplication.application._id}`);
+      const response = await axios.put(`http://localhost:5000/api/applications/decline-after-test/${selectedApplication.application._id}`);
       setAttempts(attempts.map(attempt =>
         attempt.application._id === selectedApplication.application._id
           ? { ...attempt, application: response.data }
@@ -353,7 +353,7 @@ const ManagerTestAttempts = () => {
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Experience Level:</strong> {selectedApplication.application.experienceLevel}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>University:</strong> {selectedApplication.application.university}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Motivation Letter:</strong> {selectedApplication.application.motivationLetter}</Typography>
-                <Typography variant="body2" color="textSecondary" component="p"><strong>Resume:</strong> <a href={`https://ats-project.onrender.com/${selectedApplication.application.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></Typography>
+                <Typography variant="body2" color="textSecondary" component="p"><strong>Resume:</strong> <a href={`http://localhost:5000/${selectedApplication.application.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Status:</strong> {selectedApplication.application.status}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Applied on:</strong> {new Date(selectedApplication.application.createdAt).toLocaleDateString()} {new Date(selectedApplication.application.createdAt).toLocaleTimeString()}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Match Percentage:</strong> {selectedApplication.matchPercentage}%</Typography>

@@ -14,7 +14,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://ats-project.onrender.com/auth/login', {
+      const response = await axios.post('http://localhost:5000/auth/login', {
         email,
         password,
       });

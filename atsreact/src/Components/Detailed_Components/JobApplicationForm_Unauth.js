@@ -60,7 +60,7 @@ const JobApplicationFormUnauth = () => {
 
   useEffect(() => {
     // Fetch job details
-    axios.get(`https://ats-project.onrender.com/api/jobs/${id}`)
+    axios.get(`http://localhost:5000/api/jobs/${id}`)
       .then(response => {
         setJobDetails(response.data);
       })

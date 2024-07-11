@@ -108,7 +108,7 @@ const AllApplications = () => {
   useEffect(() => {
     const fetchAllApplications = async () => {
       try {
-        const response = await axios.get('https://ats-project.onrender.com/api/applications/all');
+        const response = await axios.get('http://localhost:5000/api/applications/all');
         setApplications(response.data);
         setLoading(false);
       } catch (error) {
@@ -123,7 +123,7 @@ const AllApplications = () => {
 
   const acceptApplication = async (appId) => {
     try {
-      await axios.put(`https://ats-project.onrender.com/api/applications/accept/${appId}`);
+      await axios.put(`http://localhost:5000/api/applications/accept/${appId}`);
       const updatedApplications = applications.map(app =>
         app._id === appId ? { ...app, status: 'Accepted' } : app
       );
@@ -135,7 +135,7 @@ const AllApplications = () => {
 
   const declineApplication = async (appId) => {
     try {
-      await axios.put(`https://ats-project.onrender.com/api/applications/decline/${appId}`);
+      await axios.put(`http://localhost:5000/api/applications/decline/${appId}`);
       const updatedApplications = applications.map(app =>
         app._id === appId ? { ...app, status: 'Declined' } : app
       );
@@ -269,7 +269,7 @@ const AllApplications = () => {
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Experience Level:</strong> {selectedApplication.experienceLevel}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>University:</strong> {selectedApplication.university}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Motivation Letter:</strong> {selectedApplication.motivationLetter}</Typography>
-                <Typography variant="body2" color="textSecondary" component="p"><strong>Resume:</strong> <a href={`https://ats-project.onrender.com/${selectedApplication.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></Typography>
+                <Typography variant="body2" color="textSecondary" component="p"><strong>Resume:</strong> <a href={`http://localhost:5000/${selectedApplication.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Status:</strong> {selectedApplication.status}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Applied on:</strong> {new Date(selectedApplication.createdAt).toLocaleDateString()} {new Date(selectedApplication.createdAt).toLocaleTimeString()}</Typography>
                 <Typography variant="body2" color="textSecondary" component="p"><strong>Match Percentage:</strong> {selectedApplication.jobId ? calculateMatchPercentage(selectedApplication.jobId.requirements, selectedApplication.resumeText) : 0}%</Typography>
