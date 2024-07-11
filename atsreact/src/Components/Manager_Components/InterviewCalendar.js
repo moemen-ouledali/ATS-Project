@@ -90,7 +90,7 @@ const InterviewCalendar = () => {
   useEffect(() => {
     const fetchInterviews = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/interviews');
+        const response = await axios.get('https://ats-project.onrender.com/api/interviews');
         setInterviews(response.data);
         setLoading(false);
       } catch (error) {
@@ -107,7 +107,7 @@ const InterviewCalendar = () => {
     const applicationId = interview.applicationId._id || interview.applicationId; // Ensure applicationId is a string
     console.log(`Fetching details for applicationId: ${applicationId}`);
     try {
-      const response = await axios.get(`http://localhost:5000/api/applications/${applicationId}`);
+      const response = await axios.get(`https://ats-project.onrender.com/api/applications/${applicationId}`);
       setApplicationDetails(response.data);
       setOpen(true);
     } catch (error) {
@@ -125,7 +125,7 @@ const InterviewCalendar = () => {
     if (!selectedInterview) return;
     const applicationId = selectedInterview.applicationId._id || selectedInterview.applicationId; // Ensure applicationId is a string
     try {
-      await axios.put(`http://localhost:5000/api/applications/${applicationId}/status`, { status });
+      await axios.put(`https://ats-project.onrender.com/api/applications/${applicationId}/status`, { status });
       setInterviews(interviews.map(i => (i._id === selectedInterview._id ? { ...i, applicationStatus: status } : i)));
       handleClose();
     } catch (error) {
@@ -178,7 +178,7 @@ const InterviewCalendar = () => {
                 <Grid item xs={12} sm={6}>
                   <InfoTypography variant="body1"><strong>University:</strong> {applicationDetails.university}</InfoTypography>
                   <InfoTypography variant="body1"><strong>Motivation Letter:</strong> {applicationDetails.motivationLetter}</InfoTypography>
-                  <InfoTypography variant="body1"><strong>Resume:</strong> <a href={`http://localhost:5000/${applicationDetails.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></InfoTypography>
+                  <InfoTypography variant="body1"><strong>Resume:</strong> <a href={`https://ats-project.onrender.com/${applicationDetails.resumePath}`} target="_blank" rel="noopener noreferrer">View Resume</a></InfoTypography>
                   <InfoTypography variant="body1"><strong>Status:</strong> {applicationDetails.status}</InfoTypography>
                   <InfoTypography variant="body1"><strong>Applied on:</strong> {new Date(applicationDetails.createdAt).toLocaleDateString()} {new Date(applicationDetails.createdAt).toLocaleTimeString()}</InfoTypography>
                 </Grid>

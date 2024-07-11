@@ -11,7 +11,7 @@ const VerifyEmail = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/auth/verify-code', { email, code });
+      const response = await axios.post('https://ats-project.onrender.com/auth/verify-code', { email, code });
       setMessage(response.data.message);
       if (response.status === 200) {
         navigate('/login');

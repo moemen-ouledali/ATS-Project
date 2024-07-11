@@ -158,15 +158,15 @@ const HRManagerAnalytics = () => {
         applicantsByCityRes,
         genderRes,
       ] = await Promise.all([
-        axios.get('http://localhost:5000/api/analytics/application-status', { params }),
-        axios.get('http://localhost:5000/api/analytics/applications-over-time', { params }),
-        axios.get('http://localhost:5000/api/analytics/education-level', { params }),
-        axios.get('http://localhost:5000/api/analytics/experience-level', { params }),
-        axios.get('http://localhost:5000/api/analytics/applications-per-category', { params }),
-        axios.get('http://localhost:5000/api/analytics/test-scores', { params }),
-        axios.get('http://localhost:5000/api/analytics/top-universities', { params }),
-        axios.get('http://localhost:5000/api/analytics/applicants-by-city', { params }),
-        axios.get('http://localhost:5000/api/analytics/gender', { params }),
+        axios.get('https://ats-project.onrender.com/api/analytics/application-status', { params }),
+        axios.get('https://ats-project.onrender.com/api/analytics/applications-over-time', { params }),
+        axios.get('https://ats-project.onrender.com/api/analytics/education-level', { params }),
+        axios.get('https://ats-project.onrender.com/api/analytics/experience-level', { params }),
+        axios.get('https://ats-project.onrender.com/api/analytics/applications-per-category', { params }),
+        axios.get('https://ats-project.onrender.com/api/analytics/test-scores', { params }),
+        axios.get('https://ats-project.onrender.com/api/analytics/top-universities', { params }),
+        axios.get('https://ats-project.onrender.com/api/analytics/applicants-by-city', { params }),
+        axios.get('https://ats-project.onrender.com/api/analytics/gender', { params }),
       ]);
 
       setApplicationStatusData({

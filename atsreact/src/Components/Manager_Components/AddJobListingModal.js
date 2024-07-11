@@ -36,7 +36,7 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/jobs/add', jobDetails);
+      await axios.post('https://ats-project.onrender.com/api/jobs/add', jobDetails);
       fetchJobListings();
       handleClose();
     } catch (error) {

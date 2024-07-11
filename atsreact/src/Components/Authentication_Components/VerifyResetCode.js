@@ -16,7 +16,7 @@ const VerifyResetCode = () => {
         e.preventDefault();
         try {
             // Verify reset code and reset password
-            const response = await axios.post('http://localhost:5000/auth/reset-password', { email, resetCode, newPassword });
+            const response = await axios.post('https://ats-project.onrender.com/auth/reset-password', { email, resetCode, newPassword });
             setMessage(response.data.message);
         } catch (err) {
             setError('Failed to reset password. Please try again.');

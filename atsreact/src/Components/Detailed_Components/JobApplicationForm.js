@@ -150,7 +150,7 @@ const JobApplicationForm = () => {
 
   useEffect(() => {
     // Fetch job details
-    axios.get(`http://localhost:5000/api/jobs/${id}`)
+    axios.get(`https://ats-project.onrender.com/api/jobs/${id}`)
       .then(response => {
         setJobDetails(response.data);
       })
@@ -181,7 +181,7 @@ const JobApplicationForm = () => {
     });
     formData.append('jobId', id);
 
-    axios.post('http://localhost:5000/api/applications/apply', formData, {
+    axios.post('https://ats-project.onrender.com/api/applications/apply', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${authToken}`

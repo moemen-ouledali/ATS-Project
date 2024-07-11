@@ -12,7 +12,7 @@ const RequestPasswordReset = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/auth/request-password-reset', { email });
+            const response = await axios.post('https://ats-project.onrender.com/auth/request-password-reset', { email });
             setMessage(response.data.message);
             // Redirect to the verify reset code page after successfully sending the reset code
             navigate('/verify-reset-code', { state: { email } });

@@ -110,7 +110,7 @@ const UserManagement = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/auth/users');
+        const response = await axios.get('https://ats-project.onrender.com/auth/users');
         setUsers(response.data);
         setLoading(false);
       } catch (err) {
@@ -125,7 +125,7 @@ const UserManagement = () => {
 
   const handleChangeRole = async () => {
     try {
-      await axios.put(`http://localhost:5000/auth/user/${selectedUser._id}/role`, { role: newRole });
+      await axios.put(`https://ats-project.onrender.com/auth/user/${selectedUser._id}/role`, { role: newRole });
       setUsers(users.map(user => user._id === selectedUser._id ? { ...user, role: newRole } : user));
       setModalOpen(false);
       setSelectedUser(null);
@@ -149,7 +149,7 @@ const UserManagement = () => {
 
   const handleCreateManager = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/auth/register', {
+      const response = await axios.post('https://ats-project.onrender.com/auth/register', {
         role: 'Manager',
         firstName: newManager.firstName,
         lastName: newManager.lastName,

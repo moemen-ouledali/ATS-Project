@@ -13,12 +13,14 @@ const EMAIL_PASS = 'beeapply2024';
 // Set up nodemailer transporter for Outlook
 const transporter = nodemailer.createTransport({
     host: 'smtp.office365.com',
-    port: 587,
+    port: 25,
     secure: false, // true for 465, false for other ports
     auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASS
-    }
+    },
+    logger: true, // Enable logger
+    debug: true // Enable debug output
 });
 
 // Generate a random 6-digit code

@@ -92,7 +92,7 @@ const AllJobsPage = () => {
   const shuffledImages = shuffleArray([...cardImages]);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/jobs')
+    axios.get('https://ats-project.onrender.com/api/jobs')
       .then(response => {
         const nonInternshipJobs = response.data.filter(job => job.jobType.toLowerCase() !== 'internship');
         setJobs(nonInternshipJobs);
