@@ -1,23 +1,20 @@
-import React, { useState, useEffect, useCallback } from 'react'; // Import necessary hooks and libraries from React
-import axios from 'axios'; // Import axios for making HTTP requests
-import { Pie, Line, Bar } from 'react-chartjs-2'; // Import chart types from react-chartjs-2
-import { Chart, registerables } from 'chart.js'; // Import Chart and registerables from chart.js
-import { Container, Typography, CircularProgress, Box, Grid, Card, CardContent, CardHeader, Divider, TextField, Button, Avatar } from '@mui/material'; // Import various components from @mui/material
-import { createTheme, ThemeProvider } from '@mui/material/styles'; // Import theming utilities from @mui/material/styles
-import { styled } from '@mui/system'; // Import styled from @mui/system
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'; // Import LocalizationProvider for date pickers
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'; // Import AdapterDateFns for date picker adapter
-import { DatePicker } from '@mui/x-date-pickers/DatePicker'; // Import DatePicker component
-import { format } from 'date-fns'; // Import format function from date-fns
-import maleIcon from '../../Media/ProfilePicture/male.png'; // Import male profile picture
-import femaleIcon from '../../Media/ProfilePicture/female.png'; // Import female profile picture
-import 'chartjs-plugin-datalabels'; // Import chartjs-plugin-datalabels for labeling charts
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import { Pie, Line, Bar } from 'react-chartjs-2';
+import { Chart, registerables } from 'chart.js';
+import { Container, Typography, CircularProgress, Box, Grid, Card, CardContent, CardHeader, Divider, TextField, Button, Avatar } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { styled } from '@mui/system';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { format } from 'date-fns';
+import maleIcon from '../../Media/ProfilePicture/male.png';
+import femaleIcon from '../../Media/ProfilePicture/female.png';
+import 'chartjs-plugin-datalabels';
 
-Chart.register(...registerables); // Register all chart.js components
+Chart.register(...registerables);
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Theme Configuration
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const theme = createTheme({
   palette: {
     primary: {
@@ -49,14 +46,12 @@ const theme = createTheme({
   },
 });
 
-// Define a styled component for gradient text
 const GradientText = styled('span')({
   background: 'linear-gradient(45deg, #4A90E2, #E91E63)',
   WebkitBackgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
 });
 
-// Define a styled component for cards
 const StyledCard = styled(Card)({
   borderRadius: '15px',
   boxShadow: '0 15px 30px rgba(0,0,0,0.1)',
@@ -67,10 +62,6 @@ const StyledCard = styled(Card)({
   },
 });
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Data Processing Functions
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Function to sort data for charts
 const sortData = (data) => {
   if (!data || !data.labels || !data.datasets || !data.datasets[0].data) {
     console.error('Invalid data structure:', data);
@@ -97,7 +88,6 @@ const sortData = (data) => {
   };
 };
 
-// Function to process experience level data
 const processExperienceLevelData = (data) => {
   const ranges = {
     '0 years': 0,
@@ -131,23 +121,7 @@ const processExperienceLevelData = (data) => {
   };
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// HR Manager Analytics Component
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const HRManagerAnalytics = () => {
-  // State hooks for managing component state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [applicationStatusData, setApplicationStatusData] = useState({});
@@ -162,13 +136,11 @@ const HRManagerAnalytics = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
-  // Function to handle date changes
   const handleDateChange = () => {
     setLoading(true);
     fetchData();
   };
 
-  // Function to fetch data from the API
   const fetchData = useCallback(async () => {
     try {
       const params = {};
@@ -298,18 +270,18 @@ const HRManagerAnalytics = () => {
         ],
       });
 
-      setError(null); // Clear any previous error
+      setError(null);
     } catch (error) {
       console.error('Error fetching analytics data:', error);
-      setError('Failed to fetch analytics data'); // Set error message
+      setError('Failed to fetch analytics data');
     } finally {
-      setLoading(false); // Set loading to false after fetching data
+      setLoading(false);
     }
   }, [startDate, endDate]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]); // Fetch data when component mounts or when fetchData changes
+  }, [fetchData]);
 
   if (loading) {
     return (
@@ -327,20 +299,6 @@ const HRManagerAnalytics = () => {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
-  
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // JSX Structure for rendering the component
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ background: theme.palette.background.default, py: 6, minHeight: '100vh' }}>
@@ -508,4 +466,4 @@ const HRManagerAnalytics = () => {
   );
 };
 
-export default HRManagerAnalytics; // Export the component as the default export
+export default HRManagerAnalytics;

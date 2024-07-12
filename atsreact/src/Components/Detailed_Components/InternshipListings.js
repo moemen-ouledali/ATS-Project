@@ -1,20 +1,9 @@
-import React, { useEffect, useState } from 'react'; // Importing React and necessary hooks
-import axios from 'axios'; // Importing axios for HTTP requests
-import { 
-  Grid, 
-  Card, 
-  CardActionArea, 
-  CardMedia, 
-  CardContent, 
-  Typography, 
-  CardActions, 
-  Button, 
-  Box, 
-  CircularProgress 
-} from '@mui/material'; // Importing Material UI components
-import { createTheme, ThemeProvider } from '@mui/material/styles'; // Importing theme creation and ThemeProvider from Material UI
-import { styled } from '@mui/system'; // Importing styled from Material UI's system
-import { Link as RouterLink } from 'react-router-dom'; // Importing RouterLink for navigation
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography, CardActions, Button, Box, CircularProgress } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { styled } from '@mui/system';
+import { Link as RouterLink } from 'react-router-dom';
 
 // Importing images
 import image1 from '../../Media/cards media/1.png';
@@ -26,23 +15,8 @@ import image6 from '../../Media/cards media/6.png';
 import image7 from '../../Media/cards media/7.png';
 import image8 from '../../Media/cards media/8.png';
 
-// Array of images
 const cardImages = [image1, image2, image3, image4, image5, image6, image7, image8];
 
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Create a custom theme for Material UI components
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const theme = createTheme({
   palette: {
     primary: {
@@ -79,22 +53,6 @@ const theme = createTheme({
   },
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Create styled components
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const StyledCard = styled(Card)({
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
   '&:hover': {
@@ -118,16 +76,6 @@ const StyledButton = styled(Button)({
   borderRadius: '30px',
 });
 
-
-
-
-
-
-
-
-
-
-// Function to shuffle an array
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -136,43 +84,11 @@ function shuffleArray(array) {
   return array;
 }
 
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Define the main component for the Internship Listings Page
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const InternshipListings = () => {
-  const [internships, setInternships] = useState([]); // State to store internships
-  const [loading, setLoading] = useState(true); // State to handle loading state
-  const shuffledImages = shuffleArray([...cardImages]); // Shuffling images array
+  const [internships, setInternships] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const shuffledImages = shuffleArray([...cardImages]);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Fetch internships from the API
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     axios.get('http://localhost:5000/api/jobs', {
       params: { jobType: 'Internship' }
@@ -187,31 +103,8 @@ const InternshipListings = () => {
     });
   }, []);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Render the component
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   return (
-    <ThemeProvider theme={theme}> {/* Apply the custom theme */}
+    <ThemeProvider theme={theme}>
       <Box sx={{ padding: '40px 24px', backgroundColor: theme.palette.background.default, minHeight: '100vh' }}>
         <Typography
           component="h1"
@@ -273,4 +166,4 @@ const InternshipListings = () => {
   );
 };
 
-export default InternshipListings; // Export the component as default
+export default InternshipListings;

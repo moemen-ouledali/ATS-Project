@@ -17,12 +17,6 @@ import image8 from '../../Media/cards media/8.png';
 
 const cardImages = [image1, image2, image3, image4, image5, image6, image7, image8];
 
-
-
-
-
-
-// Define a custom theme
 const theme = createTheme({
   palette: {
     primary: {
@@ -59,15 +53,6 @@ const theme = createTheme({
   },
 });
 
-
-
-
-
-
-
-
-
-// Styled Card component with hover effects
 const StyledCard = styled(Card)({
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
   '&:hover': {
@@ -80,14 +65,6 @@ const StyledCard = styled(Card)({
   backgroundColor: '#fff',
 });
 
-
-
-
-
-
-
-
-// Styled Button component with custom styles
 const StyledButton = styled(Button)({
   backgroundColor: '#4A90E2',
   color: '#fff',
@@ -99,16 +76,6 @@ const StyledButton = styled(Button)({
   borderRadius: '30px',
 });
 
-
-
-
-
-
-
-
-
-
-// Shuffle the images array to assign random images to job listings
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -118,16 +85,16 @@ function shuffleArray(array) {
 }
 
 const JobListingsPage = () => {
-  const { category } = useParams(); // Retrieve the category from URL parameters
-  const [jobListings, setJobListings] = useState([]); // State to store job listings
-  const [loading, setLoading] = useState(true); // State to handle loading state
-  const shuffledImages = shuffleArray([...cardImages]); // Shuffle images to assign them randomly
+  const { category } = useParams();
+  const [jobListings, setJobListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const shuffledImages = shuffleArray([...cardImages]);
 
   useEffect(() => {
     const fetchJobListings = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/jobs?category=${encodeURIComponent(category)}`);
-        const nonInternshipJobs = response.data.filter(listing => listing.jobType.toLowerCase() !== 'internship'); // Filter out internship jobs
+        const nonInternshipJobs = response.data.filter(listing => listing.jobType.toLowerCase() !== 'internship');
         setJobListings(nonInternshipJobs);
         setLoading(false);
       } catch (error) {
@@ -138,15 +105,6 @@ const JobListingsPage = () => {
 
     fetchJobListings();
   }, [category]);
-
-
-
-
-
-
-
-
-  
 
   return (
     <ThemeProvider theme={theme}>

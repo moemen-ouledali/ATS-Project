@@ -1,4 +1,3 @@
-// Import necessary dependencies and components
 import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
@@ -7,10 +6,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Container, Typography, Modal, Box, Button, CircularProgress, Grid, Divider } from '@mui/material';
 import { styled } from '@mui/system';
 
-// Localizer setup for the calendar using moment.js
 const localizer = momentLocalizer(moment);
 
-// Styled components using Material-UI's styled
 const StyledCalendar = styled(Calendar)({
   height: '700px',
   margin: '50px 0',
@@ -56,12 +53,12 @@ const ModalBox = styled(Box)({
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '90%',
-  maxWidth: '1200px',
+  width: '90%', // Increased width to 90%
+  maxWidth: '1200px', // Increased max-width to 1200px
   backgroundColor: '#fff',
   border: 'none',
   boxShadow: 24,
-  padding: '20px',
+  padding: '20px', // Added padding
   borderRadius: '10px',
 });
 
@@ -82,24 +79,7 @@ const InfoTypography = styled(Typography)({
   marginBottom: '10px',
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Main component: InterviewCalendar
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const InterviewCalendar = () => {
-  // State variables
   const [interviews, setInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -107,58 +87,52 @@ const InterviewCalendar = () => {
   const [applicationDetails, setApplicationDetails] = useState(null);
   const [open, setOpen] = useState(false);
 
-  // Fetch interviews when the component mounts
   useEffect(() => {
     const fetchInterviews = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/interviews');
-        setInterviews(response.data); // Update interviews state
-        setLoading(false); // Set loading to false after data is fetched
+        setInterviews(response.data);
+        setLoading(false);
       } catch (error) {
-        setError('Error fetching interviews: ' + error.message); // Set error message
-        setLoading(false); // Set loading to false after data is fetched
+        setError('Error fetching interviews: ' + error.message);
+        setLoading(false);
       }
     };
 
     fetchInterviews();
   }, []);
 
-  // Handle the selection of an interview event
   const handleSelectEvent = async (interview) => {
-    setSelectedInterview(interview); // Set the selected interview
+    setSelectedInterview(interview);
     const applicationId = interview.applicationId._id || interview.applicationId; // Ensure applicationId is a string
     console.log(`Fetching details for applicationId: ${applicationId}`);
     try {
       const response = await axios.get(`http://localhost:5000/api/applications/${applicationId}`);
-      setApplicationDetails(response.data); // Set application details
-      setOpen(true); // Open the modal
+      setApplicationDetails(response.data);
+      setOpen(true);
     } catch (error) {
-      alert('Error fetching application details: ' + error.message); // Show error alert
+      alert('Error fetching application details: ' + error.message);
     }
   };
 
-  // Handle closing the modal
   const handleClose = () => {
-    setOpen(false); // Close the modal
-    setSelectedInterview(null); // Clear selected interview
-    setApplicationDetails(null); // Clear application details
+    setOpen(false);
+    setSelectedInterview(null);
+    setApplicationDetails(null);
   };
 
-  // Handle updating the status of the application
   const handleUpdateStatus = async (status) => {
     if (!selectedInterview) return;
     const applicationId = selectedInterview.applicationId._id || selectedInterview.applicationId; // Ensure applicationId is a string
     try {
       await axios.put(`http://localhost:5000/api/applications/${applicationId}/status`, { status });
-      // Update the status in the interviews list
       setInterviews(interviews.map(i => (i._id === selectedInterview._id ? { ...i, applicationStatus: status } : i)));
-      handleClose(); // Close the modal
+      handleClose();
     } catch (error) {
-      alert('Error updating status: ' + error.message); // Show error alert
+      alert('Error updating status: ' + error.message);
     }
   };
 
-  // Convert interviews to events format for the calendar
   const events = interviews.map(interview => ({
     title: `${interview.applicantName} - Interview`,
     start: new Date(interview.dateTime),
@@ -166,27 +140,9 @@ const InterviewCalendar = () => {
     interview: interview
   }));
 
-  if (loading) return <CircularProgress />; // Show loading indicator if data is being fetched
-  if (error) return <Typography color="error">{error}</Typography>; // Show error message if there is an error
+  if (loading) return <CircularProgress />;
+  if (error) return <Typography color="error">{error}</Typography>;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // JSX Structure for rendering the component
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   return (
     <Container>
       <HeaderTypography variant="h3" gutterBottom align="center">

@@ -1,103 +1,56 @@
-import React, { useState } from 'react'; // Importing React and useState hook
-import axios from 'axios'; // Importing axios for making HTTP requests
-import { useNavigate } from 'react-router-dom'; // Importing useNavigate hook for navigation
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Verify Email Component
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const VerifyEmail = () => {
-  const [email, setEmail] = useState(''); // State for storing email input
-  const [code, setCode] = useState(''); // State for storing verification code input
-  const [message, setMessage] = useState(''); // State for storing success/error message
-  const navigate = useNavigate(); // Hook for navigating to different routes
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Handle Form Submission
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-
+    e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/auth/verify-code', { email, code }); // Send POST request to backend
-      setMessage(response.data.message); // Set success/error message
-
-      if (response.status === 200) { // Check if response status is 200 (OK)
-        navigate('/login'); // Navigate to login page
+      const response = await axios.post('http://localhost:5000/auth/verify-code', { email, code });
+      setMessage(response.data.message);
+      if (response.status === 200) {
+        navigate('/login');
       }
     } catch (error) {
-      setMessage("Verification failed. Please try again."); // Set error message
-      console.error("Verification error:", error); // Log error to console
+      setMessage("Verification failed. Please try again.");
+      console.error("Verification error:", error);
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-  
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Render the Form
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   return (
-    <div className="container mt-5"> {/* Container for the form */}
-      <h2>Verify Your Email</h2> {/* Form title */}
-      <form onSubmit={handleSubmit}> {/* Form submission handler */}
-        <div className="form-group"> {/* Form group for email input */}
-          <label>Email address</label> {/* Label for email input */}
+    <div className="container mt-5">
+      <h2>Verify Your Email</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Email address</label>
           <input
-            type="email" // Input type
-            className="form-control" // Input class
-            value={email} // Value of the input field
-            onChange={(e) => setEmail(e.target.value)} // Update state on change
-            required // Make input required
+            type="email"
+            className="form-control"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </div>
-
-        <div className="form-group"> {/* Form group for verification code input */}
-          <label>Verification Code</label> {/* Label for verification code input */}
+        <div className="form-group">
+          <label>Verification Code</label>
           <input
-            type="text" // Input type
-            className="form-control" // Input class
-            value={code} // Value of the input field
-            onChange={(e) => setCode(e.target.value)} // Update state on change
-            required // Make input required
+            type="text"
+            className="form-control"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            required
           />
         </div>
-
-        <button type="submit" className="btn btn-primary">Verify</button> {/* Submit button */}
+        <button type="submit" className="btn btn-primary">Verify</button>
       </form>
-
-      {message && <div className="alert alert-info mt-3">{message}</div>} {/* Display success/error message */}
+      {message && <div className="alert alert-info mt-3">{message}</div>}
     </div>
   );
 };
 
-export default VerifyEmail; // Export the component
+export default VerifyEmail;

@@ -1,25 +1,10 @@
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Import necessary libraries and components
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// src/Components/Manager_Components/AddJobListingModal.js
 
-import React, { useState } from 'react'; // Import React and useState hook for managing state
-import { Modal, Button, Form } from 'react-bootstrap'; // Import components from react-bootstrap for UI elements
-import axios from 'axios'; // Import axios for making HTTP requests
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Define the AddJobListingModal component
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+import React, { useState } from 'react';
+import { Modal, Button, Form } from 'react-bootstrap';
+import axios from 'axios';
 
 const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
-  // Define state for job details using useState hook
   const [jobDetails, setJobDetails] = useState({
     title: '',
     category: '',
@@ -31,24 +16,16 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
     minimumDegree: '',
   });
 
-  // Function to handle changes in form inputs
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target; // Destructure properties from the event target
-
-    // Handle checkbox inputs
+    const { name, value, type, checked } = e.target;
     if (type === 'checkbox') {
       setJobDetails((prevDetails) => ({
         ...prevDetails,
         requirements: checked
-          ? [...prevDetails.requirements, value] // Add checked requirement
-          : prevDetails.requirements.filter((req) => req !== value), // Remove unchecked requirement
+          ? [...prevDetails.requirements, value]
+          : prevDetails.requirements.filter((req) => req !== value),
       }));
     } else {
-
-
-
-      
-      // Handle other input types (text, select)
       setJobDetails((prevDetails) => ({
         ...prevDetails,
         [name]: value,
@@ -56,44 +33,17 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-  // Function to handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/jobs/add', jobDetails); // Send job details to the server
-      fetchJobListings(); // Refresh job listings
-      handleClose(); // Close the modal
+      await axios.post('http://localhost:5000/api/jobs/add', jobDetails);
+      fetchJobListings();
+      handleClose();
     } catch (error) {
-      console.error('Failed to add job listing:', error); // Log error if request fails
+      console.error('Failed to add job listing:', error);
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // Function to render checkbox options for job requirements based on selected category
   const renderRequirements = () => {
     const requirementsOptions = {
       'Web & Mobile Development': [
@@ -113,50 +63,27 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
       ]
     };
 
-
-
-
-
-
-
-
-
-
-
-
-
-    // Render checkboxes for requirements
     return requirementsOptions[jobDetails.category]?.map((req) => (
       <Form.Check
-        key={req} // Unique key for each checkbox
+        key={req}
         type="checkbox"
-        label={req} // Label displayed next to the checkbox
+        label={req}
         name="requirements"
         value={req}
-        onChange={handleChange} // Handle change event
-        checked={jobDetails.requirements.includes(req)} // Set checkbox checked state
+        onChange={handleChange}
+        checked={jobDetails.requirements.includes(req)}
       />
     ));
   };
 
-
-
-
-
-
-
-
-
-
-  // Render the modal component
   return (
-    <Modal show={show} onHide={handleClose}> {/* Show or hide modal based on show prop */}
-      <Modal.Header closeButton> {/* Modal header with close button */}
-        <Modal.Title>Add Job Listing</Modal.Title> {/* Modal title */}
+    <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Add Job Listing</Modal.Title>
       </Modal.Header>
-      <Modal.Body> {/* Modal body containing the form */}
-        <Form onSubmit={handleSubmit}> {/* Form to add job listing */}
-          <Form.Group controlId="formTitle"> {/* Form group for job title */}
+      <Modal.Body>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group controlId="formTitle">
             <Form.Label>Job Title</Form.Label>
             <Form.Control
               type="text"
@@ -167,7 +94,7 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
             />
           </Form.Group>
 
-          <Form.Group controlId="formCategory"> {/* Form group for job category */}
+          <Form.Group controlId="formCategory">
             <Form.Label>Category</Form.Label>
             <Form.Control
               as="select"
@@ -183,7 +110,7 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
             </Form.Control>
           </Form.Group>
 
-          <Form.Group controlId="formJobLocation"> {/* Form group for job location */}
+          <Form.Group controlId="formJobLocation">
             <Form.Label>Job Location</Form.Label>
             <Form.Control
               type="text"
@@ -194,7 +121,7 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
             />
           </Form.Group>
 
-          <Form.Group controlId="formJobType"> {/* Form group for job type */}
+          <Form.Group controlId="formJobType">
             <Form.Label>Job Type</Form.Label>
             <Form.Control
               as="select"
@@ -209,7 +136,7 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
             </Form.Control>
           </Form.Group>
 
-          <Form.Group controlId="formDescription"> {/* Form group for job description */}
+          <Form.Group controlId="formDescription">
             <Form.Label>Description</Form.Label>
             <Form.Control
               as="textarea"
@@ -220,12 +147,12 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
             />
           </Form.Group>
 
-          <Form.Group controlId="formRequirements"> {/* Form group for job requirements */}
+          <Form.Group controlId="formRequirements">
             <Form.Label>Requirements</Form.Label>
-            {renderRequirements()} {/* Render requirements checkboxes */}
+            {renderRequirements()}
           </Form.Group>
 
-          <Form.Group controlId="formExperienceLevel"> {/* Form group for experience level */}
+          <Form.Group controlId="formExperienceLevel">
             <Form.Label>Experience Level</Form.Label>
             <Form.Control
               as="select"
@@ -242,7 +169,7 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
             </Form.Control>
           </Form.Group>
 
-          <Form.Group controlId="formMinimumDegree"> {/* Form group for minimum degree */}
+          <Form.Group controlId="formMinimumDegree">
             <Form.Label>Minimum Degree</Form.Label>
             <Form.Control
               as="select"
@@ -258,7 +185,7 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
             </Form.Control>
           </Form.Group>
 
-          <Button variant="primary" type="submit"> {/* Button to submit the form */}
+          <Button variant="primary" type="submit">
             Add Job
           </Button>
         </Form>
@@ -266,9 +193,5 @@ const AddJobListingModal = ({ show, handleClose, fetchJobListings }) => {
     </Modal>
   );
 };
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Export the AddJobListingModal component
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export default AddJobListingModal;

@@ -23,20 +23,6 @@ import {
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/system';
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// **Theme Configuration**
 const theme = createTheme({
   palette: {
     primary: {
@@ -73,18 +59,6 @@ const theme = createTheme({
   },
 });
 
-
-
-
-
-
-
-
-
-
-
-
-// **Styled Components**
 const StyledCard = styled(Card)({
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
   '&:hover': {
@@ -110,22 +84,7 @@ const StyledButton = styled(Button)({
   transition: 'background-color 0.3s ease-in-out',
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-// **Main Component Function**
 const UserManagement = () => {
-
-  // **State Variables**
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -148,15 +107,6 @@ const UserManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
 
-
-
-
-
-
-
-
-
-  // **Fetch Users from API**
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -173,14 +123,6 @@ const UserManagement = () => {
     fetchUsers();
   }, []);
 
-
-
-
-
-
-
-
-  // **Handle Role Change**
   const handleChangeRole = async () => {
     try {
       await axios.put(`http://localhost:5000/auth/user/${selectedUser._id}/role`, { role: newRole });
@@ -194,44 +136,17 @@ const UserManagement = () => {
     }
   };
 
-
-
-
-
-
-  // **Open Modal for Role Change**
   const openModal = (user) => {
     setSelectedUser(user);
     setModalOpen(true);
   };
 
-
-
-
-
-
-
-
-
-
-  // **Close Modal**
   const closeModal = () => {
     setModalOpen(false);
     setSelectedUser(null);
     setNewRole('');
   };
 
-
-
-
-
-
-
-
-
-
-
-  // **Handle Manager Account Creation**
   const handleCreateManager = async () => {
     try {
       const response = await axios.post('http://localhost:5000/auth/register', {
@@ -262,17 +177,6 @@ const UserManagement = () => {
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-  // **Filter Users by Role and Search Term**
   const filteredUsers = (role, searchTerm) => users.filter(user =>
     user.role === role &&
     (user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -280,56 +184,16 @@ const UserManagement = () => {
     user.email.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-
-
-
-
-
-
-
-
-
-
-
-
-  // **Paginate Users**
   const paginatedUsers = (users) => {
     const startIndex = (currentPage - 1) * usersPerPage;
     const endIndex = startIndex + usersPerPage;
     return users.slice(startIndex, endIndex);
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // **Handle Page Change for Pagination**
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
-
-
-
-
-
-
-
-
-
-
-
-  // **Render User Table**
   const renderTable = (role, searchTerm, setSearchTerm) => {
     const usersToShow = paginatedUsers(filteredUsers(role, searchTerm));
     return (
@@ -384,22 +248,6 @@ const UserManagement = () => {
     );
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // **Loading State**
   if (loading) {
     return (
       <Container className="text-center" style={{ marginTop: '50px' }}>
@@ -408,17 +256,6 @@ const UserManagement = () => {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
-  // **Error State**
   if (error) {
     return (
       <Container className="text-center" style={{ marginTop: '50px' }}>
@@ -427,19 +264,6 @@ const UserManagement = () => {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-  
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ padding: '40px 24px', backgroundColor: theme.palette.background.default, minHeight: '100vh' }}>
@@ -456,130 +280,132 @@ const UserManagement = () => {
         >
           User Management
         </Typography>
-
-        {/* **Main Content** */}
-        {view === 'manageUsers' && (
-          <>
-            {/* **Admin Table** */}
-            {renderTable('Admin', searchTermAdmin, setSearchTermAdmin)}
-
-            {/* **Manager Table** */}
-            {renderTable('Manager', searchTermManager, setSearchTermManager)}
-
-            {/* **Candidate Table** */}
-            {renderTable('Candidate', searchTermCandidate, setSearchTermCandidate)}
-
-            {/* **Add Manager Button** */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
-              <StyledButton onClick={() => setView('addManager')}>Add Manager</StyledButton>
-            </Box>
-          </>
-        )}
-
-        {/* **Add Manager Form** */}
-        {view === 'addManager' && (
-          <StyledCard>
-            <CardContent>
-              <Typography variant="h5" component="div" sx={{ marginBottom: '20px', color: theme.palette.primary.main }}>
-                Add New Manager
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                {/* **Manager Details Form** */}
+        <Container>
+          <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+            <StyledButton variant="contained" size="large" onClick={() => setView('manageUsers')} sx={{ marginRight: '10px' }}>
+              Manage Users
+            </StyledButton>
+            <StyledButton variant="contained" size="large" onClick={() => setView('createManager')}>
+              Create Manager Account
+            </StyledButton>
+          </Box>
+          {view === 'manageUsers' && (
+            <>
+              {renderTable('Manager', searchTermManager, setSearchTermManager)}
+              {renderTable('Candidate', searchTermCandidate, setSearchTermCandidate)}
+              {renderTable('Admin', searchTermAdmin, setSearchTermAdmin)}
+            </>
+          )}
+          {view === 'createManager' && (
+            <StyledCard>
+              <CardContent>
+                <Typography variant="h5" component="div" sx={{ marginBottom: '20px', color: theme.palette.primary.main }}>
+                  Create Manager Account
+                </Typography>
                 <TextField
+                  type="text"
                   label="First Name"
-                  variant="outlined"
                   value={newManager.firstName}
                   onChange={e => setNewManager({ ...newManager, firstName: e.target.value })}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: '20px' }}
                 />
                 <TextField
+                  type="text"
                   label="Last Name"
-                  variant="outlined"
                   value={newManager.lastName}
                   onChange={e => setNewManager({ ...newManager, lastName: e.target.value })}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: '20px' }}
                 />
                 <TextField
+                  type="email"
                   label="Email"
-                  variant="outlined"
                   value={newManager.email}
                   onChange={e => setNewManager({ ...newManager, email: e.target.value })}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: '20px' }}
                 />
                 <TextField
-                  label="Date of Birth"
                   type="date"
-                  InputLabelProps={{ shrink: true }}
-                  variant="outlined"
+                  label="Date of Birth"
                   value={newManager.dateOfBirth}
                   onChange={e => setNewManager({ ...newManager, dateOfBirth: e.target.value })}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: '20px' }}
+                  InputLabelProps={{ shrink: true }}
                 />
                 <TextField
-                  label="Password"
                   type="password"
-                  variant="outlined"
+                  label="Password"
                   value={newManager.password}
                   onChange={e => setNewManager({ ...newManager, password: e.target.value })}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: '20px' }}
                 />
                 <TextField
+                  type="text"
                   label="Phone Number"
-                  variant="outlined"
                   value={newManager.phoneNumber}
                   onChange={e => setNewManager({ ...newManager, phoneNumber: e.target.value })}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: '20px' }}
                 />
                 <TextField
-                  label="Gender"
                   select
-                  variant="outlined"
+                  label="Gender"
                   value={newManager.gender}
                   onChange={e => setNewManager({ ...newManager, gender: e.target.value })}
+                  variant="outlined"
+                  fullWidth
+                  sx={{ marginBottom: '20px' }}
                 >
-                  <MenuItem value="Male">Male</MenuItem>
-                  <MenuItem value="Female">Female</MenuItem>
-                  <MenuItem value="Other">Other</MenuItem>
+                  <MenuItem value="male">Male</MenuItem>
+                  <MenuItem value="female">Female</MenuItem>
                 </TextField>
-              </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-                {/* **Cancel and Create Buttons** */}
-                <StyledButton onClick={() => setView('manageUsers')}>Cancel</StyledButton>
-                <StyledButton onClick={handleCreateManager}>Create Manager</StyledButton>
-              </Box>
-            </CardContent>
-          </StyledCard>
-        )}
-
-        {/* **Modal for Role Change** */}
+                <StyledButton onClick={handleCreateManager} fullWidth>Create Manager</StyledButton>
+              </CardContent>
+            </StyledCard>
+          )}
+        </Container>
         <Modal open={modalOpen} onClose={closeModal}>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 400,
-              bgcolor: 'background.paper',
-              boxShadow: 24,
-              p: 4,
-              borderRadius: 2,
-            }}
-          >
-            <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-              Change Role for {selectedUser && `${selectedUser.firstName} ${selectedUser.lastName}`}
-            </Typography>
-            <TextField
-              select
-              label="Role"
-              value={newRole}
-              onChange={e => setNewRole(e.target.value)}
-              variant="outlined"
-              fullWidth
-              sx={{ mb: 2 }}
-            >
-              <MenuItem value="Admin">Admin</MenuItem>
-              <MenuItem value="Manager">Manager</MenuItem>
-              <MenuItem value="Candidate">Candidate</MenuItem>
-            </TextField>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <StyledButton onClick={closeModal}>Cancel</StyledButton>
-              <StyledButton onClick={handleChangeRole}>Change Role</StyledButton>
-            </Box>
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            borderRadius: 2,
+          }}>
+            <Typography variant="h6" gutterBottom>Change Role</Typography>
+            {selectedUser && (
+              <>
+                <Typography variant="body1" gutterBottom>{selectedUser.firstName} {selectedUser.lastName}</Typography>
+                <TextField
+                  select
+                  label="Select Role"
+                  value={newRole}
+                  onChange={(e) => setNewRole(e.target.value)}
+                  fullWidth
+                  variant="outlined"
+                  sx={{ marginBottom: '20px' }}
+                >
+                  <MenuItem value="Manager">Manager</MenuItem>
+                  <MenuItem value="Candidate">Candidate</MenuItem>
+                  <MenuItem value="Admin">Admin</MenuItem>
+                </TextField>
+                <StyledButton onClick={handleChangeRole} fullWidth>Change Role</StyledButton>
+              </>
+            )}
           </Box>
         </Modal>
       </Box>

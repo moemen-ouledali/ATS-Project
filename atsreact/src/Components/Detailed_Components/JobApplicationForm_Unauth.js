@@ -5,15 +5,6 @@ import { Container, Box, Typography, Card, CardContent, CircularProgress, Button
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/system';
 
-
-
-
-
-
-
-
-
-// Define a custom theme
 const theme = createTheme({
   palette: {
     primary: {
@@ -50,17 +41,6 @@ const theme = createTheme({
   },
 });
 
-
-
-
-
-
-
-
-
-
-
-// Styled Card component with hover effects
 const StyledCard = styled(Card)({
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
   '&:hover': {
@@ -74,56 +54,24 @@ const StyledCard = styled(Card)({
   backgroundImage: 'linear-gradient(135deg, #fff 30%, #f3e5f5 90%)',
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-// Main component for unauthenticated job application form
 const JobApplicationFormUnauth = () => {
-  const { id } = useParams(); // Retrieve job ID from URL parameters
-  const [jobDetails, setJobDetails] = useState(null); // State to store job details
-  const [loading, setLoading] = useState(true); // State to handle loading state
+  const { id } = useParams(); // Job ID from URL parameters
+  const [jobDetails, setJobDetails] = useState(null);
 
   useEffect(() => {
-    // Fetch job details from the API
+    // Fetch job details
     axios.get(`http://localhost:5000/api/jobs/${id}`)
       .then(response => {
         setJobDetails(response.data);
-        setLoading(false);
       })
       .catch(error => {
         console.error('Error fetching job details:', error);
         alert('Failed to fetch job details.');
-        setLoading(false);
       });
   }, [id]);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
   return (
-    <ThemeProvider theme={theme}> {/* Apply the custom theme */}
+    <ThemeProvider theme={theme}>
       <Box sx={{ background: 'linear-gradient(135deg, #4400E7 30%, #B71A89 90%)', py: 6, minHeight: '100vh' }}>
         <Container maxWidth="md">
           <StyledCard raised>
@@ -141,25 +89,21 @@ const JobApplicationFormUnauth = () => {
               >
                 Job Details
               </Typography>
-              {loading ? (
+              {jobDetails ? (
+                <Box sx={{ marginBottom: '20px', padding: '20px', backgroundColor: '#f8f8f8', borderRadius: '5px' }}>
+                <Typography variant="h5">{jobDetails.title}</Typography>
+                <Typography variant="body2"><strong>Category:</strong> {jobDetails.category}</Typography>
+                <Typography variant="body2"><strong>Location:</strong> {jobDetails.jobLocation}</Typography>
+                <Typography variant="body2"><strong>Type:</strong> {jobDetails.jobType}</Typography>
+                <Typography variant="body2"><strong>Description:</strong> {jobDetails.description}</Typography>
+                <Typography variant="body2"><strong>Requirements:</strong> {jobDetails.requirements.join(', ')}</Typography>
+                <Typography variant="body2"><strong>Experience Required:</strong> {jobDetails.experienceLevel}</Typography>
+                <Typography variant="body2"><strong>Degree Required:</strong> {jobDetails.minimumDegree}</Typography>
+              </Box>
+              ) : (
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
                   <CircularProgress />
                 </Box>
-              ) : jobDetails ? (
-                <Box sx={{ marginBottom: '20px', padding: '20px', backgroundColor: '#f8f8f8', borderRadius: '5px' }}>
-                  <Typography variant="h5">{jobDetails.title}</Typography>
-                  <Typography variant="body2"><strong>Category:</strong> {jobDetails.category}</Typography>
-                  <Typography variant="body2"><strong>Location:</strong> {jobDetails.jobLocation}</Typography>
-                  <Typography variant="body2"><strong>Type:</strong> {jobDetails.jobType}</Typography>
-                  <Typography variant="body2"><strong>Description:</strong> {jobDetails.description}</Typography>
-                  <Typography variant="body2"><strong>Requirements:</strong> {jobDetails.requirements.join(', ')}</Typography>
-                  <Typography variant="body2"><strong>Experience Required:</strong> {jobDetails.experienceLevel}</Typography>
-                  <Typography variant="body2"><strong>Degree Required:</strong> {jobDetails.minimumDegree}</Typography>
-                </Box>
-              ) : (
-                <Typography sx={{ textAlign: 'center', color: 'red' }}>
-                  Failed to load job details.
-                </Typography>
               )}
               <Typography sx={{ textAlign: 'center', marginTop: '20px' }}>
                 <Link to="/register" style={{ textDecoration: 'none' }}>
@@ -174,4 +118,4 @@ const JobApplicationFormUnauth = () => {
   );
 };
 
-export default JobApplicationFormUnauth; // Export the component as default
+export default JobApplicationFormUnauth;

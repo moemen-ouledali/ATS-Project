@@ -1,116 +1,59 @@
-const express = require('express'); // Import Express
-const router = express.Router(); // Create a new router instance
-const multer = require('multer'); // Import multer for file uploads
-const path = require('path'); // Import path for handling file paths
-const Application = require('../models/Application'); // Import the Application model
-const JobListing = require('../models/JobListing'); // Import the JobListing model
-const fs = require('fs'); // Import fs for file system operations
-const pdf = require('pdf-parse'); // Import pdf-parse for extracting text from PDF files
-const nodemailer = require('nodemailer'); // Import nodemailer for sending emails
+const express = require('express');
+const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const Application = require('../models/Application');
+const JobListing = require('../models/JobListing'); // Ensure this is imported
+const fs = require('fs');
+const pdf = require('pdf-parse');
+const nodemailer = require('nodemailer');
 const Interview = require('../models/interview'); // Import the Interview model
+require('dotenv').config();
 
-
-
-
-
-
-// Email credentials
-const EMAIL_USER = 'BeeApply.reset@outlook.com';
-const EMAIL_PASS = 'beeapply2024';
-
-
-
-
-
-
-
-
-// Set up storage engine for multer
+// Set up storage engine
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/'); // Ensure this folder exists
     },
     filename: function (req, file, cb) {
-        cb(null, file.originalname); // Use the original file name
+        cb(null, file.originalname); // Using original file name
     }
 });
 
-const upload = multer({ storage: storage }); // Initialize multer with the storage engine
-
-
-
-
-
-
-
-
-
-
+const upload = multer({ storage: storage });
 
 // Configure nodemailer transporter
 const transporter = nodemailer.createTransport({
     host: 'smtp.office365.com',
     port: 587,
-    secure: false, // true for port 465, false for other ports
+    secure: false, // true for 465, false for other ports
     auth: {
-        user: EMAIL_USER,
-        pass: EMAIL_PASS
-    },
-    logger: true, // Enable logging
-    debug: true // Enable debug output
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
 });
-
-
-
-
-
-
-
-
-
 
 // Debugging middleware to check route hits
 router.use((req, res, next) => {
-    console.log(`Request URL: ${req.originalUrl}`); // Log the request URL
-    next(); // Proceed to the next middleware/route handler
+    console.log(`Request URL: ${req.originalUrl}`);
+    next();
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Endpoint to handle job application submission
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 router.post('/apply', upload.single('resume'), async (req, res) => {
-    const { name, email, phone, educationLevel, experienceLevel, university, motivationLetter, jobId } = req.body; // Extract form data from the request body
-    const file = req.file; // Extract the uploaded file
+    const { name, email, phone, educationLevel, experienceLevel, university, motivationLetter, jobId } = req.body;
+    const file = req.file;
 
     if (!file) {
-        return res.status(400).send('No resume file uploaded.'); // Check if the file was uploaded
+        return res.status(400).send('No resume file uploaded.');
     }
 
     // Read the PDF file and extract text
-    let dataBuffer = fs.readFileSync(file.path); // Read the file into a buffer
+    let dataBuffer = fs.readFileSync(file.path);
 
     pdf(dataBuffer).then(function (data) {
-        // data.text is the extracted text from the PDF
-        const resumeText = data.text; // Store the extracted text
+        // `data.text` is the extracted text from the PDF
+        const resumeText = data.text;
 
-        // Create an application object with the extracted and form data
         const applicationData = {
             name,
             email,
@@ -121,185 +64,85 @@ router.post('/apply', upload.single('resume'), async (req, res) => {
             motivationLetter,
             jobId,
             resumePath: file.path,
-            resumeText: resumeText, // Store extracted text in the database
-            status: 'in review' // Initial status
+            resumeText: resumeText, // Storing extracted text in the database
+            status: 'in review'
         };
 
-        const application = new Application(applicationData); // Create a new Application instance
+        const application = new Application(applicationData);
 
         application.save()
-            .then(() => res.json({ message: 'Application and file saved successfully', data: application })) // Save the application to the database and send a response
+            .then(() => res.json({ message: 'Application and file saved successfully', data: application }))
             .catch(error => {
-                console.error('Error saving the application:', error); // Log any errors
-                res.status(500).send('Error processing application'); // Send an error response
+                console.error('Error saving the application:', error);
+                res.status(500).send('Error processing application');
             });
     }).catch(error => {
-        console.error('Error reading the PDF file:', error); // Log any errors
-        res.status(500).send('Error extracting text from resume'); // Send an error response
+        console.error('Error reading the PDF file:', error);
+        res.status(500).send('Error extracting text from resume');
     });
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Endpoint to GET all applications for the current user by email
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// GET all applications for the current user by email
 router.get('/', async (req, res) => {
     try {
-        const email = req.query.email; // Extract email from query parameters
-        const applications = await Application.find({ email }).populate('jobId'); // Find applications by email and populate job details
-        res.json(applications); // Send applications as a JSON response
+        const email = req.query.email;
+        const applications = await Application.find({ email }).populate('jobId');
+        res.json(applications);
     } catch (error) {
-        console.error('Failed to fetch applications:', error); // Log any errors
-        res.status(500).send('Error fetching applications'); // Send an error response
+        console.error('Failed to fetch applications:', error);
+        res.status(500).send('Error fetching applications');
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Endpoint to GET applications for a specific job
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// GET applications for a specific job
 router.get('/for-job/:jobId', async (req, res) => {
     try {
-        const { jobId } = req.params; // Extract jobId from route parameters
-        const applications = await Application.find({ jobId }).populate('jobId'); // Find applications by jobId and populate job details
-        res.json(applications); // Send applications as a JSON response
+        const { jobId } = req.params;
+        const applications = await Application.find({ jobId }).populate('jobId');
+        res.json(applications);
     } catch (error) {
-        console.error('Failed to fetch applications for the job:', error); // Log any errors
-        res.status(500).send('Error fetching applications for the job'); // Send an error response
+        console.error('Failed to fetch applications for the job:', error);
+        res.status(500).send('Error fetching applications for the job');
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Endpoint to GET all applications (for admin or HR manager)
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// GET all applications (for admin or HR manager)
 router.get('/all', async (req, res) => {
     try {
-        const applications = await Application.find().populate('jobId'); // Find all applications and populate job details
-        res.json(applications); // Send applications as a JSON response
+        const applications = await Application.find().populate('jobId');
+        res.json(applications);
     } catch (error) {
-        console.error('Failed to fetch all applications:', error); // Log any errors
-        res.status(500).send('Error fetching all applications'); // Send an error response
+        console.error('Failed to fetch all applications:', error);
+        res.status(500).send('Error fetching all applications');
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Endpoint to GET application details by ID
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// GET application details by ID
 router.get('/:id', async (req, res) => {
     try {
-        const application = await Application.findById(req.params.id).populate('jobId'); // Find application by ID and populate job details
+        const application = await Application.findById(req.params.id).populate('jobId');
         if (!application) {
-            return res.status(404).json({ message: 'Application not found' }); // Check if the application exists
+            return res.status(404).json({ message: 'Application not found' });
         }
-        res.json(application); // Send application details as a JSON response
+        res.json(application);
     } catch (error) {
-        console.error('Failed to fetch application details:', error); // Log any errors
-        res.status(500).send('Error fetching application details'); // Send an error response
+        console.error('Failed to fetch application details:', error);
+        res.status(500).send('Error fetching application details');
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Endpoint to accept an application
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// Accept an application
 router.put('/accept/:id', async (req, res) => {
     try {
-        const applicationId = req.params.id; // Extract application ID from route parameters
-        const application = await Application.findByIdAndUpdate(applicationId, { status: 'Accepted' }, { new: true }); // Update the application status to 'Accepted'
+        const applicationId = req.params.id;
+        const application = await Application.findByIdAndUpdate(applicationId, { status: 'Accepted' }, { new: true });
 
         if (!application) {
-            return res.status(404).json({ message: 'Application not found' }); // Check if the application exists
+            return res.status(404).json({ message: 'Application not found' });
         }
 
-        // Define email options
         const mailOptions = {
-            from: EMAIL_USER,
+            from: process.env.EMAIL_USER,
             to: application.email,
             subject: 'Pre-Acceptance Notification',
             html: `
@@ -321,161 +164,84 @@ router.put('/accept/:id', async (req, res) => {
             `
         };
 
-        await transporter.sendMail(mailOptions); // Send the email
+        await transporter.sendMail(mailOptions);
 
-        res.json(application); // Send the updated application as a JSON response
+        res.json(application);
     } catch (error) {
-        console.error('Failed to accept application:', error); // Log any errors
-        res.status(500).send('Error accepting application'); // Send an error response
+        console.error('Failed to accept application:', error);
+        res.status(500).send('Error accepting application');
     }
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Endpoint to decline an application
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// Decline an application
 router.put('/decline/:id', async (req, res) => {
     try {
-        const applicationId = req.params.id; // Extract application ID from route parameters
-        const application = await Application.findByIdAndUpdate(applicationId, { status: 'Declined' }, { new: true }); // Update the application status to 'Declined'
-        res.json(application); // Send the updated application as a JSON response
+        const applicationId = req.params.id;
+        const application = await Application.findByIdAndUpdate(applicationId, { status: 'Declined' }, { new: true });
+        res.json(application);
     } catch (error) {
-        console.error('Failed to decline application:', error); // Log any errors
-        res.status(500).send('Error declining application'); // Send an error response
+        console.error('Failed to decline application:', error);
+        res.status(500).send('Error declining application');
     }
 });
 
+// New endpoints for post-evaluation test decisions
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Endpoint to decline an application after evaluation test
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// Decline an application after evaluation test
 router.put('/decline-after-test/:id', async (req, res) => {
     try {
-        const applicationId = req.params.id; // Extract application ID from route parameters
-        const application = await Application.findByIdAndUpdate(applicationId, { status: 'declined after evaluation test' }, { new: true }); // Update the application status to 'declined after evaluation test'
+        const applicationId = req.params.id;
+        const application = await Application.findByIdAndUpdate(applicationId, { status: 'declined after evaluation test' }, { new: true });
 
         if (!application) {
-            return res.status(404).json({ message: 'Application not found' }); // Check if the application exists
+            return res.status(404).json({ message: 'Application not found' });
         }
 
-        // Define email options
         const mailOptions = {
-            from: EMAIL_USER,
+            from: process.env.EMAIL_USER,
             to: application.email,
             subject: 'Application Declined',
             text: `Dear ${application.name},\n\nWe regret to inform you that your application for the ${application.jobId.title} position has been declined after the evaluation test.\n\nThank you for your interest in our company.\n\nBest regards,\n[Your Company Name]`
         };
 
-        await transporter.sendMail(mailOptions); // Send the email
+        await transporter.sendMail(mailOptions);
 
-        res.json(application); // Send the updated application as a JSON response
+        res.json(application);
     } catch (error) {
-        console.error('Failed to decline application:', error); // Log any errors
-        res.status(500).send('Error declining application'); // Send an error response
+        console.error('Failed to decline application:', error);
+        res.status(500).send('Error declining application');
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Endpoint to accept an application after evaluation test
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// Accept an application after evaluation test
 router.put('/accept-after-test/:id', async (req, res) => {
     try {
-        const applicationId = req.params.id; // Extract application ID from route parameters
-        const { date, time } = req.body; // Extract date and time from request body
-        const application = await Application.findById(applicationId); // Find the application by ID
+        const applicationId = req.params.id;
+        const { date, time } = req.body;
+        const application = await Application.findById(applicationId);
 
         if (!application) {
-            return res.status(404).json({ message: 'Application not found' }); // Check if the application exists
+            return res.status(404).json({ message: 'Application not found' });
         }
 
         if (!date || !time) {
-            return res.status(400).json({ message: 'Date and time are required for the interview.' }); // Validate date and time
+            return res.status(400).json({ message: 'Date and time are required for the interview.' });
         }
 
         const interview = new Interview({
             applicationId: applicationId,
             applicantName: application.name,
-            dateTime: new Date(`${date}T${time}`), // Combine date and time into a Date object
+            dateTime: new Date(`${date}T${time}`),
         });
 
-        await interview.save(); // Save the interview details
+        await interview.save();
 
-        application.status = 'accepted for interview'; // Update the application status
-        await application.save(); // Save the updated application
+        application.status = 'accepted for interview';
+        await application.save();
 
-        // Define email options
         const mailOptions = {
-            from: EMAIL_USER,
+            from: process.env.EMAIL_USER,
             to: application.email,
             subject: 'Application Accepted - Interview Scheduled',
             html: `
@@ -489,56 +255,32 @@ router.put('/accept-after-test/:id', async (req, res) => {
                 </div>
             `
         };
+        
 
-        await transporter.sendMail(mailOptions); // Send the email
+        await transporter.sendMail(mailOptions);
 
-        res.json(application); // Send the updated application as a JSON response
+        res.json(application);
     } catch (error) {
-        console.error('Failed to accept application:', error); // Log any errors
-        res.status(500).send('Error accepting application'); // Send an error response
+        console.error('Failed to accept application:', error);
+        res.status(500).send('Error accepting application');
     }
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Endpoint to update application status
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// Update application status
 router.put('/:id/status', async (req, res) => {
     try {
-        const application = await Application.findByIdAndUpdate(
-            req.params.id, // Extract application ID from route parameters
-            { status: req.body.status }, // Update the application status with the value from request body
-            { new: true } // Return the updated application
-        );
-        res.json(application); // Send the updated application as a JSON response
+      const application = await Application.findByIdAndUpdate(
+        req.params.id,
+        { status: req.body.status },
+        { new: true }
+      );
+      res.json(application);
     } catch (error) {
-        res.status(500).send('Error updating status: ' + error.message); // Send an error response with the error message
+      res.status(500).send('Error updating status: ' + error.message);
     }
-});
+  });
 
-module.exports = router; // Export the router
+  
+module.exports = router;
+
