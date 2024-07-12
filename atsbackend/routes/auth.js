@@ -1,40 +1,87 @@
-// atsbackend/routes/auth.js
+const express = require('express'); // Import Express
+const router = express.Router(); // Create a new router object
+const User = require('../models/User'); // Import User model
+const jwt = require('jsonwebtoken'); // Import JSON Web Token library
+const nodemailer = require('nodemailer'); // Import Nodemailer for sending emails
+const crypto = require('crypto'); // Import crypto for generating random values
+const JWT_SECRET = 'your_jwt_secret_here'; // JWT secret key for signing tokens
 
-const express = require('express');
-const router = express.Router();
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
-const crypto = require('crypto');
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_here';
 
-// Set up nodemailer transporter for Outlook
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Email credentials and transporter setup
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const EMAIL_USER = 'BeeApply.reset@outlook.com'; // Email user for sending emails
+const EMAIL_PASS = 'beeapply2024'; // Email password
+
+// Set up Nodemailer transporter for Outlook
 const transporter = nodemailer.createTransport({
-    host: 'smtp.office365.com',
-    port: 587,
+    host: 'smtp.office365.com', // SMTP host for Outlook
+    port: 587, // Port for Outlook
     secure: false, // true for 465, false for other ports
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
+        user: EMAIL_USER,
+        pass: EMAIL_PASS
+    },
+    logger: true, // Enable logger
+    debug: true // Enable debug output
 });
 
-// Generate a random 6-digit code
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function to generate a random 6-digit verification code
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const generateVerificationCode = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    return Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit random code
 };
 
-// POST /auth/register - Register a new user
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Endpoint to register a new user
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 router.post('/register', async (req, res) => {
     const { role, firstName, lastName, email, dateOfBirth, password, phoneNumber, city, highestEducationLevel, gender } = req.body;
 
     try {
-        let existingUser = await User.findOne({ email });
+        let existingUser = await User.findOne({ email }); // Check if the email is already registered
         if (existingUser) {
-            return res.status(400).json({ message: "Email is already registered" });
+            return res.status(400).json({ message: "Email is already registered" }); // If email exists, return an error
         }
 
-        const verificationCode = generateVerificationCode();
+        const verificationCode = generateVerificationCode(); // Generate a verification code
 
         const newUser = new User({
             role,
@@ -51,11 +98,11 @@ router.post('/register', async (req, res) => {
             isVerified: role === 'Manager' ? true : false
         });
 
-        await newUser.save();
+        await newUser.save(); // Save the new user to the database
 
         // Send verification code to user's email
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: EMAIL_USER,
             to: email,
             subject: 'Email Verification Code',
             html: `
@@ -94,34 +141,69 @@ router.post('/register', async (req, res) => {
 });
 
 
-// POST /auth/verify-code - Verify the user's code
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Endpoint to verify the user's code
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 router.post('/verify-code', async (req, res) => {
     const { email, code } = req.body;
 
     try {
-        const user = await User.findOne({ email, verificationCode: code });
+        const user = await User.findOne({ email, verificationCode: code }); // Find user with the provided email and code
         if (!user) {
-            return res.status(400).json({ message: 'Invalid verification code' });
+            return res.status(400).json({ message: 'Invalid verification code' }); // If no user found, return an error
         }
 
-        user.isVerified = true;
-        user.verificationCode = null;
-        await user.save();
+        user.isVerified = true; // Mark the user as verified
+        user.verificationCode = null; // Clear the verification code
+        await user.save(); // Save the changes
 
-        res.status(200).json({ message: 'Email verified successfully' });
+        res.status(200).json({ message: 'Email verified successfully' }); // Send success response
     } catch (error) {
         console.error('Error verifying code:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-// POST /auth/login - Log in a user and return JWT
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Endpoint to log in a user and return JWT
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }); // Find user by email
         if (!user || password !== user.password) {
-            return res.status(401).json({ message: "Invalid email or password" });
+            return res.status(401).json({ message: "Invalid email or password" }); // If no user found or password is incorrect, return an error
         }
 
         if (!user.isVerified) {
@@ -132,7 +214,7 @@ router.post('/login', async (req, res) => {
 
             // Send the verification code to the user's email
             const mailOptions = {
-                from: process.env.EMAIL_USER,
+                from: EMAIL_USER,
                 to: email,
                 subject: 'Email Verification Code',
                 text: `Your verification code is: ${verificationCode}`
@@ -153,7 +235,7 @@ router.post('/login', async (req, res) => {
             { userId: user._id, email: user.email, role: user.role },
             JWT_SECRET,
             { expiresIn: '1h' }
-        );
+        ); // Create a JWT token
 
         res.json({
             token,
@@ -162,30 +244,64 @@ router.post('/login', async (req, res) => {
             fullName: `${user.firstName} ${user.lastName}`,
             email: user.email,
             phoneNumber: user.phoneNumber
-        });
+        }); // Send the token and user details as response
     } catch (error) {
         console.error("Error logging in user:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 });
 
-// GET /auth/user/:id - Get a specific user by ID
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Endpoint to get a specific user by ID
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 router.get('/user/:id', async (req, res) => {
     console.log("Fetching user with ID:", req.params.id);  // This will log the ID being queried
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.id); // Find user by ID
         if (!user) {
             console.log("No user found with ID:", req.params.id);
-            return res.status(404).send('User not found');
+            return res.status(404).send('User not found'); // If no user found, return an error
         }
-        res.json(user);
+        res.json(user); // Send the user details as response
     } catch (error) {
         console.error("Error fetching user:", error);
         res.status(500).send('Internal server error');
     }
 });
 
-// PUT /auth/user/:id - Update a specific user by ID
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Endpoint to update a specific user by ID
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 router.put('/user/:id', async (req, res) => {
     const { firstName, lastName, email, dateOfBirth, phoneNumber, city, highestEducationLevel, gender } = req.body;
     try {
@@ -198,38 +314,54 @@ router.put('/user/:id', async (req, res) => {
             city,
             highestEducationLevel,
             gender // Add this line
-        }, { new: true });
+        }, { new: true }); // Update user details
 
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "User not found" }); // If no user found, return an error
         }
 
-        res.json({ message: "User updated successfully", user });
+        res.json({ message: "User updated successfully", user }); // Send success response
     } catch (error) {
         console.error("Error updating user:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 });
 
-// POST /auth/request-password-reset - Request password reset
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Endpoint to request password reset
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 router.post('/request-password-reset', async (req, res) => {
     const { email } = req.body;
 
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }); // Find user by email
         if (!user) {
-            return res.status(404).json({ message: "Email not found" });
+            return res.status(404).json({ message: "Email not found" }); // If no user found, return an error
         }
 
-        const resetCode = generateVerificationCode();
+        const resetCode = generateVerificationCode(); // Generate a reset code
 
         // Store the reset code and expiration time in the user document
         user.resetCode = resetCode;
         user.resetCodeExpires = Date.now() + 3600000; // 1 hour from now
-        await user.save();
+        await user.save(); // Save the changes
 
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: EMAIL_USER,
             to: email,
             subject: 'Password Reset Request',
             text: `You requested a password reset. Your reset code is: ${resetCode}`
@@ -240,7 +372,7 @@ router.post('/request-password-reset', async (req, res) => {
                 console.error('Error sending password reset email:', error);
                 return res.status(500).json({ message: 'Failed to send password reset email. Please try again.' });
             }
-            res.status(200).json({ message: 'Password reset code sent successfully' });
+            res.status(200).json({ message: 'Password reset code sent successfully' }); // Send success response
         });
     } catch (error) {
         console.error('Error during password reset request:', error);
@@ -248,97 +380,211 @@ router.post('/request-password-reset', async (req, res) => {
     }
 });
 
-// POST /auth/verify-reset-code - Verify reset code
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Endpoint to verify reset code
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 router.post('/verify-reset-code', async (req, res) => {
     const { email, resetCode } = req.body;
 
     try {
-        const user = await User.findOne({ email, resetCode });
+        const user = await User.findOne({ email, resetCode }); // Find user with the provided email and reset code
         if (!user) {
-            return res.status(400).json({ message: 'Invalid or expired reset code' });
+            return res.status(400).json({ message: 'Invalid or expired reset code' }); // If no user found or code is invalid, return an error
         }
 
         if (Date.now() > user.resetCodeExpires) {
-            return res.status(400).json({ message: 'Reset code has expired' });
+            return res.status(400).json({ message: 'Reset code has expired' }); // If reset code has expired, return an error
         }
 
-        res.status(200).json({ message: 'Reset code verified successfully' });
+        res.status(200).json({ message: 'Reset code verified successfully' }); // Send success response
     } catch (error) {
         console.error('Error verifying reset code:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-// POST /auth/change-password - Change the password
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Endpoint to change the password
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 router.post('/change-password', async (req, res) => {
     const { userId, currentPassword, newPassword } = req.body;
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId); // Find user by ID
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'User not found' }); // If no user found, return an error
         }
 
         if (user.password !== currentPassword) {
-            return res.status(401).json({ message: 'Current password is incorrect' });
+            return res.status(401).json({ message: 'Current password is incorrect' }); // If current password is incorrect, return an error
         }
 
-        user.password = newPassword;
-        await user.save();
-        res.json({ message: 'Password changed successfully' });
+        user.password = newPassword; // Update the password
+        await user.save(); // Save the changes
+        res.json({ message: 'Password changed successfully' }); // Send success response
     } catch (error) {
         console.error('Error changing password:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-// POST /auth/reset-password - Reset the password
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Endpoint to reset the password
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 router.post('/reset-password', async (req, res) => {
     const { email, resetCode, newPassword } = req.body;
     try {
-        const user = await User.findOne({ email, resetCode });
+        const user = await User.findOne({ email, resetCode }); // Find user with the provided email and reset code
         if (!user) {
-            return res.status(400).json({ message: 'Invalid or expired reset code' });
+            return res.status(400).json({ message: 'Invalid or expired reset code' }); // If no user found or code is invalid, return an error
         }
 
         if (Date.now() > user.resetCodeExpires) {
-            return res.status(400).json({ message: 'Reset code has expired' });
+            return res.status(400).json({ message: 'Reset code has expired' }); // If reset code has expired, return an error
         }
 
-        user.password = newPassword;
-        user.resetCode = undefined;
-        user.resetCodeExpires = undefined;
-        await user.save();
+        user.password = newPassword; // Update the password
+        user.resetCode = undefined; // Clear the reset code
+        user.resetCodeExpires = undefined; // Clear the reset code expiration
+        await user.save(); // Save the changes
 
-        res.json({ message: 'Password reset successfully' });
+        res.json({ message: 'Password reset successfully' }); // Send success response
     } catch (error) {
         console.error('Error resetting password:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-// Get all users
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Endpoint to get all users
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 router.get('/users', async (req, res) => {
     try {
-        const users = await User.find();
-        res.json(users);
+        const users = await User.find(); // Find all users
+        res.json(users); // Send the user details as response
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).send('Error fetching users');
     }
 });
 
-// Update user role
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Endpoint to update user role
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 router.put('/user/:id/role', async (req, res) => {
     try {
-        const { role } = req.body;
-        const userId = req.params.id;
-        const user = await User.findByIdAndUpdate(userId, { role }, { new: true });
-        res.json(user);
+        const { role } = req.body; // Get the new role from request body
+        const userId = req.params.id; // Get the user ID from request parameters
+        const user = await User.findByIdAndUpdate(userId, { role }, { new: true }); // Update the user role
+        res.json(user); // Send the updated user details as response
     } catch (error) {
         console.error('Error updating user role:', error);
         res.status(500).send('Error updating user role');
     }
 });
 
-module.exports = router;
 
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+module.exports = router; // Export the router

@@ -1,9 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import axios from 'axios';
-import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography, CardActions, Button, Box, CircularProgress, TextField, FormControlLabel, RadioGroup, Radio } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { styled } from '@mui/system';
+import React, { useState, useEffect } from 'react'; // Importing React and necessary hooks
+import { Link as RouterLink } from 'react-router-dom'; // Importing RouterLink for navigation
+import axios from 'axios'; // Importing axios for HTTP requests
+import { 
+  Grid, 
+  Card, 
+  CardActionArea, 
+  CardMedia, 
+  CardContent, 
+  Typography, 
+  CardActions, 
+  Button, 
+  Box, 
+  CircularProgress, 
+  TextField, 
+  FormControlLabel, 
+  RadioGroup, 
+  Radio 
+} from '@mui/material'; // Importing Material UI components
+import { createTheme, ThemeProvider } from '@mui/material/styles'; // Importing theme creation and ThemeProvider from Material UI
+import { styled } from '@mui/system'; // Importing styled from Material UI's system
 
 // Importing images
 import image1 from '../../Media/cards media/1.png';
@@ -15,8 +30,21 @@ import image6 from '../../Media/cards media/6.png';
 import image7 from '../../Media/cards media/7.png';
 import image8 from '../../Media/cards media/8.png';
 
+// Array of images
 const cardImages = [image1, image2, image3, image4, image5, image6, image7, image8];
 
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Create a custom theme for Material UI components
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const theme = createTheme({
   palette: {
     primary: {
@@ -53,6 +81,21 @@ const theme = createTheme({
   },
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Create styled components
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const StyledCard = styled(Card)({
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
   '&:hover': {
@@ -76,6 +119,19 @@ const StyledButton = styled(Button)({
   borderRadius: '30px',
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+// Function to shuffle an array
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -84,13 +140,42 @@ function shuffleArray(array) {
   return array;
 }
 
-const AllJobsPage = () => {
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterLocation, setFilterLocation] = useState('All');
-  const shuffledImages = shuffleArray([...cardImages]);
 
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Define the main component for the All Jobs Page
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+const AllJobsPage = () => {
+  const [jobs, setJobs] = useState([]); // State to store jobs
+  const [loading, setLoading] = useState(true); // State to handle loading state
+  const [searchTerm, setSearchTerm] = useState(''); // State to handle search term
+  const [filterLocation, setFilterLocation] = useState('All'); // State to handle location filter
+  const shuffledImages = shuffleArray([...cardImages]); // Shuffling images array
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Fetch jobs from the API
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     axios.get('http://localhost:5000/api/jobs')
       .then(response => {
@@ -104,21 +189,57 @@ const AllJobsPage = () => {
       });
   }, []);
 
+
+
+
+
+
+
+  // Handle search input change
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
 
+
+
+
+
+  // Handle location filter change
   const handleFilterLocation = (e) => {
     setFilterLocation(e.target.value);
   };
 
+
+
+
+
+
+
+
+  // Filter jobs based on search term and location
   const filteredJobs = jobs.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
     (filterLocation === 'All' || job.jobLocation.toLowerCase() === filterLocation.toLowerCase())
   );
 
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Render the component
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}> {/* Apply the custom theme */}
       <Box sx={{ padding: '40px 24px', backgroundColor: theme.palette.background.default, minHeight: '100vh' }}>
         <Typography
           component="h1"
@@ -211,4 +332,4 @@ const AllJobsPage = () => {
   );
 };
 
-export default AllJobsPage;
+export default AllJobsPage; // Export the component as default

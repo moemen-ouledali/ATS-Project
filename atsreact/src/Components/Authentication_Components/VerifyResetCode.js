@@ -1,69 +1,114 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Form, Button, Container, Alert } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
+import React, { useState } from 'react'; // Importing React and useState hook
+import axios from 'axios'; // Importing axios for making HTTP requests
+import { Form, Button, Container, Alert } from 'react-bootstrap'; // Importing Bootstrap components
+import { useLocation } from 'react-router-dom'; // Importing useLocation hook for accessing location state
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Verify Reset Code Component
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const VerifyResetCode = () => {
-    const [resetCode, setResetCode] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [message, setMessage] = useState('');
-    const [error, setError] = useState('');
+    const [resetCode, setResetCode] = useState(''); // State for storing reset code input
+    const [newPassword, setNewPassword] = useState(''); // State for storing new password input
+    const [message, setMessage] = useState(''); // State for storing success message
+    const [error, setError] = useState(''); // State for storing error message
 
-    const location = useLocation();
+    const location = useLocation(); // Hook for accessing location state
     const { email } = location.state || { email: '' }; // Get email from location state
 
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Handle Form Submission
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Prevent default form submission behavior
+
         try {
             // Verify reset code and reset password
             const response = await axios.post('http://localhost:5000/auth/reset-password', { email, resetCode, newPassword });
-            setMessage(response.data.message);
+            setMessage(response.data.message); // Set success message
         } catch (err) {
-            setError('Failed to reset password. Please try again.');
-            console.error('Password reset error:', err);
+            setError('Failed to reset password. Please try again.'); // Set error message
+            console.error('Password reset error:', err); // Log error to console
         }
     };
 
+
+
+
+
+
+
+
+
+
+
+    
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Render the Form
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     return (
-        <Container>
-            <h2>Reset Password</h2>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="formEmail">
-                    <Form.Label>Email address</Form.Label>
+        <Container> {/* Container for the form */}
+            <h2>Reset Password</h2> {/* Form title */}
+            <Form onSubmit={handleSubmit}> {/* Form submission handler */}
+                <Form.Group controlId="formEmail"> {/* Form group for email display */}
+                    <Form.Label>Email address</Form.Label> {/* Label for email */}
                     <Form.Control
-                        type="email"
-                        value={email}
-                        readOnly
+                        type="email" // Input type
+                        value={email} // Value of the input field
+                        readOnly // Make input read-only
                     />
                 </Form.Group>
-                <Form.Group controlId="formResetCode">
-                    <Form.Label>Reset Code</Form.Label>
+
+                <Form.Group controlId="formResetCode"> {/* Form group for reset code input */}
+                    <Form.Label>Reset Code</Form.Label> {/* Label for reset code */}
                     <Form.Control
-                        type="text"
-                        placeholder="Enter the reset code"
-                        value={resetCode}
-                        onChange={(e) => setResetCode(e.target.value)}
-                        required
+                        type="text" // Input type
+                        placeholder="Enter the reset code" // Placeholder text
+                        value={resetCode} // Value of the input field
+                        onChange={(e) => setResetCode(e.target.value)} // Update state on change
+                        required // Make input required
                     />
                 </Form.Group>
-                <Form.Group controlId="formNewPassword">
-                    <Form.Label>New Password</Form.Label>
+
+                <Form.Group controlId="formNewPassword"> {/* Form group for new password input */}
+                    <Form.Label>New Password</Form.Label> {/* Label for new password */}
                     <Form.Control
-                        type="password"
-                        placeholder="Enter new password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        required
+                        type="password" // Input type
+                        placeholder="Enter new password" // Placeholder text
+                        value={newPassword} // Value of the input field
+                        onChange={(e) => setNewPassword(e.target.value)} // Update state on change
+                        required // Make input required
                     />
                 </Form.Group>
-                <Button variant="primary" type="submit" className="mt-3">
+
+                <Button variant="primary" type="submit" className="mt-3"> {/* Submit button */}
                     Reset Password
                 </Button>
             </Form>
-            {message && <Alert variant="success" className="mt-3">{message}</Alert>}
-            {error && <Alert variant="danger" className="mt-3">{error}</Alert>}
+
+            {message && <Alert variant="success" className="mt-3">{message}</Alert>} {/* Display success message */}
+            {error && <Alert variant="danger" className="mt-3">{error}</Alert>} {/* Display error message */}
         </Container>
     );
 };
 
-export default VerifyResetCode;
+export default VerifyResetCode; // Export the component

@@ -1,32 +1,57 @@
-import React, { useState } from 'react';
-import { Button, Form, Card } from 'react-bootstrap';
-import { Save, Cancel } from '@mui/icons-material';
+import React, { useState } from 'react'; // Import React and useState hook from 'react'
+import { Button, Form, Card } from 'react-bootstrap'; // Import Button, Form, and Card components from 'react-bootstrap'
+import { Save, Cancel } from '@mui/icons-material'; // Import Save and Cancel icons from '@mui/icons-material'
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Edit Job Listing Component
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const EditJobListing = ({ listing, onSave, onCancel }) => {
+  // Initialize state for job details, using the provided listing as the initial state
   const [jobDetails, setJobDetails] = useState({ ...listing });
 
+  // Function to handle changes in the form inputs
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked } = e.target; // Destructure properties from the event target
     if (type === 'checkbox') {
+      // Handle checkbox changes
       setJobDetails((prevDetails) => ({
         ...prevDetails,
         requirements: checked
-          ? [...prevDetails.requirements, value]
-          : prevDetails.requirements.filter((req) => req !== value),
+          ? [...prevDetails.requirements, value] // Add requirement if checked
+          : prevDetails.requirements.filter((req) => req !== value), // Remove requirement if unchecked
       }));
     } else {
+      // Handle other input changes
       setJobDetails((prevDetails) => ({
         ...prevDetails,
-        [name]: value,
+        [name]: value, // Update the respective field in job details
       }));
     }
   };
 
+  // Function to handle form submission
   const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(listing._id, jobDetails);
+    e.preventDefault(); // Prevent default form submission behavior
+    onSave(listing._id, jobDetails); // Call onSave with the listing ID and updated job details
   };
 
+  // Function to render requirement checkboxes based on the selected category
   const renderRequirements = () => {
     const requirementsOptions = {
       'Web & Mobile Development': [
@@ -46,6 +71,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
       ]
     };
 
+    // Map over the requirements options and create a checkbox for each requirement
     return requirementsOptions[jobDetails.category]?.map((req) => (
       <Form.Check
         key={req}
@@ -59,8 +85,23 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
     ));
   };
 
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
   return (
     <Card.Body as="form" onSubmit={handleSubmit}>
+      {/* Form group for job title */}
       <Form.Group controlId="formTitle">
         <Form.Label>Job Title</Form.Label>
         <Form.Control
@@ -72,6 +113,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         />
       </Form.Group>
 
+      {/* Form group for job category */}
       <Form.Group controlId="formCategory">
         <Form.Label>Category</Form.Label>
         <Form.Control
@@ -88,6 +130,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         </Form.Control>
       </Form.Group>
 
+      {/* Form group for job location */}
       <Form.Group controlId="formJobLocation">
         <Form.Label>Job Location</Form.Label>
         <Form.Control
@@ -99,6 +142,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         />
       </Form.Group>
 
+      {/* Form group for job type */}
       <Form.Group controlId="formJobType">
         <Form.Label>Job Type</Form.Label>
         <Form.Control
@@ -114,6 +158,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         </Form.Control>
       </Form.Group>
 
+      {/* Form group for job description */}
       <Form.Group controlId="formDescription">
         <Form.Label>Description</Form.Label>
         <Form.Control
@@ -125,11 +170,13 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         />
       </Form.Group>
 
+      {/* Form group for job requirements */}
       <Form.Group controlId="formRequirements">
         <Form.Label>Requirements</Form.Label>
         {renderRequirements()}
       </Form.Group>
 
+      {/* Form group for experience level */}
       <Form.Group controlId="formExperienceLevel">
         <Form.Label>Experience Level</Form.Label>
         <Form.Control
@@ -147,6 +194,7 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         </Form.Control>
       </Form.Group>
 
+      {/* Form group for minimum degree */}
       <Form.Group controlId="formMinimumDegree">
         <Form.Label>Minimum Degree</Form.Label>
         <Form.Control
@@ -163,6 +211,9 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
         </Form.Control>
       </Form.Group>
 
+
+
+      {/* Card footer with Save and Cancel buttons */}
       <Card.Footer>
         <Button
           type="submit"
@@ -183,4 +234,4 @@ const EditJobListing = ({ listing, onSave, onCancel }) => {
   );
 };
 
-export default EditJobListing;
+export default EditJobListing; // Export the EditJobListing component
