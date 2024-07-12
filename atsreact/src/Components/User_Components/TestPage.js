@@ -5,6 +5,18 @@ import { Box, Typography, Container, Paper, CircularProgress, Button, Radio, Rad
 import { AuthContext } from '../../AuthContext';
 import { styled } from '@mui/system';
 
+
+
+
+
+
+
+
+
+
+/**************************************************************************
+ * Styling for Timer component using MUI's styled API
+ **************************************************************************/
 const Timer = styled(Box)({
   fontSize: '2.5rem',
   fontWeight: 'bold',
@@ -23,6 +35,20 @@ const Timer = styled(Box)({
   animation: 'pulse 2s infinite',
 });
 
+
+
+
+
+
+
+
+
+
+
+
+/**************************************************************************
+ * Styling for QuestionBox component using MUI's styled API
+ **************************************************************************/
 const QuestionBox = styled(Box)({
   marginBottom: '40px',
   padding: '30px',
@@ -36,6 +62,20 @@ const QuestionBox = styled(Box)({
   },
 });
 
+
+
+
+
+
+
+
+
+
+
+
+/**************************************************************************
+ * Styling for OptionLabel component using MUI's styled API
+ **************************************************************************/
 const OptionLabel = styled(FormControlLabel)({
   background: '#fafafa',
   borderRadius: '12px',
@@ -49,6 +89,20 @@ const OptionLabel = styled(FormControlLabel)({
   },
 });
 
+
+
+
+
+
+
+
+
+
+
+
+/**************************************************************************
+ * Styling for SubmitButton component using MUI's styled API
+ **************************************************************************/
 const SubmitButton = styled(Button)({
   marginTop: '50px',
   padding: '18px 35px',
@@ -77,6 +131,22 @@ const TestPage = () => {
   const { authToken } = useContext(AuthContext);
   const navigate = useNavigate();
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /**************************************************************************
+   * Fetch test data when the component mounts
+   **************************************************************************/
   useEffect(() => {
     const fetchTest = async () => {
       try {
@@ -129,6 +199,21 @@ const TestPage = () => {
     checkTestAttempt();
   }, [category, authToken, location.search]);
 
+
+
+
+
+
+
+
+
+
+
+
+
+  /**************************************************************************
+   * Handle test submission
+   **************************************************************************/
   const handleSubmit = useCallback(async () => {
     if (!authToken) {
       console.error('No token found');
@@ -173,10 +258,22 @@ const TestPage = () => {
       console.error('Failed to submit test:', error.response?.data || error.message);
     }
   }, [authToken, location.search, test, answers, navigate]);
-  
-  
 
 
+
+
+
+
+
+
+
+
+
+
+  
+  /**************************************************************************
+   * Handle timer countdown
+   **************************************************************************/
   useEffect(() => {
     if (timeLeft === 0) {
       handleSubmit();
@@ -189,12 +286,38 @@ const TestPage = () => {
     return () => clearInterval(timer);
   }, [timeLeft, handleSubmit]);
 
+
+
+
+
+
+
+
+
+
+
+  /**************************************************************************
+   * Format time in minutes and seconds
+   **************************************************************************/
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
+
+
+
+
+
+
+
+
+
+
+  /**************************************************************************
+   * Handle option change in the quiz
+   **************************************************************************/
   const handleOptionChange = (index, option) => {
     const newAnswers = [...answers];
     newAnswers[index].givenAnswer = option;
@@ -202,6 +325,15 @@ const TestPage = () => {
     setAnswers(newAnswers);
   };
 
+
+
+
+
+
+
+  /**************************************************************************
+   * Render loading state
+   **************************************************************************/
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
@@ -210,6 +342,14 @@ const TestPage = () => {
     );
   }
 
+
+
+
+
+
+  /**************************************************************************
+   * Render error state
+   **************************************************************************/
   if (error) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
@@ -218,6 +358,17 @@ const TestPage = () => {
     );
   }
 
+
+
+
+
+
+
+
+
+  /**************************************************************************
+   * Render test not available state
+   **************************************************************************/
   if (!test || !test.questions) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
@@ -226,6 +377,18 @@ const TestPage = () => {
     );
   }
 
+
+
+
+
+
+
+
+  
+
+  /**************************************************************************
+   * Render the main component
+   **************************************************************************/
   return (
     <Container component={Paper} sx={{ p: 5, mt: 5, backgroundColor: '#f0f4f8', borderRadius: '20px' }}>
       <Typography variant="h2" gutterBottom align="center" sx={{ fontWeight: 'bold', color: '#007BFF', mb: 5 }}>

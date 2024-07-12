@@ -1,9 +1,46 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import { Container, Box, TextField, Button, Typography, Card, CardContent, Select, MenuItem, InputLabel, FormControl, Grid } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import '../assets/css/LoginForm.css';
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Import necessary libraries and components
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+import React, { useState } from 'react'; // Import React and useState hook
+import axios from 'axios'; // Import axios for making HTTP requests
+import { useNavigate } from 'react-router-dom'; // Import useNavigate hook for navigation
+import { 
+  Container, 
+  Box, 
+  TextField, 
+  Button, 
+  Typography, 
+  Card, 
+  CardContent, 
+  Select, 
+  MenuItem, 
+  InputLabel, 
+  FormControl, 
+  Grid 
+} from '@mui/material'; // Import Material-UI components
+import { createTheme, ThemeProvider } from '@mui/material/styles'; // Import theme creation from Material-UI
+import '../assets/css/LoginForm.css'; // Import custom CSS for styling
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Create a custom theme for Material-UI components
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const theme = createTheme({
   palette: {
@@ -41,6 +78,31 @@ const theme = createTheme({
   },
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Define the RegisterForm component
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const RegisterForm = () => {
   const [userData, setUserData] = useState({
     role: 'Candidate',
@@ -53,21 +115,23 @@ const RegisterForm = () => {
     city: '',
     highestEducationLevel: 'Baccalaureate',
     gender: ''
-  });
-  const [message, setMessage] = useState('');
-  const [errorMessages, setErrorMessages] = useState([]);
-  const [verificationCode, setVerificationCode] = useState('');
-  const [isVerifying, setIsVerifying] = useState(false);
-  const navigate = useNavigate();
+  }); // State for storing user data input
+  const [message, setMessage] = useState(''); // State for storing messages
+  const [errorMessages, setErrorMessages] = useState([]); // State for storing error messages
+  const [verificationCode, setVerificationCode] = useState(''); // State for storing verification code
+  const [isVerifying, setIsVerifying] = useState(false); // State to check if user is verifying
+  const navigate = useNavigate(); // Hook for navigation
 
+  // Handle change in form inputs
   const handleChange = (event) => {
     const { name, value } = event.target;
     setUserData(prevState => ({
       ...prevState,
       [name]: value
-    }));
+    })); // Update state with new input values
   };
 
+  // Function to validate form inputs
   const validateForm = () => {
     const { firstName, lastName, dateOfBirth, password, phoneNumber } = userData;
     const nameRegex = /^[A-Za-z]+$/;
@@ -97,32 +161,34 @@ const RegisterForm = () => {
     return errors;
   };
 
+  // Handle form submission for registration
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behavior
     const errors = validateForm();
     if (errors.length > 0) {
-      setErrorMessages(errors);
+      setErrorMessages(errors); // Display errors if validation fails
       return;
     }
 
     try {
       const response = await axios.post('http://localhost:5000/auth/register', userData);
       setMessage(response.data.message);
-      setIsVerifying(true);
-      setErrorMessages([]); // Clear error messages if registration is successful
+      setIsVerifying(true); // Show verification code input if registration is successful
+      setErrorMessages([]); // Clear error messages
     } catch (error) {
       setMessage("Registration failed. Please try again.");
       console.error("Registration error:", error);
     }
   };
 
+  // Handle form submission for verification code
   const handleVerifyCode = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behavior
     try {
       const response = await axios.post('http://localhost:5000/auth/verify-code', { email: userData.email, code: verificationCode });
       setMessage(response.data.message);
       if (response.status === 200) {
-        navigate('/login');
+        navigate('/login'); // Navigate to login page if verification is successful
       }
     } catch (error) {
       setMessage("Verification failed. Please try again.");
@@ -130,14 +196,52 @@ const RegisterForm = () => {
     }
   };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Render the registration form
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}> 
+      {/* Apply custom theme */}
       <section className="vh-100 flex items-center justify-center bg-gray-100">
         <Container maxWidth="lg">
           <Card sx={{ boxShadow: 3, p: 4 }}>
             <CardContent>
               <div className="text-center mb-4">
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" alt="Sample" className="img-fluid mb-3" />
+                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp" alt="Sample" className="img-fluid mb-3" /> 
+                {/* Display sample image */}
                 <Typography variant="h4" gutterBottom>
                   Register
                 </Typography>
@@ -157,7 +261,8 @@ const RegisterForm = () => {
                         fullWidth 
                         margin="normal" 
                         required 
-                      />
+                      /> 
+                      {/* Input field for first name */}
                       <TextField 
                         name="lastName" 
                         label="Last Name" 
@@ -166,7 +271,8 @@ const RegisterForm = () => {
                         fullWidth 
                         margin="normal" 
                         required 
-                      />
+                      /> 
+                      {/* Input field for last name */}
                       <TextField 
                         name="email" 
                         label="Email Address" 
@@ -176,7 +282,8 @@ const RegisterForm = () => {
                         fullWidth 
                         margin="normal" 
                         required 
-                      />
+                      /> 
+                      {/* Input field for email */}
                       <TextField 
                         name="dateOfBirth" 
                         label="Date of Birth" 
@@ -187,7 +294,8 @@ const RegisterForm = () => {
                         fullWidth 
                         margin="normal" 
                         required 
-                      />
+                      /> 
+                      {/* Input field for date of birth */}
                     </Grid>
                     <Grid item xs={12} md={6}>
                       <TextField 
@@ -199,7 +307,8 @@ const RegisterForm = () => {
                         fullWidth 
                         margin="normal" 
                         required 
-                      />
+                      /> 
+                      {/* Input field for password */}
                       <TextField 
                         name="phoneNumber" 
                         label="Phone Number" 
@@ -208,7 +317,8 @@ const RegisterForm = () => {
                         fullWidth 
                         margin="normal" 
                         required 
-                      />
+                      /> 
+                      {/* Input field for phone number */}
                       <FormControl fullWidth margin="normal" required>
                         <InputLabel>City</InputLabel>
                         <Select
@@ -225,7 +335,8 @@ const RegisterForm = () => {
                             <MenuItem key={city} value={city}>{city}</MenuItem>
                           ))}
                         </Select>
-                      </FormControl>
+                      </FormControl> 
+                      {/* Select dropdown for city */}
                       <FormControl fullWidth margin="normal" required>
                         <InputLabel>Highest Education Level</InputLabel>
                         <Select
@@ -237,7 +348,8 @@ const RegisterForm = () => {
                           <MenuItem value="Licence">Licence</MenuItem>
                           <MenuItem value="Engineering">Engineering</MenuItem>
                         </Select>
-                      </FormControl>
+                      </FormControl> 
+                      {/* Select dropdown for highest education level */}
                       <FormControl fullWidth margin="normal" required>
                         <InputLabel>Gender</InputLabel>
                         <Select
@@ -249,7 +361,8 @@ const RegisterForm = () => {
                           <MenuItem value="male">Male</MenuItem>
                           <MenuItem value="female">Female</MenuItem>
                         </Select>
-                      </FormControl>
+                      </FormControl> 
+                      {/* Select dropdown for gender */}
                     </Grid>
                   </Grid>
                   <Box sx={{ textAlign: 'center', mt: 2 }}>
@@ -278,7 +391,8 @@ const RegisterForm = () => {
                     fullWidth 
                     margin="normal" 
                     required 
-                  />
+                  /> 
+                  {/* Input field for verification code */}
                   <Box sx={{ textAlign: 'center', mt: 2 }}>
                     <Button type="submit" variant="contained" color="primary" fullWidth>
                       Verify
@@ -295,4 +409,6 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export default RegisterForm; // Export the RegisterForm component
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

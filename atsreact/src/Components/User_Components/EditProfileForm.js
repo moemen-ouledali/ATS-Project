@@ -1,24 +1,23 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../AuthContext';
-import { Container, Box, Typography, TextField, Button, IconButton, Avatar, Grid, MenuItem, Divider, Modal, Alert, CircularProgress, Slide, Fade } from '@mui/material';
+import {
+  Container, Box, Typography, TextField, Button, IconButton, Avatar, Grid, MenuItem, Divider, Modal, Alert, CircularProgress, Slide, Fade
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import maleProfilePic from '../../Media/ProfilePicture/male.png';
 import femaleProfilePic from '../../Media/ProfilePicture/female.png';
 
+/**************************************************************************
+ * Define custom theme for MUI components
+ **************************************************************************/
 const theme = createTheme({
     palette: {
-        primary: {
-            main: '#4A90E2',
-        },
-        secondary: {
-            main: '#50E3C2',
-        },
-        background: {
-            default: '#f7f9fc',
-        },
+        primary: { main: '#4A90E2' },
+        secondary: { main: '#50E3C2' },
+        background: { default: '#f7f9fc' },
     },
     typography: {
         fontFamily: 'Montserrat, sans-serif',
@@ -44,6 +43,9 @@ const theme = createTheme({
     },
 });
 
+/**************************************************************************
+ * Styles for modal
+ **************************************************************************/
 const style = {
     position: 'absolute',
     top: '50%',
@@ -57,7 +59,7 @@ const style = {
 };
 
 const EditProfileForm = () => {
-    const { authToken, userId} = useContext(AuthContext);
+    const { authToken, userId } = useContext(AuthContext);
     const [userDetails, setUserDetails] = useState({
         firstName: '',
         lastName: '',
@@ -77,6 +79,16 @@ const EditProfileForm = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
 
+
+
+
+
+
+
+
+    /**************************************************************************
+     * Fetch user details when the component is mounted
+     **************************************************************************/
     useEffect(() => {
         if (!userId) {
             console.error("User ID is null");
@@ -106,6 +118,16 @@ const EditProfileForm = () => {
         fetchUserDetails();
     }, [userId]);
 
+
+
+
+
+
+
+
+    /**************************************************************************
+     * Handle input change
+     **************************************************************************/
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUserDetails(prevDetails => ({
@@ -114,6 +136,16 @@ const EditProfileForm = () => {
         }));
     };
 
+
+
+
+
+
+
+
+    /**************************************************************************
+     * Handle form submission
+     **************************************************************************/
     const handleSubmit = (e) => {
         e.preventDefault();
         axios.put(`http://localhost:5000/auth/user/${userId}`, userDetails, {
@@ -129,10 +161,33 @@ const EditProfileForm = () => {
         });
     };
 
+
+
+
+
+
+
+
+
+    /**************************************************************************
+     * Toggle edit mode
+     **************************************************************************/
     const handleEditClick = () => {
         setEditMode(true);
     };
 
+
+
+
+
+
+
+
+
+
+    /**************************************************************************
+     * Handle password change
+     **************************************************************************/
     const handlePasswordChange = async (e) => {
         e.preventDefault();
         if (newPassword !== confirmNewPassword) {
@@ -156,9 +211,28 @@ const EditProfileForm = () => {
         }
     };
 
+
+
+
+
+
+
+
+    /**************************************************************************
+     * Open and close password modal
+     **************************************************************************/
     const openPasswordModal = () => setShowPasswordModal(true);
     const closePasswordModal = () => setShowPasswordModal(false);
 
+
+
+
+
+
+    
+    /**************************************************************************
+     * Render the component
+     **************************************************************************/
     return (
         <ThemeProvider theme={theme}>
             <Container maxWidth="md">

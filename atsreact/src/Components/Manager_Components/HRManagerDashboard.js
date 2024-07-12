@@ -1,3 +1,4 @@
+// Import necessary dependencies and components
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AddJobListingModal from './AddJobListingModal';
@@ -23,24 +24,37 @@ import {
   FormControl,
   InputLabel,
 } from '@mui/material';
-import { Add, Edit, Delete, Visibility, Assessment, CalendarToday, List, BarChart } from '@mui/icons-material';
+import { Add, Edit, Delete, Visibility, List, BarChart, CalendarToday } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { styled } from '@mui/system';
 
+
+
+
+
+
+
+
+
+
+
+
+
+// Create a theme using Material-UI's createTheme
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#4A90E2',
+      main: '#4A90E2', // Main color
     },
     secondary: {
-      main: '#E91E63',
+      main: '#E91E63', // Secondary color
     },
     background: {
-      default: '#F5F5F5',
+      default: '#F5F5F5', // Background color
     },
   },
   typography: {
-    fontFamily: 'Montserrat, sans-serif',
+    fontFamily: 'Montserrat, sans-serif', // Font family
     h4: {
       fontWeight: 800,
       color: '#333',
@@ -63,6 +77,12 @@ const theme = createTheme({
   },
 });
 
+
+
+
+
+
+// Styled components for Card and Button
 const StyledCard = styled(Card)({
   transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
   '&:hover': {
@@ -94,7 +114,28 @@ const GradientText = styled('span')({
   WebkitTextFillColor: 'transparent',
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Main component: HRManagerDashboard
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const HRManagerDashboard = () => {
+  // State variables
   const [jobListings, setJobListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -109,93 +150,193 @@ const HRManagerDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const navigate = useNavigate();
 
+
+
+
+
+
+
+
+
+
+
+  // Fetch job listings when the component mounts or when showJobListings changes
   useEffect(() => {
     if (showJobListings) {
       fetchJobListings();
     }
   }, [showJobListings]);
 
+
+
+
+
+
+
+
+
+
+  // Function to fetch job listings from the server
   const fetchJobListings = async () => {
-    setLoading(true);
+    setLoading(true); // Set loading to true while fetching data
     try {
       const response = await axios.get('http://localhost:5000/api/jobs');
-      setJobListings(response.data);
-      setError(null);
+      setJobListings(response.data); // Update job listings state
+      setError(null); // Clear any previous error
     } catch (error) {
       console.error('Failed to fetch job listings:', error);
-      setError('Failed to fetch job listings');
+      setError('Failed to fetch job listings'); // Set error message
     } finally {
-      setLoading(false);
+      setLoading(false); // Set loading to false after fetching data
     }
   };
 
+
+
+
+
+
+
+
+
+
+  // Function to confirm deletion of a job listing
   const confirmDeleteJobListing = (id) => {
     setDeleteJobId(id);
     setShowDeleteModal(true);
   };
 
+
+
+
+
+
+
+
+
+  // Function to delete a job listing
   const deleteJobListing = async () => {
     try {
       await axios.delete(`http://localhost:5000/api/jobs/${deleteJobId}`);
-      fetchJobListings();
-      setToastMessage('Job listing deleted successfully');
+      fetchJobListings(); // Refresh job listings
+      setToastMessage('Job listing deleted successfully'); // Show success message
       setShowToast(true);
       setShowDeleteModal(false);
       setDeleteJobId(null);
     } catch (error) {
       console.error('Failed to delete job listing:', error);
-      setToastMessage('Failed to delete job listing');
+      setToastMessage('Failed to delete job listing'); // Show error message
       setShowToast(true);
     }
   };
 
+
+
+
+
+
+
+  // Function to handle edit button click
   const handleEditClick = (id) => {
     setEditingId(id);
   };
 
+
+
+
+
+
+
+
+
+
+  // Function to save edited job listing
   const handleSave = async (id, updatedListing) => {
     try {
       await axios.put(`http://localhost:5000/api/jobs/${id}`, updatedListing);
-      fetchJobListings();
+      fetchJobListings(); // Refresh job listings
       setEditingId(null);
-      setToastMessage('Job listing updated successfully');
+      setToastMessage('Job listing updated successfully'); // Show success message
       setShowToast(true);
     } catch (error) {
       console.error('Failed to update job listing:', error);
-      setToastMessage('Failed to update job listing');
+      setToastMessage('Failed to update job listing'); // Show error message
       setShowToast(true);
     }
   };
 
+
+
+
+
+
+
+
+
+
+  // Function to handle cancel edit
   const handleCancel = () => {
     setEditingId(null);
   };
 
+
+
+
+
+
+
+  // Function to navigate to applicants page
   const showApplicants = (jobId) => {
     navigate(`/job-applicants/${jobId}`);
   };
 
+  // Function to navigate to all applications page
   const showAllApplications = () => {
     navigate('/all-applications');
   };
 
+  // Function to navigate to test attempts page
   const showTestAttempts = () => {
     navigate('/manager-test-attempts');
   };
 
+  // Function to navigate to interview calendar page
   const showInterviewCalendar = () => {
     navigate('/interview-calendar');
   };
 
+  // Functions to handle modal visibility
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
   const handleCloseDeleteModal = () => setShowDeleteModal(false);
 
-  const filteredJobListings = jobListings.filter(listing =>
+  // Filter job listings based on search term and selected category
+  const filteredJobListings = jobListings.filter((listing) =>
     listing.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
     (selectedCategory ? listing.category === selectedCategory : true)
   );
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // JSX Structure for rendering the component
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ background: 'linear-gradient(135deg, #F5F5F5 30%, #E0E0E0 90%)', py: 6, minHeight: '100vh' }}>

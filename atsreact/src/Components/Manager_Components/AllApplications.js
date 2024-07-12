@@ -1,26 +1,48 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Modal, Button as BootstrapButton } from 'react-bootstrap';
-import { Box, Typography, Container, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Select, MenuItem, InputLabel, FormControl, CircularProgress, Pagination, Button as MuiButton } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { styled } from '@mui/system';
-import 'react-datepicker/dist/react-datepicker.css';
-import DatePicker from 'react-datepicker';
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Import necessary libraries and components
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+import React, { useEffect, useState } from 'react';  // Import React and hooks for state and effect management
+import axios from 'axios';  // Import axios for making HTTP requests
+import { Modal, Button as BootstrapButton } from 'react-bootstrap';  // Import components from react-bootstrap
+import { 
+  Box, Typography, Container, Paper, Table, TableBody, TableCell, 
+  TableContainer, TableHead, TableRow, TextField, Select, MenuItem, 
+  InputLabel, FormControl, CircularProgress, Pagination, Button as MuiButton 
+} from '@mui/material';  // Import various components from @mui/material
+import { createTheme, ThemeProvider } from '@mui/material/styles';  // Import theming utilities from @mui/material
+import { styled } from '@mui/system';  // Import styled utility from @mui/system
+import 'react-datepicker/dist/react-datepicker.css';  // Import CSS for date picker
+import DatePicker from 'react-datepicker';  // Import DatePicker component from react-datepicker
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Define theme for Material UI components
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#4A90E2',
+      main: '#4A90E2',  // Primary color
     },
     secondary: {
-      main: '#E91E63',
+      main: '#E91E63',  // Secondary color
     },
     background: {
-      default: '#F5F5F5',
+      default: '#F5F5F5',  // Default background color
     },
   },
   typography: {
-    fontFamily: 'Montserrat, sans-serif',
+    fontFamily: 'Montserrat, sans-serif',  // Set default font family
     h4: {
       fontWeight: 800,
       color: '#333',
@@ -42,6 +64,20 @@ const theme = createTheme({
     },
   },
 });
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Define styled button components
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const GradientButton = styled(MuiButton)(({ gradient }) => ({
   background: gradient,
@@ -69,6 +105,24 @@ const ViewButton = styled(GradientButton)({
   background: 'linear-gradient(45deg, #4A90E2, #357ABD)',
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Define helper functions for matching and sorting requirements
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const calculateMatchPercentage = (requirements, resumeText) => {
   const resumeWords = resumeText.toLowerCase().split(/\s+/);
   const matchedRequirements = requirements.filter(requirement =>
@@ -92,74 +146,130 @@ const getMatchedUnmatchedRequirements = (requirements, resumeText) => {
   return { matched, unmatched };
 };
 
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Define the main component for managing and displaying all applications
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 const AllApplications = () => {
-  const [applications, setApplications] = useState([]);
-  const [selectedApplication, setSelectedApplication] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortConfig, setSortConfig] = useState({ key: 'appliedOn', direction: 'asc' });
-  const applicationsPerPage = 10;
+  const [applications, setApplications] = useState([]);  // State to store applications
+  const [selectedApplication, setSelectedApplication] = useState(null);  // State to store selected application
+  const [loading, setLoading] = useState(true);  // State to manage loading status
+  const [error, setError] = useState(null);  // State to manage error messages
+  const [searchTerm, setSearchTerm] = useState('');  // State to store search term
+  const [selectedStatus, setSelectedStatus] = useState('');  // State to store selected status
+  const [startDate, setStartDate] = useState(null);  // State to store start date for filtering
+  const [endDate, setEndDate] = useState(null);  // State to store end date for filtering
+  const [currentPage, setCurrentPage] = useState(1);  // State to manage current page for pagination
+  const [sortConfig, setSortConfig] = useState({ key: 'appliedOn', direction: 'asc' });  // State to manage sorting configuration
+  const applicationsPerPage = 10;  // Number of applications to show per page
 
   useEffect(() => {
     const fetchAllApplications = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/applications/all');
-        setApplications(response.data);
-        setLoading(false);
+        const response = await axios.get('http://localhost:5000/api/applications/all');  // Fetch all applications
+        setApplications(response.data);  // Set applications data
+        setLoading(false);  // Set loading to false after fetching data
       } catch (error) {
-        console.error('Failed to fetch applications:', error);
-        setError('Failed to fetch applications');
-        setLoading(false);
+        console.error('Failed to fetch applications:', error);  // Log error if fetching fails
+        setError('Failed to fetch applications');  // Set error message
+        setLoading(false);  // Set loading to false after error
       }
     };
 
-    fetchAllApplications();
-  }, []);
+    fetchAllApplications();  // Call the function to fetch applications
+  }, []);  // Empty dependency array to run effect only once
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Define functions for accepting, declining, and viewing application details
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const acceptApplication = async (appId) => {
     try {
-      await axios.put(`http://localhost:5000/api/applications/accept/${appId}`);
+      await axios.put(`http://localhost:5000/api/applications/accept/${appId}`);  // Send request to accept application
       const updatedApplications = applications.map(app =>
         app._id === appId ? { ...app, status: 'Accepted' } : app
-      );
-      setApplications(updatedApplications);
+      );  // Update the status of the accepted application
+      setApplications(updatedApplications);  // Update state with new applications list
     } catch (error) {
-      console.error('Failed to accept application:', error);
+      console.error('Failed to accept application:', error);  // Log error if accepting fails
     }
   };
 
   const declineApplication = async (appId) => {
     try {
-      await axios.put(`http://localhost:5000/api/applications/decline/${appId}`);
+      await axios.put(`http://localhost:5000/api/applications/decline/${appId}`);  // Send request to decline application
       const updatedApplications = applications.map(app =>
         app._id === appId ? { ...app, status: 'Declined' } : app
-      );
-      setApplications(updatedApplications);
+      );  // Update the status of the declined application
+      setApplications(updatedApplications);  // Update state with new applications list
     } catch (error) {
-      console.error('Failed to decline application:', error);
+      console.error('Failed to decline application:', error);  // Log error if declining fails
     }
   };
 
   const showApplicationDetails = (application) => {
-    setSelectedApplication(application);
+    setSelectedApplication(application);  // Set the selected application for viewing details
   };
 
   const closeApplicationDetails = () => {
-    setSelectedApplication(null);
+    setSelectedApplication(null);  // Close the application details modal
   };
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Define function for sorting applications
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const handleSort = (field) => {
     let direction = 'asc';
     if (sortConfig.key === field && sortConfig.direction === 'asc') {
       direction = 'desc';
     }
-    setSortConfig({ key: field, direction });
+    setSortConfig({ key: field, direction });  // Update sort configuration
   };
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Define filtering, sorting, and pagination for applications
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   const sortedApplications = [...applications].sort((a, b) => {
     if (sortConfig.key === 'appliedOn') {
@@ -183,6 +293,24 @@ const AllApplications = () => {
   );
 
   const paginatedApplications = filteredApplications.slice((currentPage - 1) * applicationsPerPage, currentPage * applicationsPerPage);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Render the component
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   return (
     <ThemeProvider theme={theme}>
@@ -297,4 +425,4 @@ const AllApplications = () => {
   );
 };
 
-export default AllApplications;
+export default AllApplications;  // Export the main component
