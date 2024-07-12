@@ -1,222 +1,120 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react'; // Importing React and necessary hooks
-import axios from 'axios'; // Importing axios for HTTP requests
-import { AuthContext } from '../../AuthContext'; // Importing the AuthContext
-import { useNavigate } from 'react-router-dom'; // Importing useNavigate for navigation
-import { 
-  Container, 
-  Typography, 
-  Box, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
-  Button, 
-  CircularProgress, 
-  Modal 
-} from '@mui/material'; // Importing Material UI components
-import { createTheme, ThemeProvider } from '@mui/material/styles'; // Importing theme creation and ThemeProvider from Material UI
+import React, { useState, useEffect, useContext, useCallback } from 'react';
+import axios from 'axios';
+import { AuthContext } from '../../AuthContext';
+import { useNavigate } from 'react-router-dom';
+import {
+  Container,
+  Typography,
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  CircularProgress,
+  Modal,
+} from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Define a custom theme for Material UI components
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#4A90E2', // Primary color
+      main: '#4A90E2',
     },
     secondary: {
-      main: '#50E3C2', // Secondary color
+      main: '#50E3C2',
     },
     background: {
-      default: '#f7f9fc', // Background color
+      default: '#f7f9fc',
     },
   },
   typography: {
-    fontFamily: 'Montserrat, sans-serif', // Font family
+    fontFamily: 'Montserrat, sans-serif',
     h4: {
       fontWeight: 800,
       color: '#333',
-      fontSize: '2rem', // Header 4 style
+      fontSize: '2rem',
     },
     h5: {
       fontWeight: 700,
       color: '#555',
-      fontSize: '1.5rem', // Header 5 style
+      fontSize: '1.5rem',
     },
     body2: {
       color: '#777',
-      fontSize: '1rem', // Body text style
+      fontSize: '1rem',
     },
     button: {
       textTransform: 'uppercase',
       fontWeight: 700,
-      fontSize: '0.875rem', // Button text style
+      fontSize: '0.875rem',
     },
   },
 });
 
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Define the main component for the Candidate Dashboard
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const CandidateDashboard = () => {
-  const [applications, setApplications] = useState([]); // State to store applications
-  const [loading, setLoading] = useState(true); // State to handle loading state
-  const [error, setError] = useState(''); // State to handle errors
-  const [selectedApplication, setSelectedApplication] = useState(null); // State to handle the selected application for the modal
-  const { authToken, userDetails } = useContext(AuthContext); // Get auth token and user details from context
-  const navigate = useNavigate(); // Get the navigate function for programmatic navigation
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [selectedApplication, setSelectedApplication] = useState(null);
+  const { authToken, userDetails } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Fetch applications from the API
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const fetchApplications = useCallback(async () => {
-    setLoading(true); // Set loading state to true
+    setLoading(true);
     try {
       const response = await axios.get('http://localhost:5000/api/applications', {
         headers: {
-          Authorization: `Bearer ${authToken}`, // Add authorization header
+          Authorization: `Bearer ${authToken}`,
         },
         params: {
-          email: userDetails.email, // Add email as query parameter
+          email: userDetails.email,
         },
       });
 
-      setApplications(response.data); // Set the fetched applications to state
-      setLoading(false); // Set loading state to false
+      setApplications(response.data);
+      setLoading(false);
     } catch (err) {
-      setError('Failed to fetch applications'); // Set error message
-      setLoading(false); // Set loading state to false
-      console.error(err); // Log the error
+      setError('Failed to fetch applications');
+      setLoading(false);
+      console.error(err);
     }
   }, [authToken, userDetails.email]);
 
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Fetch applications when the component mounts
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
-    fetchApplications(); // Fetch applications
+    fetchApplications();
   }, [fetchApplications]);
 
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Show application details in a modal
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const showApplicationDetails = (application) => {
-    setSelectedApplication(application); // Set the selected application for the modal
+    setSelectedApplication(application);
   };
 
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Close the application details modal
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const closeApplicationDetails = () => {
-    setSelectedApplication(null); // Clear the selected application
+    setSelectedApplication(null);
   };
 
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Handle navigation to the evaluation test
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   const handleEvaluationTest = (category, applicationId) => {
-    navigate(`/test/${category}?applicationId=${applicationId}`); // Navigate to the evaluation test page
+    navigate(`/test/${category}?applicationId=${applicationId}`);
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Render the component
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   return (
-    <ThemeProvider theme={theme}> {/* Apply the custom theme */}
+    <ThemeProvider theme={theme}>
       <Container sx={{ py: 6 }}>
         <Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 4, fontWeight: 'bold' }}>
           Your Applications
         </Typography>
-        {loading ? ( // Show loading spinner if loading
+        {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
             <CircularProgress />
           </Box>
-        ) : error ? ( // Show error message if there's an error
+        ) : error ? (
           <Typography variant="h6" color="error" align="center">
             {error}
           </Typography>
-        ) : ( // Show applications table if data is fetched successfully
+        ) : (
           applications.length === 0 ? (
             <Typography variant="h6" align="center">
               No applications found.
@@ -235,7 +133,7 @@ const CandidateDashboard = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {applications.map((app) => ( // Loop through applications and render table rows
+                  {applications.map((app) => (
                     <TableRow key={app._id}>
                       <TableCell>{app.jobId ? app.jobId.title : 'No job title available'}</TableCell>
                       <TableCell>{new Date(app.createdAt).toLocaleDateString()} at {new Date(app.createdAt).toLocaleTimeString()}</TableCell>
@@ -246,7 +144,7 @@ const CandidateDashboard = () => {
                         <Button variant="contained" color="primary" onClick={() => showApplicationDetails(app)} sx={{ mr: 1 }}>
                           View Details
                         </Button>
-                        {app.status === 'Accepted' && app.jobId && ( // Show evaluation test button if the application is accepted
+                        {app.status === 'Accepted' && app.jobId && (
                           <Button
                             variant="contained"
                             color="secondary"
@@ -263,7 +161,7 @@ const CandidateDashboard = () => {
             </TableContainer>
           )
         )}
-        <Modal open={!!selectedApplication} onClose={closeApplicationDetails}> {/* Modal for application details */}
+        <Modal open={!!selectedApplication} onClose={closeApplicationDetails}>
           <Box sx={{
             position: 'absolute',
             top: '50%',
@@ -321,4 +219,4 @@ const CandidateDashboard = () => {
   );
 };
 
-export default CandidateDashboard; // Export the component as default
+export default CandidateDashboard;
